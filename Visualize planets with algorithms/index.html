@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <link rel="stylesheet" href="css/normalize.css" />
+  <link rel="stylesheet" href="css/skeleton.css" />
+  <link rel="stylesheet" href="css/font-awesome.css" />
+  <link rel="stylesheet" href="css/open-sans.css" />
+  <link rel="stylesheet" href="css/index.css" />
+  <link rel="stylesheet" href="css/tooltipster.bundle.min.css" />
+  <link rel="stylesheet" href="css/bootstrap.css"/>
+
+  <script src="js/cytoscape.min.js"></script>
+  <script src="js/cola.js"></script>
+  <script src="js/cytoscape-cola.js"></script>
+  <script src="js/jquery-3.1.1.min.js"></script>
+  <script src="js/tooltipster.bundle.min.js"></script>
+  <script src="js/index.js"></script>
+
+  <title>Visualize planets with algorithms</title>
+</head>
+
+<body>
+  <h1>Visualize planets with algorithms</h1>
+
+  <div id="cy" class="main">
+  </div>
+
+  <div class="tools">
+    <h2>Layout</h2>
+    <label for="layout" class="tooltip u-pull-left" title="Change layout">Active layout</label>
+    <div class="u-cf"></div>
+    <select id="layout">
+        <option value="cola" selected>Force-directed</option>
+        <option value="concentricCentrality">Concentric by centrality</option>
+        <option value="concentricHierarchyCentrality">Hierarchy by centrality</option>
+        <option value="custom">Custom</option>
+      </select>
+    <i id="redo-layout" class="fa fa-refresh action-icon tooltip" title="Redo layout"></i>
+
+    <h2>Algorithms</h2>
+    <label for="algorithm" class="tooltip u-pull-left" title="Run algorithm. Try running A* a few times to see distances to different nodes">
+        Run algorithm
+      </label>
+    <div class="u-cf"></div>
+    <select id="algorithm">
+        <option value="none" selected>None</option>
+        <option value="bfs">BFS</option>
+        <option value="dfs">DFS</option>
+        <option value="astar">A*</option>
+        <option value="custom">Custom</option>
+      </select>
+    <!--<i id="redo-algorithm" class="fa fa-refresh action-icon tooltip" title="Redo algorithm visualization"></i>-->
+	
+	<div id="start-point-div" class="hidden-select-start">
+	<label for="start-point" class="tooltip" title="Select start point">
+        Select start point
+      </label>
+	<div class="u-cf"></div>
+	<select id="start-point">
+		<option value="None" selected>None</option>
+		<option value="1">Mercury</option>
+		<option value="2">Venus</option>
+		<option value="3">Earth</option>
+		<option value="4">Moon</option>
+		<option value="5">Mars</option>
+		<option value="6">Jupiter</option>
+		<option value="7">Io</option>
+		<option value="8">Europa</option>
+		<option value="9">Ganymede</option>
+		<option value="10">Callisto</option>
+		<option value="11">Saturn</option>
+		<option value="12">Titan</option>
+		<option value="13">Rhea</option>
+		<option value="14">Iapetus</option>
+		<option value="15">Dione</option>
+		<option value="16">Tethys</option>
+		<option value="17">Enceladus</option>
+		<option value="18">Mimas</option>
+		<option value="19">Uranus</option>
+		<option value="20">Titania</option>
+		<option value="21">Oberon</option>
+		<option value="22">Ariel</option>
+		<option value="23">Umbriel</option>
+		<option value="24">Miranda</option>
+		<option value="25">Neptune</option>
+		<option value="26">Triton</option>
+		<option value="27">Pluto</option>
+		<option value="28">Eris</option>
+		<option value="29">Makemake</option>
+		<option value="30">Charon</option>
+	</select>
+	<br/>
+	<span id="error-start" class="err alert-danger hidden-error-start"><strong>Error!</strong>Select start point!</span>
+	</div>
+	<div id="end-point-div" class="hidden-select-end">
+	<label for="end-point" class="tooltip" title="Select end point">
+        Select end point
+      </label>
+	 <div class="u-cf"></div>
+	<select id="end-point">
+		<option value="None" selected>None</option>
+		<option value="1" >Mercury</option>
+		<option value="2">Venus</option>
+		<option value="3">Earth</option>
+		<option value="4">Moon</option>
+		<option value="5">Mars</option>
+		<option value="6">Jupiter</option>
+		<option value="7">Io</option>
+		<option value="8">Europa</option>
+		<option value="9">Ganymede</option>
+		<option value="10">Callisto</option>
+		<option value="11">Saturn</option>
+		<option value="12">Titan</option>
+		<option value="13">Rhea</option>
+		<option value="14">Iapetus</option>
+		<option value="15">Dione</option>
+		<option value="16">Tethys</option>
+		<option value="17">Enceladus</option>
+		<option value="18">Mimas</option>
+		<option value="19">Uranus</option>
+		<option value="20">Titania</option>
+		<option value="21">Oberon</option>
+		<option value="22">Ariel</option>
+		<option value="23">Umbriel</option>
+		<option value="24">Miranda</option>
+		<option value="25">Neptune</option>
+		<option value="26">Triton</option>
+		<option value="27">Pluto</option>
+		<option value="28">Eris</option>
+		<option value="29">Makemake</option>
+		<option value="30">Charon</option>
+	</select>
+	<br/>
+	<span id="error-end" class="err alert-danger hidden-error-end"><strong>Error!</strong>Select end point!</span>
+	</div>
+	<button id="do-algorithm" class="hidden-button">Apply algorithm</button>
+  </div>
+</body>
+
+</html>
