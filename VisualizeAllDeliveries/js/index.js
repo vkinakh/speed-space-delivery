@@ -4,7 +4,9 @@
 	// Begin and end are reqiured for aStar algorithm
 	// Path for custom algorithm
 	// Algo variable for changing algorithm
-	let begin, end, path, algo;
+	// speed variable for speed of shutle
+	let begin, end, path, algo, speed;
+
 	// <Helper functions>
 	// Function for creating array from elements with specific selector 
     let $$ = selector => Array.from( document.querySelectorAll( selector ) );
@@ -143,7 +145,10 @@
         let options = {
           root: '#' + begin,
           // astar requires target; goal property is ignored for other algorithms
-          goal: '#' + end
+          goal: '#' + end,
+		  weight : function(edge){
+			  return Number(edge.weight);
+		  }
         };
         return Promise.resolve(algorithm(options));
       }
@@ -164,7 +169,7 @@
 			// get all path ids
 			var ids = path.split(',');
 			algResults.path.length = ids.length;
-			for(var k = 0; k < ids.length; ++k)
+			for(var k = 1; k < ids.length - 1; ++k)
 			{
 				algResults.path[k] = cy.getElementById(ids[k]);
 			}
@@ -172,8 +177,8 @@
         // for astar, highlight first and final before showing path
         if (algResults.distance) {
           // Among DFS, BFS, A*, only A* will have the distance property defined
-          algResults.path.first().addClass('highlighted start');
-          algResults.path.last().addClass('highlighted end');
+          algResults.path[0].addClass('highlighted start');
+          algResults.path[ids.length - 1].addClass('highlighted end');
           // i is not advanced to 1, so start node is effectively highlighted twice.
           // this is intentional; creates a short pause between highlighting ends and highlighting the path
         }
@@ -181,8 +186,16 @@
           let highlightNext = () => {
             if (currentAlgorithm === algResults && i < algResults.path.length) {
               algResults.path[i].addClass('highlighted');
-              i++;
-              setTimeout(highlightNext, 500);
+             
+			  if(Number(algResults.path[i].id()) > 30)
+			  {
+				  //alert(algResults.path[i].data('weight'));
+				  setTimeout(highlightNext, 500 * algResults.path[i].data('weight') / speed);
+			  }else{
+				setTimeout(highlightNext, 500);
+			  }
+			  
+			   i++;
             } else {
               // resolve when finished or when a new algorithm has started visualization
               resolve();
@@ -262,12 +275,15 @@
 				rows[i].addEventListener('click', function(){									
 					if(this.cells[4].innerHTML == "astar")
 					{
+						// Quick delivery
+						speed = 10;
 						begin = this.cells[2].innerHTML, end = this.cells[3].innerHTML;
 						algo = "astar";
 						tryPromise(applyAlgorithmFromSelect);
 					}else{
 						// In this case path was created manyally or using some other algorithms
 						// In DB this case is specified using just list on path nodes
+						speed = 5;
 						algo = "path";
 						path = this.cells[4].innerHTML;
 						begin = this.cells[2].innerHTML, end = this.cells[3].innerHTML;

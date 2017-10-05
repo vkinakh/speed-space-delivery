@@ -9,8 +9,8 @@
 			"color": "#FF8000"
 		},
 		"position": {
-			"x": 400.912746727675,
-			"y": 467.8537077293129
+			"x": 0,
+			"y": 0
 		},
 		"group": "nodes",
 		"removed": false,
@@ -32,8 +32,8 @@
 
 		},
 		"position": {
-			"x": 346.91274572767503,
-			"y": 521.8537087293129
+			"x": 120,
+			"y": 0
 		},
 		"group": "nodes",
 		"removed": false,
@@ -54,8 +54,8 @@
 			"color": "#df7401"
 		},
 		"position": {
-			"x": 229.18847460153427,
-			"y": 528.4007363957313
+			"x": 170,
+			"y": -20
 		},
 		"group": "nodes",
 		"removed": false,
@@ -76,8 +76,8 @@
 			"color": "#0101df"
 		},
 		"position": {
-			"x": 562.9127497276751,
-			"y": 521.6122505651548
+			"x": 250,
+			"y": 15
 		},
 		"group": "nodes",
 		"removed": false,
@@ -98,8 +98,8 @@
 			"color": "#d8d8d8"
 		},
 		"position": {
-			"x": 238.92084419292118,
-			"y": 595.734380309857
+			"x": 238,
+			"y": 112
 		},
 		"group": "nodes",
 		"removed": false,
@@ -120,8 +120,8 @@
 			"color": "#ff0000"
 		},
 		"position": {
-			"x": 454.912747727675,
-			"y": 528.6540608593782
+			"x": 454,
+			"y": 28
 		},
 		"group": "nodes",
 		"removed": false,
@@ -142,7 +142,7 @@
 			"color": "#f5d0a9"
 		},
 		"position": {
-			"x": 283.1884756015343,
+			"x": 583.1884756015343,
 			"y": 541.7343793098571
 		},
 		"group": "nodes",
@@ -165,7 +165,7 @@
 		},
 		"position": {
 			"x": 487.22096038912815,
-			"y": 420.6540588593782
+			"y": 480.6540588593782
 		},
 		"group": "nodes",
 		"removed": false,
@@ -186,7 +186,7 @@
 			"color": "#e6e6e6"
 		},
 		"position": {
-			"x": 339.50567120248456,
+			"x": 615.50567120248456,
 			"y": 359.8537057293128
 		},
 		"group": "nodes",
@@ -208,8 +208,8 @@
 			"color": "#bef781"
 		},
 		"position": {
-			"x": 325.22095738912816,
-			"y": 413.8537067293128
+			"x": 512.22095738912816,
+			"y": 280.8537067293128
 		},
 		"group": "nodes",
 		"removed": false,
@@ -687,7 +687,8 @@
 			"id": "31",
 			"source": "1",
 			"target": "2",
-			"path" : "From Mercury to Venus"
+			"path" : "From Mercury to Venus",
+			"weight" : "77"
 		},
 		"position": {},
 		"group": "edges",
@@ -703,7 +704,8 @@
 			"id": "32",
 			"source": "2",
 			"target": "1",
-			"path" : "From Venus to Mercury"
+			"path" : "From Venus to Mercury",
+			"weight" : "77"
 		},
 		"position": {},
 		"group": "edges",
@@ -719,7 +721,8 @@
 			"id": "33",
 			"source": "2",
 			"target": "3",
-			"path" : "From Venus to Earth"
+			"path" : "From Venus to Earth",
+			"weight" : "76"
 		},
 		"position": {},
 		"group": "edges",
@@ -735,7 +738,8 @@
 			"id": "34",
 			"source": "3",
 			"target": "2",
-			"path" : "From Earth to Venus"
+			"path" : "From Earth to Venus",
+			"weight" : "76"
 		},
 		"position": {},
 		"group": "edges",
@@ -751,7 +755,8 @@
 			"id": "34",
 			"source": "3",
 			"target": "4",
-			"path" : "From Earth to Moon"
+			"path" : "From Earth to Moon",
+			"weight" : "55"
 		},
 		"position": {},
 		"group": "edges",
@@ -767,7 +772,8 @@
 			"id": "35",
 			"source": "4",
 			"target": "3",
-			"path" : "From Moon to Earth"
+			"path" : "From Moon to Earth",
+			"weight" : "55"
 		},
 		"position": {},
 		"group": "edges",
@@ -783,7 +789,8 @@
 			"id": "36",
 			"source": "3",
 			"target": "5",
-			"path" : "From Earth to Mars"
+			"path" : "From Earth to Mars",
+			"weight" : "78"
 		},
 		"position": {},
 		"group": "edges",
@@ -799,7 +806,8 @@
 			"id": "37",
 			"source": "5",
 			"target": "3",
-			"path" : "From Mars to Earth"
+			"path" : "From Mars to Earth",
+			"weight" : "78"
 		},
 		"position": {},
 		"group": "edges",
@@ -815,7 +823,8 @@
 			"id": "38",
 			"source": "5",
 			"target": "6",
-			"path" : "From Mars to Jupiter"
+			"path" : "From Mars to Jupiter",
+			"weight" : "88"
 		},
 		"position": {},
 		"group": "edges",
@@ -831,7 +840,8 @@
 			"id": "39",
 			"source": "6",
 			"target": "5",
-			"path" : "From Jupiter to Mars"
+			"path" : "From Jupiter to Mars",
+			"weight" : "88"
 		},
 		"position": {},
 		"group": "edges",
@@ -847,7 +857,8 @@
 			"id": "40",
 			"source": "6",
 			"target": "7",
-			"path" : "From Jupiter to Io"
+			"path" : "From Jupiter to Io",
+			"weight" : "46"
 		},
 		"position": {},
 		"group": "edges",
@@ -863,7 +874,8 @@
 			"id": "41",
 			"source": "7",
 			"target": "6",
-			"path" : "From Io to Jupiter"
+			"path" : "From Io to Jupiter",
+			"weight" : "46"
 		},
 		"position": {},
 		"group": "edges",
@@ -879,7 +891,8 @@
 			"id": "42",
 			"source": "6",
 			"target": "8",
-			"path" : "From Jupiter to Europa"
+			"path" : "From Jupiter to Europa",
+			"weight" : "58"
 		},
 		"position": {},
 		"group": "edges",
@@ -895,7 +908,8 @@
 			"id": "43",
 			"source": "8",
 			"target": "6",
-			"path" : "From Europa to Jupiter"
+			"path" : "From Europa to Jupiter",
+			"weight" : "58"
 		},
 		"position": {},
 		"group": "edges",
@@ -908,10 +922,11 @@
 	},
 	{
 		"data": {
-			"id": "44",
+			"id": "44", 
 			"source": "6",
 			"target": "9",
-			"path" : "From Jupiter to Ganymede"
+			"path" : "From Jupiter to Ganymede",
+			"weight" : "60"
 		},
 		"position": {},
 		"group": "edges",
@@ -927,7 +942,8 @@
 			"id": "45",
 			"source": "9",
 			"target": "6",
-			"path" : "From Ganymede to Jupiter"
+			"path" : "From Ganymede to Jupiter",
+			"weight" : "60"
 		},
 		"position": {},
 		"group": "edges",
@@ -943,7 +959,8 @@
 			"id": "46",
 			"source": "6",
 			"target": "10",
-			"path" : "From Jupiter to Callisto"
+			"path" : "From Jupiter to Callisto",
+			"weight" : "63"
 		},
 		"position": {},
 		"group": "edges",
@@ -959,7 +976,8 @@
 			"id": "47",
 			"source": "10",
 			"target": "6",
-			"path" : "From Callisto to Jupiter"
+			"path" : "From Callisto to Jupiter",
+			"weight" : "63"
 		},
 		"position": {},
 		"group": "edges",
@@ -975,7 +993,8 @@
 			"id": "48",
 			"source": "6",
 			"target": "11",
-			"path" : "From Jupiter to Saturn"
+			"path" : "From Jupiter to Saturn",
+			"weight" : "88"
 		},
 		"position": {},
 		"group": "edges",
@@ -991,7 +1010,9 @@
 			"id": "49",
 			"source": "11",
 			"target": "6",
-			"path" : "From Saturn to Jupiter"
+			"path" : "From Saturn to Jupiter",
+			"weight" : "88"
+			
 		},
 		"position": {},
 		"group": "edges",
@@ -1007,7 +1028,8 @@
 			"id": "50",
 			"source": "11",
 			"target": "12",
-			"path" : "From Saturn to Titan"
+			"path" : "From Saturn to Titan",
+			"weight" : "60"
 		},
 		"position": {},
 		"group": "edges",
@@ -1023,7 +1045,8 @@
 			"id": "51",
 			"source": "12",
 			"target": "11",
-			"path" : "From Titan to Saturn"
+			"path" : "From Titan to Saturn",
+			"weight" : "60"
 		},
 		"position": {},
 		"group": "edges",
@@ -1039,7 +1062,8 @@
 			"id": "52",
 			"source": "11",
 			"target": "13",
-			"path" : "From Saturn to Rhea"
+			"path" : "From Saturn to Rhea", 
+			"weight" : "57"
 		},
 		"position": {},
 		"group": "edges",
@@ -1055,7 +1079,8 @@
 			"id": "53",
 			"source": "13",
 			"target": "11",
-			"path" : "From Rhea to Saturn"
+			"path" : "From Rhea to Saturn",
+			"weight" : "57"
 		},
 		"position": {},
 		"group": "edges",
@@ -1071,7 +1096,8 @@
 			"id": "54",
 			"source": "11",
 			"target": "14",
-			"path" : "From Saturn to Iapetus"
+			"path" : "From Saturn to Iapetus",
+			"weight" : "65"
 		},
 		"position": {},
 		"group": "edges",
@@ -1087,7 +1113,8 @@
 			"id": "55",
 			"source": "14",
 			"target": "11",
-			"path" : "From Iapetus to Saturn"
+			"path" : "From Iapetus to Saturn",
+			"weight" : "65"
 		},
 		"position": {},
 		"group": "edges",
@@ -1103,7 +1130,8 @@
 			"id": "56",
 			"source": "11",
 			"target": "15",
-			"path" : "From Saturn to Dione"
+			"path" : "From Saturn to Dione",
+			"weight" : "56"
 		},
 		"position": {},
 		"group": "edges",
@@ -1119,7 +1147,8 @@
 			"id": "57",
 			"source": "15",
 			"target": "11",
-			"path" : "From Dione to Saturn"
+			"path" : "From Dione to Saturn",
+			"weight" : "56"
 		},
 		"position": {},
 		"group": "edges",
@@ -1135,7 +1164,8 @@
 			"id": "58",
 			"source": "11",
 			"target": "16",
-			"path" : "From Saturn to Tethys"
+			"path" : "From Saturn to Tethys",
+			"weight" : "54"
 		},
 		"position": {},
 		"group": "edges",
@@ -1151,7 +1181,8 @@
 			"id": "59",
 			"source": "16",
 			"target": "11",
-			"path" : "From Tethys to Saturn"
+			"path" : "From Tethys to Saturn",
+			"weight" : "54"
 		},
 		"position": {},
 		"group": "edges",
@@ -1167,7 +1198,8 @@
 			"id": "60",
 			"source": "11",
 			"target": "17",
-			"path" : "From Saturn to Enceladus"
+			"path" : "From Saturn to Enceladus",
+			"weight" : "53"
 		},
 		"position": {},
 		"group": "edges",
@@ -1183,7 +1215,8 @@
 			"id": "61",
 			"source": "17",
 			"target": "11",
-			"path" : "From Enceladus to Saturn"
+			"path" : "From Enceladus to Saturn",
+			"weight" : "53"
 		},
 		"position": {},
 		"group": "edges",
@@ -1199,7 +1232,8 @@
 			"id": "62",
 			"source": "11",
 			"target": "18",
-			"path" : "From Saturn to Mimas"
+			"path" : "From Saturn to Mimas",
+			"weight" : "52"
 		},
 		"position": {},
 		"group": "edges",
@@ -1215,7 +1249,8 @@
 			"id": "63",
 			"source": "18",
 			"target": "11",
-			"path" : "From Mimas to Saturn"
+			"path" : "From Mimas to Saturn",
+			"weight" : "52"
 		},
 		"position": {},
 		"group": "edges",
@@ -1231,7 +1266,8 @@
 			"id": "64",
 			"source": "11",
 			"target": "19",
-			"path" : "From Saturn to Uranus"
+			"path" : "From Saturn to Uranus",
+			"weight" : "91"
 		},
 		"position": {},
 		"group": "edges",
@@ -1247,7 +1283,8 @@
 			"id": "65",
 			"source": "19",
 			"target": "11",
-			"path" : "From Uranus to Saturn"
+			"path" : "From Uranus to Saturn",
+			"weight" : "91"
 		},
 		"position": {},
 		"group": "edges",
@@ -1263,7 +1300,8 @@
 			"id": "66",
 			"source": "19",
 			"target": "20",
-			"path" : "From Uranus to Titania"
+			"path" : "From Uranus to Titania",
+			"weight" : "56"
 		},
 		"position": {},
 		"group": "edges",
@@ -1279,7 +1317,8 @@
 			"id": "67",
 			"source": "20",
 			"target": "19",
-			"path" : "From Titania to Uranus"
+			"path" : "From Titania to Uranus",
+			"weight" : "56"
 		},
 		"position": {},
 		"group": "edges",
@@ -1295,7 +1334,8 @@
 			"id": "68",
 			"source": "19",
 			"target": "21",
-			"path" : "From Uranus to Oberon"
+			"path" : "From Uranus to Oberon",
+			"weight" : "57"
 		},
 		"position": {},
 		"group": "edges",
@@ -1311,7 +1351,8 @@
 			"id": "69",
 			"source": "21",
 			"target": "19",
-			"path" : "From Oberon to Uranus"
+			"path" : "From Oberon to Uranus",
+			"weight" : "57" 
 		},
 		"position": {},
 		"group": "edges",
@@ -1327,7 +1368,8 @@
 			"id": "70",
 			"source": "19",
 			"target": "22",
-			"path" : "From Uranus to Ariel"
+			"path" : "From Uranus to Ariel",
+			"weight" : "53"
 		},
 		"position": {},
 		"group": "edges",
@@ -1343,7 +1385,8 @@
 			"id": "71",
 			"source": "22",
 			"target": "19",
-			"path" : "From Ariel to Uranus"
+			"path" : "From Ariel to Uranus",
+			"weight" : "53"
 		},
 		"position": {},
 		"group": "edges",
@@ -1359,7 +1402,8 @@
 			"id": "72",
 			"source": "19",
 			"target": "23",
-			"path" : "From Uranus to Umbriel"
+			"path" : "From Uranus to Umbriel",
+			"weight" : "54"
 		},
 		"position": {},
 		"group": "edges",
@@ -1375,7 +1419,8 @@
 			"id": "73",
 			"source": "23",
 			"target": "19",
-			"path" : "From Umbriel to Uranus"
+			"path" : "From Umbriel to Uranus",
+			"weight" : "54"
 		},
 		"position": {},
 		"group": "edges",
@@ -1391,7 +1436,8 @@
 			"id": "74",
 			"source": "19",
 			"target": "24",
-			"path" : "From Uranus to Miranda"
+			"path" : "From Uranus to Miranda",
+			"weight" : "51"
 		},
 		"position": {},
 		"group": "edges",
@@ -1407,7 +1453,8 @@
 			"id": "75",
 			"source": "24",
 			"target": "19",
-			"path" : "From Miranda to Uranus"
+			"path" : "From Miranda to Uranus",
+			"weight" : "51"
 		},
 		"position": {},
 		"group": "edges",
@@ -1423,7 +1470,8 @@
 			"id": "76",
 			"source": "19",
 			"target": "25",
-			"path" : "From Uranus to Neptune"
+			"path" : "From Uranus to Neptune",
+			"weight" : "92"
 		},
 		"position": {},
 		"group": "edges",
@@ -1439,7 +1487,8 @@
 			"id": "77",
 			"source": "25",
 			"target": "19",
-			"path" : "From Neptune to Uranus"
+			"path" : "From Neptune to Uranus",
+			"weight" : "92"
 		},
 		"position": {},
 		"group": "edges",
@@ -1455,7 +1504,8 @@
 			"id": "78",
 			"source": "25",
 			"target": "26",
-			"path" : "From Neptune to Triton"
+			"path" : "From Neptune to Triton",
+			"weight" : "55"
 		},
 		"position": {},
 		"group": "edges",
@@ -1471,7 +1521,8 @@
 			"id": "78",
 			"source": "26",
 			"target": "25",
-			"path" : "From Triton to Neptune"
+			"path" : "From Triton to Neptune",
+			"weight" : "55"
 		},
 		"position": {},
 		"group": "edges",
@@ -1487,7 +1538,8 @@
 			"id": "79",
 			"source": "25",
 			"target": "27",
-			"path" : "From Neptune to Pluto"
+			"path" : "From Neptune to Pluto",
+			"weight" : "100"
 		},
 		"position": {},
 		"group": "edges",
@@ -1503,7 +1555,8 @@
 			"id": "80",
 			"source": "27",
 			"target": "25",
-			"path" : "From Pluto to Neptune"
+			"path" : "From Pluto to Neptune",
+			"weight" : "100"
 		},
 		"position": {},
 		"group": "edges",
@@ -1519,7 +1572,8 @@
 			"id": "81",
 			"source": "27",
 			"target": "28",
-			"path" : "From Pluto to Eris"
+			"path" : "From Pluto to Eris",
+			"weight" : "50"
 		},
 		"position": {},
 		"group": "edges",
@@ -1535,7 +1589,8 @@
 			"id": "82",
 			"source": "28",
 			"target": "27",
-			"path" : "From Eris to Pluto"
+			"path" : "From Eris to Pluto",
+			"weight" : "50"
 		},
 		"position": {},
 		"group": "edges",
@@ -1551,7 +1606,8 @@
 			"id": "83",
 			"source": "27",
 			"target": "29",
-			"path" : "From Pluto to Makemake"
+			"path" : "From Pluto to Makemake",
+			"weight" : "90"
 		},
 		"position": {},
 		"group": "edges",
@@ -1567,7 +1623,8 @@
 			"id": "84",
 			"source": "29",
 			"target": "27",
-			"path" : "From Makemake to Pluto"
+			"path" : "From Makemake to Pluto",
+			"weight" : "90"
 		},
 		"position": {},
 		"group": "edges",
@@ -1583,7 +1640,8 @@
 			"id": "85",
 			"source": "27",
 			"target": "30",
-			"path" : "From Pluto to Charon"
+			"path" : "From Pluto to Charon",
+			"weight" : "43"
 		},
 		"position": {},
 		"group": "edges",
@@ -1599,7 +1657,8 @@
 			"id": "86",
 			"source": "30",
 			"target": "27",
-			"path" : "From Charon to Pluto"
+			"path" : "From Charon to Pluto",
+			"weight" : "43"
 		},
 		"position": {},
 		"group": "edges",
