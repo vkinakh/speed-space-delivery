@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="mystyle.css">
+  <link rel="stylesheet" href="style.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+   <title>Registration</title>
+   <style>
+       
+
+    </style>
+</head>
+<body>
+   <nav class="navbar navbar-default" ><!-- navbar-inverse для темних кольорів . bg-inverse темний колір -->
+        <div class="container-fluid">
+            <div class="navber-header">
+                <a class="navbar-brand" href="#"><img src="images/SSD.jpg" alt="logo" class="img-circle" width="50" height="50"></a>
+            </div>
+            <ul class="nav navbar-nav">
+      <li><a href="index.html"><span class="glyphicon glyphicon-home"></span>Home</a></li>
+    </ul>
+        <ul class="nav navbar-nav navbar-right">
+      <li class=""><a href="sing-up.html"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+      <li><a href="log-in.html"><span class="glyphicon glyphicon-log-in"></span> Log in</a> </li>
+    </ul>
+        </div>
+    </nav> 
+    <div class="container-fluid">
+    <form onsubmit="">
+       <div class="container">
+        <div class="form-group">
+             <div class="row">
+              <div class="col-md-5">
+           <label for="from">Планета-відправиник</label>
+           <select name="" id="from" class="form-control">
+             <option>Earth</option>
+             <option>Mars</option>
+             <option>Moon</option>  
+           </select>
+            </div>
+            <div class="col-md-5">
+           <label for="from2">Планета-отримувач</label>
+           <select name="" id="from2" class="form-control">
+             <option>Earth</option>
+             <option>Mars</option>
+             <option>Moon</option>  
+           </select>
+            </div>
+            <div class="col-md-5">
+                <br>
+                 <label for="type">Вид відправлення</label>
+           <select name="" id="type" class="form-control">
+             <option>Раби</option>
+             <option>Вантаж</option>
+             <option>Тварини</option>
+             <option>Рослини</option>
+                </select>
+            </div>
+        </div>
+           </div>
+
+        <div class="form-group">
+        <div class="row">
+           <div class="col-md-5">
+            <label for="from">Вага</label>
+           <input type="text" class="form-control">
+            </div>
+               <div class="col-md-5">
+                   <label for="valum" >Об'єм</label>
+                    <input type="text" class="form-control" id="valum">
+</div>    
+                </div>
+                <div class="col-md-3">
+                <br>
+               <div class="form-group">
+                  <label for="packing">Послуга "Пакування"</label>
+                   <input type="checkbox" id="packing">
+               </div> 
+               <div class="form-group">
+                  <label for="send">Зворотня доставка</label>
+                   <input type="checkbox" id="send">
+               </div> 
+        </div>
+           </div>
+            
+        </div>
+        <div class="form-group">
+            <div class="col-md-4"></div> 
+            <div class="col-md-4">
+        <button class="btn btn-default">Розрахувати вартість</button>
+        </div>
+        </div>
+    </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+@keyframes glowing {
+  0% { box-shadow: 0 0 -10px red; }
+  40% { box-shadow: 0 0 20px red; }
+  60% { box-shadow: 0 0 20px red; }
+  100% { box-shadow: 0 0 -10px red; }
+}
+.text-glow {
+  animation: glowing 1500ms;
+}
+
+.color {
+           background-color: aqua;
+}
+
+.navbar {
+            padding-bottom: 1%;
+}
+
+ .carousel{
+   max-width:100%; /* or whatever width you want. */
+   display: inline-block;
+            margin-bottom:10%;
+            
+        }
+ #cats {
+            margin-bottom: 10%;
+ }
+  #footer{
+         margin-bottom: 0;   
+        }
