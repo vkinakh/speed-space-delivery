@@ -23,7 +23,7 @@
 
 	// Initialize cytoscape map for future adding graph
     let cy;
-
+	
 	// Promise for reading specific stylesheet
     let getStylesheet = name => {
       let convert = res => name.match(/[.]json$/) ? toJson(res) : toText(res);
@@ -130,7 +130,7 @@
         case 'dfs': return Promise.resolve(cy.elements().dfs.bind(cy.elements()));
         case 'astar':return Promise.resolve(cy.elements().aStar.bind(cy.elements()));
         case 'none': return Promise.resolve(undefined);
-        case 'custom': return Promise.resolve(undefined); // replace with algorithm of choice
+        case 'path': return Promise.resolve(cy.elements().aStar.bind(cy.elements())); // replaced with created algorithm
         default: return Promise.resolve(undefined);
       }
     };
@@ -139,7 +139,7 @@
     let runAlgorithm = (algorithm) => {
       if (algorithm === undefined) {
         return Promise.resolve(undefined);
-      } else {
+      } else{
         let options = {
           root: '#' + begin,
           // astar requires target; goal property is ignored for other algorithms
@@ -158,6 +158,17 @@
       }
       else {
         let i = 0;
+		// for path algorithm
+		if(algo == "path")
+		{
+			// get all path ids
+			var ids = path.split(',');
+			algResults.path.length = ids.length;
+			for(var k = 0; k < ids.length; ++k)
+			{
+				algResults.path[k] = cy.getElementById(ids[k]);
+			}
+		}
         // for astar, highlight first and final before showing path
         if (algResults.distance) {
           // Among DFS, BFS, A*, only A* will have the distance property defined
@@ -254,16 +265,22 @@
 						begin = this.cells[2].innerHTML, end = this.cells[3].innerHTML;
 						algo = "astar";
 						tryPromise(applyAlgorithmFromSelect);
+					}else{
+						// In this case path was created manyally or using some other algorithms
+						// In DB this case is specified using just list on path nodes
+						algo = "path";
+						path = this.cells[4].innerHTML;
+						begin = this.cells[2].innerHTML, end = this.cells[3].innerHTML;
+						tryPromise(applyAlgorithmFromSelect);
 					}
 				});
 			}
 		}
-	}
+	}		
+	// </Helper functions>
 	
 	// Write data to page
 	tryPromise(applyDatasetD).then(createRowListeners);
-	// </Helper functions>
-	
 	// Create cytoscape map for graph
     cy = window.cy = cytoscape({
       container: $('#cy')

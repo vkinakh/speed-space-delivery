@@ -3,11 +3,11 @@
 {"id" :"00000002", "mass" : "3000", "start" : "17", "end" : "28", "path" : "astar", "type" : "quick", "departure_date" : "2017-10-01", "receiving_date" : "2017-10-25"},
 {"id" :"00000003", "mass" : "4500", "start" : "30", "end" : "6", "path": "astar", "type" : "quick", "departure_date" : "2017-09-30", "receiving_date" : "2017-10-27"},
 
-{"id" :"00000004", "mass" : "500", "start" : "1", "end" : "3", "path" : "1,2,3", "type" : "regular", "departure_date" : "2017-10-07", "receiving_date" : "2017-10-17"},
+{"id" :"00000004", "mass" : "500", "start" : "1", "end" : "3", "path" : "1,31,2,33,3", "type" : "regular", "departure_date" : "2017-10-07", "receiving_date" : "2017-10-17"},
 {"id" :"00000005", "mass" : "750", "start" : "14", "end" : "2", "path" : "astar", "type" : "quick", "departure_date" : "2017-10-12", "receiving_date" : "2017-11-01"},
 {"id" :"00000006", "mass" : "1250", "start" : "28", "end" : "1", "path": "astar", "type" : "quick", "departure_date" : "2017-10-11", "receiving_date" : "2017-11-03"},
 
-{"id" :"00000007", "mass" : "2000", "start" : "2", "end" : "4", "path" : "2,3,4", "type": "regular", "departure_date": "2017-09-28", "receiving_date" : "2017-10-02"},
+{"id" :"00000007", "mass" : "2000", "start" : "2", "end" : "4", "path" : "2,33,3,34,4", "type": "regular", "departure_date": "2017-09-28", "receiving_date" : "2017-10-02"},
 {"id" :"00000008", "mass" : "1500", "start" : "3", "end" : "7", "path" : "astar", "type" : "quick", "departure_date" : "2017-09-21", "receiving_date" : "2017-09-28"},
 {"id" :"00000009", "mass" : "2500", "start" : "3", "end" : "17", "path" : "astar", "type" : "quick", "departure_date" : "2017-09-19", "receiving_date" : "2017-10-01"}
 
