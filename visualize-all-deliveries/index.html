@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/skeleton.css" />
+    <link rel="stylesheet" href="css/font-awesome.css" />
+    <link rel="stylesheet" href="css/open-sans.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/tooltipster.bundle.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="js/cytoscape.min.js"></script>
+	<script src="js/cola.js"></script>
+    <script src="js/cytoscape-cola.js"></script>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/tooltipster.bundle.min.js"></script>
+    <script src="js/index.js"></script>
+<style>
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default" ><!-- navbar-inverse для темних кольорів . bg-inverse темний колір -->
+        <div class="container-fluid">
+            <div class="navber-header">
+                <a class="navbar-brand" href="#"><img src="images/SSD.jpg" alt="logo" class="img-circle" width="50" height="50"></a>
+            </div>
+            <ul class="nav navbar-nav">
+      <li class=""><a href="index.html">Home</a></li>
+    </ul>
+        <ul class="nav navbar-nav navbar-right">
+      <li><a href="index.html"><span class="glyphicon glyphicon-log-out"></span>Log-out</a></li>
+    </ul>
+        </div>
+    </nav> 
+    <div class="container tools">
+  <h2>List of order</h2>    
+ <button class="accordion">Past deliveries</button>
+ <div class=panel>
+    <div class="table-responsive">
+     <table class="table" id="past"></table>
+     </div>
+ </div>
+  <button class="accordion">Active deliveries</button>
+ <div class=panel>
+    <div class="table-responsive">
+     <table class="table" id="active"></table>
+     </div>
+ </div>
+  <button class="accordion">Future deliveries</button>
+ <div class=panel>
+    <div class="table-responsive">
+     <table class="table" id="future">
+     </table>
+     </div>
+ </div>
+    </div>
+	<div id="cy" class="main"></div>
+	<footer>
+    <div class="navbar navbar-default" >
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-2  col-md-2 col-sm-4 col-xs-6">
+                    <h3> Some 1 </h3>
+                    <ul>
+                        <li> some</li>
+                        <li> some</li>
+                        <li> some</li>
+
+                    </ul>
+                </div>
+                <div class="col-lg-2  col-md-2 col-sm-4 col-xs-6">
+                    <h3> Some 2 </h3>
+                    <ul>
+                        <li> some</li>
+                        <li> some</li>
+                        <li> some</li>
+                    </ul>
+                </div>
+                <div class="col-lg-2  col-md-2 col-sm-4 col-xs-6">
+                    <h3> Some 3</h3>
+                    <ul>
+                        <li> some</li>
+                        <li> some</li>
+                        <li> some</li>
+                    </ul>
+                </div>
+                <div class="col-lg-2  col-md-2 col-sm-4 col-xs-6">
+                    <h3>Some 4</h3>
+                    <ul>
+                      <li> some</li>
+                        <li> some</li>
+                        <li> some</li>
+                    </ul>
+                </div>
+            </div>
+            <!--/.row--> 
+        </div>
+        <!--/.container--> 
+   
+        
+            <p class="text-center">  ©Footer </p>
+        
+    </div>
+    <!--/.footer-bottom--> 
+</footer>
+
+    <script>
+        var acc = document.getElementsByClassName("accordion");
+var i;
+
+for (i = 0; i < acc.length; i++) {
+    acc[i].onclick = function(){
+        this.classList.toggle("active");
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+        } else {
+            panel.style.display = "block";
+        }
+    }
+}
+    </script>
+</body>
+</html>
