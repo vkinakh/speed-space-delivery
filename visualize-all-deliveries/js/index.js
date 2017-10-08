@@ -144,7 +144,7 @@
           // astar requires target; goal property is ignored for other algorithms
           goal: '#' + end,
 		  weight : function(edge){
-			  return Number(edge.weight);
+			  return Number(edge.data("weight"));
 		  }
         };
         return Promise.resolve(algorithm(options));
@@ -183,14 +183,7 @@
           let highlightNext = () => {
             if (currentAlgorithm === algResults && i < algResults.path.length) {
               algResults.path[i].addClass('highlighted');
-             
-			  //if(Number(algResults.path[i].id()) > 30)
-			  //{
-				  //alert(algResults.path[i].data('weight'));
-				  //setTimeout(highlightNext, 500 * algResults.path[i].data('weight') / speed);
-			  //}else{
-				setTimeout(highlightNext, 500);
-			  //}
+			  setTimeout(highlightNext, 500);
 			  
 			   i++;
             } else {
