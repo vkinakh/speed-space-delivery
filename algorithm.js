@@ -276,7 +276,7 @@ function LevitAlgorithm(planets, path, nameA, nameB)
 			v2 = i;
 	}
 
-	var inf = 1000000000;
+	var inf = Number.MAX_VALUE;
 	var n = g.length;
 	
 	var d = [];
