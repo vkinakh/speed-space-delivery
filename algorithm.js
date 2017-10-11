@@ -1,3 +1,9 @@
+//перебір всіх можливих комбінацій, вибір найоптимальнішого
+//підрахунок ціни і часу між кожними двома точками в оптимальному вирішенні
+//для всіх кораблів, які можуть здійснити доставку контейнера - підрахунок часу і ціни
+
+
+
 
 function CheckInputData(planets, path, ships)
 {
@@ -10,35 +16,11 @@ function CheckInputData(planets, path, ships)
 	return 1;
 }
 
-
-
-function TripCost(consumption, length, fuelPrice,  difficulty )
+function TripCost(consumption, weight, fuelPrice)
 {
-	var cost = consumption * length * fuelPrice * difficulty;
+	var cost = consumption * weight * fuelPrice;
 	cost += (0.3 * cost);//накрутка
 	return cost;
-}
-
-function ExistenceOfItems(nameA, nameB, planets)
-{
-	var ptr1 = 0;
-	var ptr2 = 0;
-	for (var i = 0; i < planets.length; i++)
-	{
-			if (planets[i].data.name == nameA)
-				ptr1 = 1;
-			if (planets[i].data.name == nameB)
-				ptr2 = 1;
-	}
-	return (ptr1 && ptr2);
-}
-
-function InequalityItems(nameA, nameB)
-{
-	if (nameA != nameB)
-		return 1;
-	else 
-		return 0;
 }
 
 function IndexInArrayByName(array, data)
@@ -55,138 +37,19 @@ function IndexInArrayByName(array, data)
 	return index;
 }
 
-function IsSatellite(data, planets, ships,request, path)
-{
-	var numberInArray = IndexInArrayByName(planets,data);
-	
-
-	//check if start planet is satellite
-	if (planets[numberInArray].data.planetClass == "satellite")
-	{
-		var basePlanet = planets[numberInArray].data.basePlanet;
-
-		//check if base planet for this satellite exists
-		var ptrExistence = 0;
-		for (var i = 0;i < planets.length; i++)
-		{
-			if (planets[i].data.name == basePlanet)
-				{
-					ptrExistence = 1;
-					break;
-				}
-		}
-		if (ptrExistence != 1)
-			return "Base planet for satellite doesn't exist1";
-
-		//check if path between satellite and base planet for satellite exist
-		ptrExistence = 0;
-		for(var i = 0; i < path.length; i++)
-		{
-			if (path[i].data.source == data && path[i].data.target == basePlanet)
-			{
-				ptrExistence = 1;
-				break;
-			}
-			if (path[i].data.target == data && path[i].data.source == basePlanet)
-			{
-				ptrExistence = 1;
-				break;
-			}
-		}
-		if (ptrExistence != 1)
-			return "Path between satellite and base planet doesn't exist1.1";
-		//check if base planet has a shuttle for satellites(enought big for request)
-		ptrExistence = 0;
-		var freeSatelliteships = [];
-		for (var i = 0; i < ships.length; i++)
-		{
-			if (ships[i].location == basePlanet)
-				if (ships[i].planetClass == "satellite")
-					if (ships[i].capacity >= request.weight)
-						if (ships[i].volume >= request.volume)
-							{
-								ptrExistence = 1;
-								freeSatelliteships.push(ships[i]);
-							}
-		}
-		if (ptrExistence != 1)
-			return "Shuttle on base planet for satellites doesn't exist or your request is too big for this satellite shuttle2";
-
-		return freeSatelliteships;
-	}
-	else
-		return 0;
-
-}
-
-function IsBSatelliteForThisMain(request, planets, ships,path)
-{
-	var numberInArrayB = IndexInArrayByName(planets, request.to);
-	//A is main planet
-
-		//check if B is satellite for this main planet
-		if (planets[numberInArrayB].data.planetClass == "satellite")
-			{
-				if (planets[numberInArrayB].data.basePlanet == request.from)
-				{
-					//check if path between satellite and base planet for satellite exist
-					var ptrExistence = 0;
-					for(var i = 0; i < path.length; i++)
-					{
-						if (path[i].data.source == request.to && path[i].data.target == request.from)
-						{
-							ptrExistence = 1;
-							break;
-						}
-						if (path[i].data.target == request.from && path[i].data.source == request.to)
-						{
-							ptrExistence = 1;
-							break;
-						}
-					}
-					if (ptrExistence != 1)
-						return "Path between satellite and base planet doesn't exist2.1";
-
-					//check if exist satellite shuttle on A(big enought)
-					ptrExistence = 0;
-					var freeSatelliteships = [];
-					for (var i = 0; i < ships.length; i++)
-					{
-						if (ships[i].location == request.from)
-							if (ships[i].planetClass == "satellite")
-								if (ships[i].capacity >= request.weight)
-									if (ships[i].volume >= request.volume)
-									{
-										ptrExistence = 1;
-										freeSatelliteships.push(ships[i]);
-									}
-					}
-					if (ptrExistence != 1)
-						return "Shuttle on base planet for satellites doesn't exist or your request is too big for this satellite shuttle3";
-
-					return freeSatelliteships;
-				}
-				else
-					return 0;
-			}
-		else
-			return 0;	
-}
-
-
-function BaseShuttleExistence(nameA,request, planets, ships)
+function BaseShuttleExistence(nameA, conteiner, mainShips)
 {
 	
 	//check existence ships on this main planet 
 	var freeships = [];
-	for(var i = 0; i < ships.length; i++)
+	for(var i = 0; i < mainShips.length; i++)
 	{
-		if (ships[i].location == nameA)
-			if (ships[i].planetClass == "main")
-				if (ships[i].available == "yes")
-					if (ships[i].capacity >= request.weight)
-						if (ships[i].volume >= request.volume)
-							freeships.push(ships[i]);
+		if (mainShips[i].location == nameA)
+			if (mainShips[i].planetClass == "main")
+				if (mainShips[i].available == "yes")
+					if (mainShips[i].capacity >= conteiner.weight)
+						if (mainShips[i].volume >= conteiner.volume)
+							freeships.push(mainShips[i]);
 	}
 	if (freeships.length != 0)
 	{
@@ -200,24 +63,9 @@ function BaseShuttleExistence(nameA,request, planets, ships)
 }
 
 
-function FormGraph(planets, path)
+function FormGraph(mainPlanets, mainPath)
 {
-	var mainPlanets = [];
-	for(var i = 0;i < planets.length;i++)
-	{
-		if (planets[i].data.planetClass == "main")
-			mainPlanets.push(planets[i]);
-	}
-	var mainPath = [];
-	for(var i = 0;i < path.length; i++)
-	{
-		if (planets[ IndexInArrayByName(planets,path[i].data.source) ].data.planetClass == "satellite")
-			continue;
-		if (planets[ IndexInArrayByName(planets,path[i].data.target) ].data.planetClass == "satellite")
-			continue;
-		mainPath.push(path[i]);
-	}
-	graph = [];
+	var graph = [];
 	for(var i = 0;i < mainPlanets.length; ++i)
 	{
 		var tempArr = [];
@@ -235,7 +83,7 @@ function FormGraph(planets, path)
 							break;
 						}
 				}
-				tempArr.push({to : x, length : mainPath[j].data.length});
+				tempArr.push({to : x, weight : mainPath[j].data.weight});
 			}
 			if (mainPath[j].data.target == tempName)
 			{
@@ -248,7 +96,7 @@ function FormGraph(planets, path)
 							break;
 						}
 				}
-				tempArr.push({to : x, length : mainPath[j].data.length});
+				tempArr.push({to : x, weight : mainPath[j].data.weight});
 			}
 		}
 		graph.push(tempArr);
@@ -257,17 +105,11 @@ function FormGraph(planets, path)
 	return graph;
 }
 
-function LevitAlgorithm(planets, path, nameA, nameB)
+function LevitAlgorithm(mainPlanets, mainPath, nameA, nameB)
 {
-	var g = FormGraph(planets, path);
+	var g = FormGraph(mainPlanets, mainPath);
 	var v1, v2;
 
-	var mainPlanets = [];
-	for(var i = 0;i < planets.length;i++)
-	{
-		if (planets[i].data.planetClass == "main")
-			mainPlanets.push(planets[i]);
-	}
 	for(var i = 0;i < mainPlanets.length;i++)
 	{
 		if (mainPlanets[i].data.name == nameA)
@@ -305,374 +147,91 @@ function LevitAlgorithm(planets, path, nameA, nameB)
 
 		for(var i = 0;i < g[v].length; i++)
 		{
-			var to = g[v][i].to, len = g[v][i].length;
+			var to = g[v][i].to;
+			var len = g[v][i].weight;
 			if (d[to] > d[v] + len)
 			{
 				d[to] = d[v] + len;
-				if (d[to] == 0)
+				if (id[to] == 0)
 					q.push(to);
 				else if (id[to] == 1)
 					q.unshift(to);
 				p[to] = v;
-				
 				id[to] = 1;
 			}
 		}
 	}
 
-	var minLength = d[v2];
-	var difficulty;
+	var minWeigth = d[v2];
+	var minPath = [];
 	if (p[v2] != -1)
-	{
-		var prevV2 = mainPlanets[ p[v2] ].data.name;
-		for(var i = 0;i < path.length; i++)
-		{
-			if (path[i].data.source == prevV2 && path[i].data.target == mainPlanets[v2].data.name)
-				{
-					difficulty = path[i].data.difficulty;
-					break;
-				}
-			if (path[i].data.target == prevV2 && path[i].data.source == mainPlanets[v2].data.name)
-				{
-					difficulty = path[i].data.difficulty;
-					break;
-				}
-		}
+	{	
+			//rebuilding mimimal path by planets names
+			var i = v2;
+			minPath.unshift(mainPlanets[v2].data.name);
+			while (p[i] != v1)
+			{
+				minPath.unshift(mainPlanets[ p[i] ].data.name);
+				i = p[i];
+			}
+			minPath.unshift(mainPlanets[v1].data.name);
 
+			//return results
+			var result = [];
+			result.push(minWeigth);
+			result.push(minPath);
+			return result;
 	}
 	else
 	{
-		return "This rout doesnt exist4";
+		return "This rout doesnt exist";
 	}
 
-	//return results
-	var result = [];
-	result.push(minLength);
-	result.push(difficulty);
-	return result;
 }
 
 
 
-function Main(planets, path, ships, fuelPrice, request)
+function Main(planets, path, ships, fuelPrice, conteiner)
 {
 	if (CheckInputData(planets, path, ships) == 0)
-		return "Data from database isn't correct5";
+		return "Data from database isn't correct";
 
-	if (ExistenceOfItems(request.from, request.to, planets) == 0)
-		return "One/both planets to delivery dont exist6";
-
-	if (InequalityItems(request.from, request.to) == 0)
-		return "Begin and end planets are the same7";
-
-	var checkASatellite = IsSatellite(request.from, planets, ships,request,path);
-	if (checkASatellite == 0) {} //A is not a satellite
-	else if (Array.isArray(checkASatellite)) //A is satellite - array with free ships from satellite to base planet
+	var mainPlanets = [];
+	for(var i = 0;i < planets.length;i++)
 	{
-		//search index of path from satellite A to its base planet
-		var indexPathA;
-			for(var i = 0; i < path.length; i++)
-			{
-				if (path[i].data.source == request.from && path[i].data.target == planets[ IndexInArrayByName(planets,request.from) ].data.basePlanet)
-				{
-					indexPathA = i;
-					break;
-				}
-				if (path[i].data.target == request.from && path[i].data.source == planets[ IndexInArrayByName(planets,request.from) ].data.basePlanet)
-				{
-					indexPathA = i;
-					break;
-				}
-			}
-
-		//if B is base planet for this satellite - return free satellite ships 
-		if (request.to == planets[ IndexInArrayByName(planets,request.from) ].data.basePlanet)
-		{
-			//КОРИСТУВАЧУ ТРЕБА НАДАТИ ВИБІР З МАСИВУ ВІЛЬНИХ ШАТЛІВ
-			var temp = [];
-			for(var i = 0;i < checkASatellite.length; i++)
-			{
-				var tempTime = path[indexPathA].data.length / checkASatellite[i].speed;
-				var tempPrice = TripCost(checkASatellite[i].consumption, path[indexPathA].data.length, fuelPrice, path[indexPathA].data.difficulty);
-				temp.push({time : tempTime, price : tempPrice, id : checkASatellite[i].id});
-			}
-			return temp;/////////////////////////////////////////////////////
-		}
-		else
-		{
-			//A is a satellite so now departure from base planet to nowhere
-			//then user can took one of free satellite shutles that are in checkASatellite
-			var numberInArrayA = IndexInArrayByName(planets,request.from);
-			var basePlanetForA = planets[numberInArrayA].data.basePlanet;
-
-					//basePlanetForA is base planet and B is not satellite for this base planet basePlanetForA
-					var checkBaseShuttle = BaseShuttleExistence(basePlanetForA,request, planets, ships);
-					if (checkBaseShuttle == 0)
-					{
-						return "Base ships for planet basePlanetForA dont exist8";
-					}
-	
-					//there are free ships from this main planet basePlanetForA in array checkBaseShuttle
-
-					//check if planet B is satellite
-					var checkEndSatellite = IsSatellite(request.to, planets, ships,request,path);
-					if (checkEndSatellite == 0) {} //B is not a satellite
-					else if (Array.isArray(checkEndSatellite)) //B is satellite - array with free ships from base planet to satellite
-					{
-
-						//search index of path from satellite B to its base planet
-						var indexPathB;
-						for(var i = 0; i < path.length; i++)
-						{
-							if (path[i].data.source == request.to && path[i].data.target == planets[ IndexInArrayByName(planets,request.to) ].data.basePlanet)
-							{
-								indexPathB = i;
-								break;
-							}
-							if (path[i].data.target == request.to && path[i].data.source == planets[ IndexInArrayByName(planets,request.to) ].data.basePlanet)
-							{
-								indexPathB = i;
-								break;
-							}
-						}
-
-
-						//so now departure from base planet basePlanetForA to base planet that is base for satellite B
-						//then user can took one of free satellite shutles that are in checkEndSatellite
-							var numberInArrayB = IndexInArrayByName(planets,request.to);
-							var basePlanetForB = planets[numberInArrayB].data.basePlanet;
-							//basePlanetForA is base planet and basePlanetForB is base planet
-							//check for existence routes
-
-							var checkRout = LevitAlgorithm(planets, path, basePlanetForA, basePlanetForB);
-							if (Array.isArray(checkRout))
-							{
-								var difficulty = checkRout[1];
-								var minLength = checkRout[0];
-								//min rout for delivery is found
-								//user can took one of free ships from checkBaseShuttle
-								//and then count price and time with minLength and difficulty
-								//and then took one of free satellite ships from checkEndSatelites and count price and time with satelliteRoutLength
-								//and took one of free satellite shuttles from checkASatellite and count price and time with satelliteRoutLength
-								//КОРИСТУВАЧУ ТРЕБА НАДАТИ ВИБІР З ТРЬОХ МАСИВІВ ВІЛЬНИХ ШАТЛІВ
-								var temp = [];
-								for(var i = 0;i < checkBaseShuttle.length; i++)
-								{
-									for(var j = 0; j < checkEndSatellite.length;++j )
-									{
-										for(var z = 0; z < checkASatellite.length;++z )
-										{
-											var tempTime = minLength / checkBaseShuttle[i].speed + path[indexPathA].data.length / checkASatellite[z].speed +
-											path[indexPathB].data.length / checkEndSatellite[j].speed;
-											var tempPrice = TripCost(checkBaseShuttle[i].consumption, minLength, fuelPrice, difficulty) +
-											TripCost(checkASatellite[z].consumption, path[indexPathA].data.length, fuelPrice, path[indexPathA].data.difficulty)+
-											TripCost(checkEndSatellite[j].consumption, path[indexPathB].data.length, fuelPrice, path[indexPathB].data.difficulty);
-											temp.push({time : tempTime, price : tempPrice, id : checkBaseShuttle[i].id});
-										}
-										
-									}
-					
-								}
-								return temp;/////////////////////////////////////////////////////
-							}
-							else
-							{
-								return checkRout;//rout doesnt exist
-							}
-					}
-					else
-					{
-						return checkEndSatellite;//some problem with data
-					}
-
-
-					//basePlanetForA is base planet and B is base planet
-					//check for existence routes
-
-					var checkRout = LevitAlgorithm(planets, path, basePlanetForA, request.to);
-					if (Array.isArray(checkRout))
-					{
-						var difficulty = checkRout[1];
-						var minLength = checkRout[0];
-						//min rout for delivery is found
-						//user can took one of free ships from checkBaseShips
-						//and then count price and time with minLength and difficulty
-						//and then took one satellite shuttle from checkASatellite and count price and time with satelliteRoutLength
-						//КОРИСТУВАЧУ ТРЕБА НАДАТИ ВИБІР З ДВОХ МАСИВІВ ВІЛЬНИХ ШАТЛІВ
-						var temp = [];
-						for(var i = 0;i < checkBaseShuttle.length; i++)
-						{
-							for(var j = 0; j < checkASatellite.length;++j )
-							{
-								var tempTime = minLength / checkBaseShuttle[i].speed + path[indexPathA].data.length / checkASatellite[j].speed;
-								var tempPrice = TripCost(checkBaseShuttle[i].consumption, minLength, fuelPrice, difficulty) +
-								TripCost(checkASatellite[j].consumption, path[indexPathA].data.length, fuelPrice, path[indexPathA].data.difficulty);
-								temp.push({time : tempTime, price : tempPrice, id : checkBaseShuttle[i].id});
-							}
-					
-						}
-						return temp;/////////////////////////////////////////////////////
-					}
-					else
-					{
-						return checkRout;//rout doesnt exist
-					}
-
-
-
-
-
-		}
-		
+		if (planets[i].data.planetClass == "main")
+			mainPlanets.push(planets[i]);
 	}
-	else
+	var mainPath = [];
+	for(var i = 0;i < path.length; i++)
 	{
-		return checkASatellite;//some problem with data
+		if (planets[ IndexInArrayByName(planets,path[i].data.source) ].data.planetClass == "satellite")
+			continue;
+		if (planets[ IndexInArrayByName(planets,path[i].data.target) ].data.planetClass == "satellite")
+			continue;
+		var tempPath = {data :{source : path[i].data.source, target : path[i].data.target, weight : (path[i].data.length * path[i].data.difficulty) }};
+		mainPath.push(tempPath);
+	}
+	var mainShips = [];
+	for(var i = 0;i < ships.length; ++i)
+	{
+		if (ships[i].planetClass == "main")
+			mainShips.push(ships[i]);
 	}
 
 
+	//array of free ships in freeShips
+	var freeShips = BaseShuttleExistence(conteiner.from, conteiner, mainShips);
+	if (freeShips == 0)
+		return "Ships on this main planet don't exist";
 
+	//TODO
+	var testResult = LevitAlgorithm(mainPlanets,mainPath,"Pluton", "Maslo");
+	return testResult;
 
-
-
-
-	//A is base planet
-
-	//check if B is satellite for this main planet
-	var checkBSatellite = IsBSatelliteForThisMain(request, planets, ships,path);
-	if (checkBSatellite == 0) {} //B is not a satellite for this main planet
-	else if (Array.isArray(checkBSatellite)) //B is satellite for this main planet - array with free ships from base planet to satellite
-	{
-		//search index of path from satellite B to its base planet
-		var indexPathB;
-		for(var i = 0; i < path.length; i++)
-		{
-			if (path[i].data.source == request.to && path[i].data.target == request.from)
-			{
-				indexPathB = i;
-				break;
-			}
-			if (path[i].data.target == request.to && path[i].data.source == request.from)
-			{
-				indexPathB = i;
-				break;
-			}
-		}
-
-		//КОРИСТУВАЧУ ТРЕБА НАДАТИ ВИБІР З МАСИВУ ВІЛЬНИХ ШАТЛІВ
-		var temp = [];
-			for(var i = 0;i < checkBSatellite.length; i++)
-			{
-				var tempTime = path[indexPathB].data.length / checkBSatellite[i].speed;
-				var tempPrice = TripCost(checkBSatellite[i].consumption, path[indexPathB].data.length, fuelPrice, path[indexPathB].data.difficulty);
-				temp.push({time : tempTime, price : tempPrice, id : checkBSatellite[i].id});
-			}
-			return temp;/////////////////////////////////////////////////////
-	}
-	else
-	{
-		return checkBSatellite;//some problem with data
-	}
-	
-
-	//A is base planet and B is not satellite for this base planet A
-	var checkBaseShuttle = BaseShuttleExistence(request.from, request, planets, ships);
-	if (checkBaseShuttle == 0)
-	{
-		return "Base ships for planet A dont exist9";
-	}
-	
-	//there are free ships from this main planet A in array checkBaseShuttle
-
-	//check if planet B is satellite
-	var checkEndSatellite = IsSatellite(request.to, planets, ships,request,path);
-	if (checkEndSatellite == 0) {} //B is not a satellite
-	else if (Array.isArray(checkEndSatellite)) //B is satellite - array with free ships from base planet to satellite
-	{
-		//search index of path from satellite B to its base planet
-		var indexPathB;
-		for(var i = 0; i < path.length; i++)
-		{
-			if (path[i].data.source == request.to && path[i].data.target == planets[ IndexInArrayByName(planets,request.to) ].data.basePlanet)
-			{
-				indexPathB = i;
-				break;
-			}
-			if (path[i].data.target == request.to && path[i].data.source == planets[ IndexInArrayByName(planets,request.to) ].data.basePlanet)
-			{
-				indexPathB = i;
-				break;
-			}
-		}
-
-		//so now departure from base planet A to base planet that is base for satellite B
-		//then user can took one of free satellite shutles that are in checkEndSatellite
-			var numberInArrayB = IndexInArrayByName(planets,request.to);
-			var basePlanetForB = planets[numberInArrayB].data.basePlanet;
-			//A is base planet and basePlanetForB is base planet
-			//check for existence routes
-
-			var checkRout = LevitAlgorithm(planets, path, request.from, basePlanetForB);
-			if (Array.isArray(checkRout))
-			{
-				var difficulty = checkRout[1];
-				var minLength = checkRout[0];
-				//min rout for delivery is found
-				//user can took one of free ships from checkBaseShuttle
-				//and then count price and time with minLength and difficulty
-				//and then took one of free satellite ships from checkEndSatelites and count price and time with satelliteRoutLength
-				//КОРИСТУВАЧУ ТРЕБА НАДАТИ ВИБІР З ДВОХ МАСИВІВ ВІЛЬНИХ ШАТЛІВ
-				var temp = [];
-				for(var i = 0;i < checkBaseShuttle.length; i++)
-				{
-					for(var j = 0; j < checkEndSatellite.length;++j )
-					{
-						var tempTime = minLength / checkBaseShuttle[i].speed + path[indexPathB].data.length / checkEndSatellite[j].speed;
-						var tempPrice = TripCost(checkBaseShuttle[i].consumption, minLength, fuelPrice, difficulty) +
-						TripCost(checkEndSatellite[j].consumption, path[indexPathB].data.length, fuelPrice, path[indexPathB].data.difficulty);
-						temp.push({time : tempTime, price : tempPrice, id : checkBaseShuttle[i].id});
-					}
-					
-				}
-				return temp;/////////////////////////////////////////////////////
-			}
-			else
-			{
-				return checkRout;//rout doesnt exist
-			}
-	}
-	else
-	{
-		return checkEndSatellite;//some problem with data
-	}
-
-
-	//A is base planet and B is base planet
-	//check for existence routes
-
-	var checkRout = LevitAlgorithm(planets, path, request.from, request.to);
-	if (Array.isArray(checkRout) )
-	{
-		var difficulty = checkRout[1];
-		var minLength = checkRout[0];
-		//min rout for delivery is found
-		//user can took one of free ships from checkBaseShips
-		//and then count price and time with minLength and difficulty
-		//КОРИСТУВАЧУ ТРЕБА НАДАТИ ВИБІР З МАСИВУ ВІЛЬНИХ ШАТЛІВ
-		var temp = [];
-			for(var i = 0;i < checkBaseShuttle.length; i++)
-			{
-				var tempTime = minLength / checkBaseShuttle[i].speed;
-				var tempPrice = TripCost(checkBaseShuttle[i].consumption, minLength, fuelPrice, difficulty);
-				temp.push({time : tempTime, price : tempPrice, id : checkBaseShuttle[i].id});
-			}
-			return temp;/////////////////////////////////////////////////////
-	}
-	else
-	{
-		return checkRout;//rout doesnt exist
-	}
 }
+
+	
 
 
 
@@ -685,40 +244,135 @@ function Test()
 	planets.push({data:{planetClass : "satellite", basePlanet : "Earth", name : "Moon"}});
 	planets.push({data:{planetClass : "main", basePlanet : "Venus", name : "Venus"}});
 	planets.push({data:{planetClass : "main", basePlanet : "Mars", name : "Mars"}});
-	planets.push({data:{planetClass : "satellite", basePlanet : "Venus", name : "Pi"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Jupiter", name : "Jupiter"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Pluton", name : "Pluton"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Saturn", name : "Saturn"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Saturn", name : "Saturn1"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Saturn", name : "Saturn2"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Mercury", name : "Mercury"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Neptune", name : "Neptune"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Neptune", name : "Neptune1"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Ab", name : "Ab"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Kek", name : "Kek"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Ka", name : "Ka"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Ka", name : "Ka1"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Ka", name : "Ka2"}});
+	planets.push({data:{planetClass : "main", basePlanet : "La", name : "La"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Portal", name : "Portal"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Z", name : "Z"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Z", name : "Z1"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Lol", name : "Lol"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Sun", name : "Sun"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Ma", name : "Ma"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Ma", name : "Ma1"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Tu", name : "Tu"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Maslo", name : "Maslo"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Q", name : "Q"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Q", name : "Q1"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Q", name : "Q2"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Dupa", name : "Dupa"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Mix", name : "Mix"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Pih", name : "Pih"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Pih", name : "Pih1"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Pih", name : "Pih2"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Pih", name : "Pih3"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Ser", name : "Ser"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Am", name : "Am"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Frukt", name : "Frukt"}});
+	planets.push({data:{planetClass : "main", basePlanet : "Lis", name : "Lis"}});
+	planets.push({data:{planetClass : "satellite", basePlanet : "Lis", name : "Lis1"}});
 
 	var path = [];
-	path.push({data: {source: "Earth",target: "Venus",length : 88,difficulty : 3}});
-	path.push({data: {source: "Earth",target: "Moon",length : 10,difficulty : 2}});
-	path.push({data: {source: "Pi",target: "Venus",length : 15,difficulty : 4}});
+	path.push({data: {source: "Earth",target: "Pluton",length : 15,difficulty : 3}});
+	path.push({data: {source: "Earth",target: "Moon",length : 1,difficulty : 2}});
+	path.push({data: {source: "Earth",target: "Mars",length : 16,difficulty : 4}});
+	path.push({data: {source: "Earth",target: "Neptune",length : 20,difficulty : 3}});
+	path.push({data: {source: "Neptune",target: "Neptune1",length : 4,difficulty : 2}});
+	path.push({data: {source: "Mars",target: "Venus",length : 19,difficulty : 4}});
+	path.push({data: {source: "Mars",target: "Jupiter",length : 17,difficulty : 3}});
+	path.push({data: {source: "Jupiter",target: "Saturn",length : 18,difficulty : 2}});
+	path.push({data: {source: "Saturn",target: "Saturn1",length : 2,difficulty : 4}});
+	path.push({data: {source: "Saturn",target: "Saturn2",length : 3,difficulty : 3}});
+	path.push({data: {source: "Saturn",target: "Mercury",length : 21,difficulty : 2}});
+	path.push({data: {source: "Mercury",target: "Neptune",length : 22,difficulty : 4}});
+	path.push({data: {source: "Neptune",target: "Ka",length : 24,difficulty : 3}});
+	path.push({data: {source: "Ka",target: "Ka1",length : 5,difficulty : 2}});
+	path.push({data: {source: "Ka",target: "Ka2",length : 6,difficulty : 4}});
+	path.push({data: {source: "Ka",target: "Ab",length : 25,difficulty : 3}});
+	path.push({data: {source: "Ab",target: "Kek",length : 27,difficulty : 2}});
+	path.push({data: {source: "Kek",target: "Portal",length : 28,difficulty : 4}});
+	path.push({data: {source: "Portal",target: "Am",length : 30,difficulty : 3}});
+	path.push({data: {source: "Am",target: "Lis",length : 42,difficulty : 2}});
+	path.push({data: {source: "Lis",target: "Lis1",length : 8,difficulty : 4}});
+	path.push({data: {source: "Lis",target: "Ser",length : 44,difficulty : 3}});
+	path.push({data: {source: "Ser",target: "Frukt",length : 43,difficulty : 2}});
+	path.push({data: {source: "Ab",target: "Z",length : 26,difficulty : 4}});
+	path.push({data: {source: "Z",target: "Z1",length : 7,difficulty : 3}});
+	path.push({data: {source: "Z",target: "Lol",length : 31,difficulty : 2}});
+	path.push({data: {source: "Lol",target: "Ser",length : 41,difficulty : 4}});
+	path.push({data: {source: "Lol",target: "Mix",length : 40,difficulty : 4}});
+	path.push({data: {source: "Mix",target: "Dupa",length : 45,difficulty : 3}});
+	path.push({data: {source: "Dupa",target: "Q",length : 47,difficulty : 2}});
+	path.push({data: {source: "Q",target: "Q1",length : 10,difficulty : 4}});
+	path.push({data: {source: "Q",target: "Q2",length : 11,difficulty : 4}});
+	path.push({data: {source: "Q",target: "Maslo",length : 48,difficulty : 3}});
+	path.push({data: {source: "Maslo",target: "Tu",length : 38,difficulty : 2}});
+	path.push({data: {source: "Ma",target: "Ma1",length : 9,difficulty : 4}});
+	path.push({data: {source: "Pih",target: "Pih1",length : 12,difficulty : 3}});
+	path.push({data: {source: "Pih",target: "Pih2",length : 13,difficulty : 2}});
+	path.push({data: {source: "Pih",target: "Pih3",length : 14,difficulty : 4}});
+	path.push({data: {source: "Neptune",target: "La",length : 23,difficulty : 4}});
+	path.push({data: {source: "Z",target: "Frukt",length : 29,difficulty : 3}});
+	path.push({data: {source: "Ka",target: "Lol",length : 32,difficulty : 3}});
+	path.push({data: {source: "Ka",target: "Pih",length : 33,difficulty : 3}});
+	path.push({data: {source: "Ka",target: "Sun",length : 34,difficulty : 3}});
+	path.push({data: {source: "La",target: "Sun",length : 35,difficulty : 3}});
+	path.push({data: {source: "La",target: "Ma",length : 36,difficulty : 3}});
+	path.push({data: {source: "Ma",target: "Tu",length : 37,difficulty : 3}});
+	path.push({data: {source: "Sun",target: "Q",length : 39,difficulty : 3}});
+	path.push({data: {source: "Pih",target: "Q",length : 46,difficulty : 3}});
 
 
 	var ships = [];
 	ships.push({id:1, location : "Earth", capacity : 50, volume : 1000, speed : 100, consumption : 10, planetClass : "main", available : "yes"});
-	ships.push({id:6, location : "Earth", capacity : 40, volume : 6000, speed : 250, consumption : 50, planetClass : "main", available : "yes"});
-	ships.push({id:2, location : "Earth", capacity : 20, volume : 500, speed : 50, consumption : 5, planetClass : "satellite", available : "yes"});
-	ships.push({id:3, location : "Venus", capacity : 70, volume : 2000, speed : 70, consumption : 15, planetClass : "satellite", available : "yes"});
-	ships.push({id:4, location : "Earth", capacity : 100, volume : 5000, speed : 20, consumption : 20, planetClass : "satellite", available : "yes"});
-	ships.push({id:5, location : "Venus", capacity : 35, volume : 450, speed : 150, consumption : 12, planetClass : "satellite", available : "yes"});
+	ships.push({id:2, location : "Earth", capacity : 40, volume : 6000, speed : 250, consumption : 50, planetClass : "main", available : "yes"});
+	ships.push({id:4, location : "Venus", capacity : 70, volume : 2000, speed : 70, consumption : 15, planetClass : "main", available : "yes"});
+
+	ships.push({id:3, location : "Earth", capacity : 20, volume : 500, speed : 50, consumption : 5, planetClass : "satellite", available : "yes"});
+	ships.push({id:5, location : "Neptune", capacity : 100, volume : 5000, speed : 20, consumption : 20, planetClass : "satellite", available : "yes"});
+	ships.push({id:6, location : "Pih", capacity : 35, volume : 450, speed : 150, consumption : 12, planetClass : "satellite", available : "yes"});
+	ships.push({id:7, location : "Q", capacity : 35, volume : 450, speed : 150, consumption : 12, planetClass : "satellite", available : "yes"});
+	ships.push({id:8, location : "Z", capacity : 35, volume : 450, speed : 150, consumption : 12, planetClass : "satellite", available : "yes"});
+	ships.push({id:9, location : "Ma", capacity : 35, volume : 450, speed : 150, consumption : 12, planetClass : "satellite", available : "yes"});
+	ships.push({id:10, location : "Saturn", capacity : 35, volume : 450, speed : 150, consumption : 12, planetClass : "satellite", available : "yes"});
+	ships.push({id:11, location : "Ka", capacity : 35, volume : 450, speed : 150, consumption : 12, planetClass : "satellite", available : "yes"});
+	ships.push({id:12, location : "Lis", capacity : 35, volume : 450, speed : 150, consumption : 12, planetClass : "satellite", available : "yes"});
+
+
 
 	var fuelPrice = 10;
-	var request = {trackID:"undefined", from : "Moon", to : "Pi", weight : 20, volume : 200, price:"undefined", 
-				reg_date:"undefined", send_date:"undefined", delivery_date:"undefined", recieve_date:"undefined", status:"undefined"};
+	var destinations = [];
+	destinations.push("La");
+	destinations.push("Saturn");
+	destinations.push("Kek");
+	var conteiner = {from : "Earth", to : destinations, weight : 20, volume : 200};
 
 
 
 
 
 
-	var temp = Main(planets, path, ships, fuelPrice, request);
+	var temp = Main(planets, path, ships, fuelPrice, conteiner);
 	if (Array.isArray(temp))
 	{
 		var select = document.getElementById("insertHere");
-		for(var i=0;i < temp.length;i++)
-		{
 			var p = document.createElement("p");
-			p.value = i;
-			p.innerHTML = "time:"+temp[i].time + " price:" + temp[i].price + " id:" + temp[i].id;
+			p.innerHTML = "length: " + temp[0] + " Path: ";
+			select.appendChild(p);
+		for(var i=0;i < temp[1].length;i++)
+		{
+			p = document.createElement("p");
+			p.innerHTML = temp[1][i];
 			select.appendChild(p);
 		}
 	}
