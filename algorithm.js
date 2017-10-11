@@ -1,10 +1,3 @@
-//перебір всіх можливих комбінацій, вибір найоптимальнішого
-//підрахунок ціни і часу між кожними двома точками в оптимальному вирішенні
-//для всіх кораблів, які можуть здійснити доставку контейнера - підрахунок часу і ціни
-
-
-
-
 function CheckInputData(planets, path, ships)
 {
 	if (planets.length == 0)
@@ -189,7 +182,144 @@ function LevitAlgorithm(mainPlanets, mainPath, nameA, nameB)
 
 }
 
+function NextSet(arr, n)
+{
+	
+  var j = n - 2;
+  while (j != -1 && arr[j] >= arr[j + 1]) j--;
+  if (j == -1)
+    return 0; // more sets dont exist
+  var k = n - 1;
+  while (arr[j] >= arr[k]) k--;
 
+  var temp = arr[j];
+  arr[j] = arr[k];
+  arr[k] = temp;
+
+  var l = j + 1;
+  var r = n - 1; // sort last part of set
+  while (l<r)
+    {
+    	temp = arr[l];
+        arr[l] = arr[r];
+        arr[r] = temp;
+    	l++;
+    	r--;
+    }
+  return arr;
+
+}
+
+function AllCombinations(n)
+{
+	var combinations = [];
+	var tempCombination = [];
+	for(var i = 0; i < n; i++)
+		tempCombination.push(i);
+	combinations.push(tempCombination);
+	tempCombination = NextSet(tempCombination,n);
+	while(Array.isArray(tempCombination))
+	{
+		combinations.push(tempCombination);
+		tempCombination = NextSet(tempCombination,n);
+	}
+	return combinations;
+}
+
+function LengthPathCombination(combination, conteiner,mainPlanets, mainPath)
+{
+	var len = 0;
+	var temp = LevitAlgorithm(mainPlanets, mainPath, conteiner.from, conteiner.to[ combination[0] ]);
+
+	if ( !(Array.isArray(temp)) )
+	{
+		return temp;//path doesnt exist
+	}
+
+	len += temp[0];
+	for(var i = 1; i < combination.length; ++i)
+	{
+		temp = LevitAlgorithm(mainPlanets, mainPath, conteiner.to[ combination[i-1] ], conteiner.to[ combination[i] ]);
+
+		if ( !(Array.isArray(temp)) )
+		{
+			return temp;//path doesnt exist
+		}
+
+		len += temp[0];
+	}
+	return len;
+}
+
+function OptimalPath(mainPlanets,mainPath,conteiner)
+{
+	var n = conteiner.to.length;
+	var lengthsOfPathInCombinations = [];
+	var combinations = AllCombinations(n);
+	for(var i = 0; i < combinations.length;++i)
+	{
+		var temp = LengthPathCombination(combinations[i] , conteiner, mainPlanets, mainPath);
+
+		if (typeof temp === "string") 
+			return temp;//path doesnt exist
+
+		lengthsOfPathInCombinations.push( temp );
+	}
+	var indexMin = 0;
+	for(var i = 1; i < lengthsOfPathInCombinations.length; ++i)
+	{
+		if (lengthsOfPathInCombinations[i] < lengthsOfPathInCombinations[ indexMin ])
+			indexMin = i;
+	}
+	return combinations[indexMin];
+
+}
+
+function LengthAndPlanetsInOptimalPath(mainPlanets,mainPath,conteiner)
+{
+	var combination = OptimalPath(mainPlanets, mainPath, conteiner);
+
+	if (typeof combination === "string")
+		return combination;//path doesnt exist
+
+	var temp = LevitAlgorithm(mainPlanets, mainPath, conteiner.from, conteiner.to[ combination[0] ]);
+	var result = [];
+	result.push(temp);
+	for(var i = 1; i < combination.length; ++i)
+	{
+		temp = LevitAlgorithm(mainPlanets, mainPath, conteiner.to[ combination[i-1] ], conteiner.to[ combination[i] ]);
+		result.push(temp);
+	}
+	return result;
+}
+
+
+function PriceAndTime(mainPlanets, mainPath, conteiner, freeShips, fuelPrice)
+{
+	var optimalPath = LengthAndPlanetsInOptimalPath(mainPlanets, mainPath, conteiner);
+
+	if (typeof optimalPath === "string")
+		return optimalPath;//path doesnt exist
+
+	var result = [];
+	for(var i = 0; i < freeShips.length; ++i)
+	{
+		var sections = [];
+		
+		for(var j = 0; j < optimalPath.length; ++j)
+		{
+			var tempPrice = TripCost(freeShips[i].consumption, optimalPath[j][0], fuelPrice);
+			var tempTime = optimalPath[j][0] / freeShips[i].speed;
+			var section = {price : tempPrice, time : tempTime, path : optimalPath[j][1]};
+			sections.push(section);
+		}
+
+		var tempObject = {data : sections, shipId : freeShips[i].id};
+		result.push(tempObject);
+	}
+
+	return result;
+}
 
 function Main(planets, path, ships, fuelPrice, conteiner)
 {
@@ -223,12 +353,14 @@ function Main(planets, path, ships, fuelPrice, conteiner)
 	//array of free ships in freeShips
 	var freeShips = BaseShuttleExistence(conteiner.from, conteiner, mainShips);
 	if (freeShips == 0)
-		return "Ships on this main planet don't exist";
+		return "Ships on this main planet don't exist or too small for this conteiner";
 
-	//TODO
-	var testResult = LevitAlgorithm(mainPlanets,mainPath,"Pluton", "Maslo");
-	return testResult;
+	var result = PriceAndTime(mainPlanets, mainPath, conteiner, freeShips, fuelPrice);
 
+	if (typeof result === "string")
+		return result;//path doesnt exist
+
+	return result;
 }
 
 	
@@ -335,7 +467,7 @@ function Test()
 
 	var ships = [];
 	ships.push({id:1, location : "Earth", capacity : 50, volume : 1000, speed : 100, consumption : 10, planetClass : "main", available : "yes"});
-	ships.push({id:2, location : "Earth", capacity : 40, volume : 6000, speed : 250, consumption : 50, planetClass : "main", available : "yes"});
+	//ships.push({id:2, location : "Earth", capacity : 40, volume : 6000, speed : 250, consumption : 50, planetClass : "main", available : "yes"});
 	ships.push({id:4, location : "Venus", capacity : 70, volume : 2000, speed : 70, consumption : 15, planetClass : "main", available : "yes"});
 
 	ships.push({id:3, location : "Earth", capacity : 20, volume : 500, speed : 50, consumption : 5, planetClass : "satellite", available : "yes"});
@@ -355,6 +487,14 @@ function Test()
 	destinations.push("La");
 	destinations.push("Saturn");
 	destinations.push("Kek");
+	destinations.push("Mix");
+	destinations.push("Frukt");
+	destinations.push("Q");
+	destinations.push("Am");
+	//destinations.push("Venus");
+	//destinations.push("Lol");
+	//destinations.push("Pih");
+
 	var conteiner = {from : "Earth", to : destinations, weight : 20, volume : 200};
 
 
@@ -366,14 +506,26 @@ function Test()
 	if (Array.isArray(temp))
 	{
 		var select = document.getElementById("insertHere");
-			var p = document.createElement("p");
-			p.innerHTML = "length: " + temp[0] + " Path: ";
-			select.appendChild(p);
-		for(var i=0;i < temp[1].length;i++)
+			
+		for(var i=0;i < temp.length;i++)
 		{
 			p = document.createElement("p");
-			p.innerHTML = temp[1][i];
+			p.innerHTML = "ShipId: " + temp[i].shipId + ":";
 			select.appendChild(p);
+
+			for(var j = 0; j < temp[i].data.length; ++j)
+			{
+				p = document.createElement("p");
+				p.innerHTML = "time: " + temp[i].data[j].time + " price: " + temp[i].data[j].price;
+				select.appendChild(p);
+
+				for(var z = 0; z < temp[i].data[j].path.length; ++z)
+				{
+					p = document.createElement("p");
+					p.innerHTML = temp[i].data[j].path[z];
+					select.appendChild(p);
+				}
+			}
 		}
 	}
 	else
