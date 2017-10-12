@@ -591,10 +591,17 @@ function QuickDelivery(planets, path, ships, fuelPrice, conteiner)
 											var tempTime = minWeigth / checkBaseShuttle[i].speed + (path[indexPathA].data.length * path[indexPathA].data.difficulty)
 												/ checkASatellite[z].speed +
 											(path[indexPathB].data.length * path[indexPathB].data.difficulty)/ checkEndSatellite[j].speed;
+
 											var tempPrice = TripCost(checkBaseShuttle[i].consumption, minWeigth, fuelPrice) +
 											TripCost(checkASatellite[z].consumption, path[indexPathA].data.length * path[indexPathA].data.difficulty, fuelPrice)+
 											TripCost(checkEndSatellite[j].consumption, path[indexPathB].data.length * path[indexPathB].data.difficulty, fuelPrice);
-											temp.push({time : tempTime, price : tempPrice, shipId : checkBaseShuttle[i].id, path : minPath});
+
+											var arrShipId = [];
+											arrShipId.push(checkASatellite[z].id);
+											arrShipId.push(checkBaseShuttle[i].id);
+											arrShipId.push(checkEndSatellite[j].id);
+
+											temp.push({time : tempTime, price : tempPrice, shipId : arrShipId, path : minPath});
 										}
 										
 									}
@@ -634,9 +641,16 @@ function QuickDelivery(planets, path, ships, fuelPrice, conteiner)
 							{
 								var tempTime = minWeigth / checkBaseShuttle[i].speed + (path[indexPathA].data.length * path[indexPathA].data.difficulty)
 								/ checkASatellite[j].speed;
+
 								var tempPrice = TripCost(checkBaseShuttle[i].consumption, minWeigth, fuelPrice) +
 								TripCost(checkASatellite[j].consumption, path[indexPathA].data.length * path[indexPathA].data.difficulty, fuelPrice);
-								temp.push({time : tempTime, price : tempPrice, shipId : checkBaseShuttle[i].id, path : minPath});
+
+								var arrShipId = [];
+								arrShipId.push(checkASatellite[j].id);
+								arrShipId.push(checkBaseShuttle[i].id);
+											
+
+								temp.push({time : tempTime, price : tempPrice, shipId : arrShipId, path : minPath});
 							}
 					
 						}
@@ -759,9 +773,15 @@ function QuickDelivery(planets, path, ships, fuelPrice, conteiner)
 					for(var j = 0; j < checkEndSatellite.length;++j )
 					{
 						var tempTime = minWeigth / checkBaseShuttle[i].speed + (path[indexPathB].data.length * path[indexPathB].data.difficulty)/ checkEndSatellite[j].speed;
+
 						var tempPrice = TripCost(checkBaseShuttle[i].consumption, minWeigth, fuelPrice) +
 						TripCost(checkEndSatellite[j].consumption, path[indexPathB].data.length * path[indexPathB].data.difficulty, fuelPrice);
-						temp.push({time : tempTime, price : tempPrice, shipId : checkBaseShuttle[i].id, path : minPath});
+
+						var arrShipId = [];
+						arrShipId.push(checkBaseShuttle[i].id);
+						arrShipId.push(checkEndSatellite[j].id);
+
+						temp.push({time : tempTime, price : tempPrice, shipId : arrShipId, path : minPath});
 					}
 					
 				}
@@ -936,8 +956,8 @@ function Test()
 	//destinations.push("Lol");
 	//destinations.push("Pih");
 
-	var conteiner = {from : "Earth", to : destinations, weight : 20, volume : 200};
-	//var conteiner = {from : "Moon", to : "Earth", weight : 20, volume : 200};
+	//var conteiner = {from : "Earth", to : destinations, weight : 20, volume : 200};
+	var conteiner = {from : "Moon", to : "Pih3", weight : 20, volume : 200};
 
 
 	if (Array.isArray(conteiner.to))
@@ -991,7 +1011,27 @@ function Test()
 			{
 				var p = document.createElement("p");
 				p.value = i;
-				p.innerHTML = "time: "+temp[i].time + " price: " + temp[i].price + " Ship id: " + temp[i].shipId + " Path:";
+				p.innerHTML = "time: "+temp[i].time + " price: " + temp[i].price + " Ship id: ";
+				select.appendChild(p);
+
+				if (Array.isArray(temp[i].shipId))
+				{
+					for(var z = 0; z < temp[i].shipId.length;++z)
+					{
+						var p = document.createElement("p");
+						p.innerHTML = temp[i].shipId[z];
+						select.appendChild(p);
+					}
+				}
+				else
+				{
+					var p = document.createElement("p");
+					p.innerHTML = temp[i].shipId;
+					select.appendChild(p);
+				}
+				
+				var p = document.createElement("p");
+				p.innerHTML = "Path: ";
 				select.appendChild(p);
 
 				for(var j = 0; j < temp[i].path.length; ++j)
