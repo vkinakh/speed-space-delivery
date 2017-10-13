@@ -183,6 +183,9 @@
 		$("#submit").on("click", function()
 		{
 			cy.$().removeClass('delivery-place');
+			cy.$().removeClass('start-delivery-place');
+			cy.$().removeClass('end-delivery-place');
+			
 			cy.stop();
 			// Here must be some validation
 			if($("#truck-number").val() != "" && $("#truck-number").val() != undefined)
