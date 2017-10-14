@@ -35,7 +35,7 @@ router.route('/')
             if (err) res.sendStatus(502);
             else if(person){
                 if(person.permission==='admin'){        
-                    userModel.find({'pesmission': 'operator'}, "-_id -__v", function(err, data){
+                    userModel.find({}, "-_id -__v", function(err, data){
                         if (err) res.sendStatus(502);
                         else if(data.length>0){
                             res.json(data);

@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //CONNECTING TO DATABASE
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/ssd');
+mongoose.connect('mongodb://heroku_9h8w2nr5:37cm6rs1clvgsnvdnrj1ti71fr@ds119675.mlab.com:19675/heroku_9h8w2nr5');
 
 // REGISTER ROUTES -------------------------------
 var users = require('./app/routes/users')

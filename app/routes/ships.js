@@ -7,7 +7,7 @@ let userModel = require('../models/user.js');
 router.route('/')
     .get(function (req, res) {
         let SID = req.body.SID;
-        let query = req.body.shipParams;
+        let query = req.query;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission' , function (err, person) {

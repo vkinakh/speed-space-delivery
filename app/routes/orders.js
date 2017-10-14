@@ -63,7 +63,7 @@ router.route('/')
             if (err) res.sendStatus(502);
             else if(person){
                 if(person.permission==='default'){
-                    if(newOrder!==null&&newOrder.reciever!==undefined&&newOrder.from!==undefined
+                    if(newOrder&&newOrder.reciever!==undefined&&newOrder.from!==undefined
                        &&newOrder.to!==undefined&&newOrder.weight!==undefined&&newOrder.volume!==undefined&&newOrder.type!==undefined){
                         if(!validator.validate(person.email)||!validator.validate(newOrder.reciever)){
                             res.sendStatus(400);
