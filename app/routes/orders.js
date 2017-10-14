@@ -172,7 +172,7 @@ router.route('/')
                         query.status='waitingpickup';
                     }else if(action==='cancel'){
                         query.from = person.location;
-                        query.['$or'] = [{status: 'accepted'}, {status: 'registered'}];
+                        query['$or'] = [{status: 'accepted'}, {status: 'registered'}];
                     } 
                     if(person.permission==='admin'){
                         query.from = undefined;
