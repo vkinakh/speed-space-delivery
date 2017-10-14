@@ -1,14 +1,13 @@
 let express = require('express');
 let router = express.Router();
 let crypto = require('crypto');
+let nodemailer = require('nodemailer');
+let randomstring = require("randomstring");
+let validator = require("email-validator");
 
 let userModel = require('../models/user.js');
 let unconfirmedModel = require('../models/unconfirmed.js');
 let planetModel = require('../models/planet.js');
-
-let nodemailer = require('nodemailer');
-let randomstring = require("randomstring");
-let validator = require("email-validator");
 
 let smtpTransport = nodemailer.createTransport({
     service: "Gmail",
@@ -23,7 +22,7 @@ function addAdmin(){
     let password = crypto.createHash('sha256').update('testtest'+salt).digest('hex');
     let admin = new userModel({'email':'ssd@ssd.com', 'password':password, 'salt':salt, 'permission':'admin'});
     admin.save(function(err){
-       if (err) console.log(err);
+       if (err) res.sendStatus(502);
     });
 }   
 
@@ -33,12 +32,12 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission' , function (err, person) {
-            if (err) console.log(err);
-            if(person!==null){
+            if (err) res.sendStatus(502);
+            else if(person){
                 if(person.permission==='admin'){        
                     userModel.find({'pesmission': 'operator'}, "-_id -__v", function(err, data){
-                        if(err) console.log(err);
-                        if(data.length>0){
+                        if (err) res.sendStatus(502);
+                        else if(data.length>0){
                             res.json(data);
                         }else console.log(err);
                     });
@@ -49,31 +48,30 @@ router.route('/')
     .post(function(req, res) {
         let email = req.body.email;
         let password = req.body.password;
-        console.log(req.body);
         if(!validator.validate(email)||password===undefined){
             res.sendStatus(400);
         }else{
             let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
             password = crypto.createHash('sha256').update(password+salt).digest('hex');
             userModel.findOne({'email':email, 'password': password, 'salt':salt}, function (err, person) {
-                if (err) console.log(err);
-                if(person!==null){
+                if (err) res.sendStatus(502);
+                else if(person){
                     person.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
                     if (person.SID==='unconfirmed'){
                         person.SID='changingPass';
                         person.save(function (err) {
-                            if (err) console.log(err);
+                            if (err) res.sendStatus(502);
+                            else res.sendStatus(409);
                         });
-                        res.sendStatus(409);
                     }
                     else{
                         if(person.SID!=="changingPass"){
                             person.SID = crypto.createHash('sha256').update('SSD'+salt+person._id+person.ip+Date.now()).digest('hex');
                             let response = {'SID': person.SID, 'permission': person.permission};
                             person.save(function (err) {
-                                if (err) console.log(err);
+                                if (err) res.sendStatus(502);
+                                else res.json(response);
                             });
-                            res.json(response);
                         }else res.sendStatus(409);
                     }
                 }else res.sendStatus(401);
@@ -91,31 +89,33 @@ router.route('/')
             let salt = crypto.createHash('sha256').update('SSD'+userEmail+'LUL').digest('hex');
             password = crypto.createHash('sha256').update(password+salt).digest('hex');
             userModel.findOne({'email':userEmail, 'SID': 'changingPass', 'ip': ip}, function (err, person) {
-                if (err) console.log(err);
-                if(person!==null){
+                if (err) res.sendStatus(502);
+                else if(person){
                         person.salt = salt;
                         person.password = password;
                         person.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
                         person.SID = crypto.createHash('sha256').update('SSD'+salt+person.ip+Date.now()).digest('hex');
                         let response = {'SID': person.SID, 'permission': person.permission};
-                        res.json(response);
-                        person.save();
+                        person.save(function(err){
+                            if (err) res.sendStatus(502);
+                            else res.json(response);
+                        });
                 }else res.sendStatus(401);
             });
         }
     })
     .delete(function(req, res) {
-        let operatorlogin = req.body.email;
+        let email = req.body.email;
         let SID = req.body.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
-            if (err) console.log(err);
-            if(person!==null){
-                if(person.permission==='admin'&&person.SID.length!==0){
-                    userModel.remove({'email':operatorlogin}, function (err) {
-                        if (err) console.log(err);
-                        res.sendStatus(200);
+            if (err) res.sendStatus(502);
+            else if(person){
+                if(person.permission==='admin'){
+                    userModel.remove({'email': email}, function (err) {
+                        if (err) res.sendStatus(502);
+                        else res.sendStatus(200);
                     });
                 }
             }else res.sendStatus(401);
@@ -135,8 +135,9 @@ router.route('/addOperator')
             planetModel.findOne({'name':location}, function(err, planet){
                 if (err) res.sendStatus(502);
                 else if(planet){
+                    if (planet.type==='moon') location = planet.moonOf + '.' + location;
                     userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
-                        if (err) console.log(err);
+                        if (err) res.sendStatus(502);
                         else if(person&&person.permission==='admin'&&person.SID.length!==0){
                             userModel.findOne({'email': email}, function(err, result){
                                 if (err) res.sendStatus(502);
@@ -144,7 +145,7 @@ router.route('/addOperator')
                                     result.location = location;
                                     result.permission = 'operator';
                                     result.save(function(err){
-                                        if(err) res.sendStatus(502);
+                                        if (err) res.sendStatus(502);
                                         else res.sendStatus(200);
                                     });
                                 }else{
@@ -153,7 +154,7 @@ router.route('/addOperator')
                                     let pass = crypto.createHash('sha256').update(tempPass+salt).digest('hex');
                                     let operator = new userModel({'email':email, 'password': pass, 'location':location, 'salt':salt, 'SID':'unconfirmed', 'permission':'operator'});
                                     operator.save(function (err) {
-                                        if (err) console.log(err);
+                                        if (err) res.sendStatus(502);
                                         else{
                                             let mailOptions = {
                                                 from: 'speedspacedeliveries@gmail.com',
@@ -163,12 +164,9 @@ router.route('/addOperator')
                                             };
 
                                             smtpTransport.sendMail(mailOptions, (error, info) => {
-                                                if (error) {
-                                                    return console.log(error);
-                                                }
+                                                if (err) res.sendStatus(502);
+                                                else res.sendStatus(200);
                                             });
-
-                                            res.sendStatus(200);
                                         }
                                     });
                                 }
@@ -190,7 +188,7 @@ router.route('/addAdmin')
             res.sendStatus(400);
         }else{
             userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
-                if (err) console.log(err);
+                if (err) res.sendStatus(502);
                 else if(person&&person.permission==='admin'&&person.SID.length!==0){
                     userModel.findOne({'email': email}, function(err, result){
                         if (err) res.sendStatus(502);
@@ -198,7 +196,7 @@ router.route('/addAdmin')
                             if(result.location!==undefined) result.location='';
                             result.permission = 'admin';
                             result.save(function(err){
-                                if(err) res.sendStatus(502);
+                                if (err) res.sendStatus(502);
                                 else res.sendStatus(200);
                             });
                         }else{
@@ -207,7 +205,7 @@ router.route('/addAdmin')
                             let pass = crypto.createHash('sha256').update(tempPass+salt).digest('hex');
                             let operator = new userModel({'email':operatorlogin, 'password': pass, 'salt':salt, 'SID':'unconfirmed', 'permission':'admin'});
                             operator.save(function (err) {
-                                if (err) console.log(err);
+                                if (err) res.sendStatus(502);
                                 else{
                                     let mailOptions = {
                                         from: 'speedspacedeliveries@gmail.com',
@@ -217,12 +215,9 @@ router.route('/addAdmin')
                                     };
 
                                     smtpTransport.sendMail(mailOptions, (error, info) => {
-                                        if (error) {
-                                            return console.log(error);
-                                        }
+                                        if (err) res.sendStatus(502);
+                                        else res.sendStatus(200);
                                     });
-
-                                    res.sendStatus(200);
                                 }
                             });
                         }
@@ -240,7 +235,7 @@ router.route('/register')
             res.sendStatus(400);
         }else{
             userModel.findOne({'email': email}, function(err, person){
-                if(err) res.sendStatus(502);
+                if (err) res.sendStatus(502);
                 else if(!person){
                     let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
                     password = crypto.createHash('sha256').update(password+salt).digest('hex');
@@ -256,12 +251,11 @@ router.route('/register')
                                 text: 'Your confirmation code is: ' + cCode
                             };
 
-                            smtpTransport.sendMail(mailOptions, (error, info) => {
-                                if (error) {
-                                    return console.log(error);
-                                }
+                            smtpTransport.sendMail(mailOptions, (err, info) => {
+                                if (err) res.sendStatus(502);
+                                else res.sendStatus(200);
                             });
-                            res.sendStatus(200);
+                            
                         }
                     });
                 }else res.sendStatus(401);
@@ -281,7 +275,7 @@ router.route('/confirm')
                 else if(result){
                     let user = new userModel(result.toObject());
                     user.save(function(err){
-                        if(err) console.log(err);
+                        if (err) res.sendStatus(502);
                         else res.sendStatus(200);
                     });
                 }else res.sendStatus(401);
@@ -291,16 +285,19 @@ router.route('/confirm')
 
 router.route('/logout')
     .post(function(req, res){
-    let SID = req.body.SID;
-    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-    userModel.findOne({'SID':SID, 'ip':ip}, 'SID ip', function (err, person){
-        if (err) console.log(err);
-        if(person!==null){
-            person.SID = "";
-            person.ip = "";
-            person.save();
-        }else res.sendStatus(401);
+        let SID = req.body.SID;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+        userModel.findOne({'SID':SID, 'ip':ip}, 'SID ip', function (err, person){
+            if (err) res.sendStatus(502);
+            else if(person){
+                person.SID = "";
+                person.ip = "";
+                person.save(function(err){
+                    if (err) res.sendStatus(502);
+                    else res.sendStatus(200);
+                });
+            }else res.sendStatus(401);
+        });
     });
-});
 
 module.exports = router

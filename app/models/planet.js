@@ -17,11 +17,13 @@ let planetSchema = new Schema({
 
 planetSchema.pre('save', function(next) {
     var doc = this;
-    let planetModel = mongoose.model('planet', planetSchema);
-    planetModel.count(function(err,count){
-        doc.id = count + 1;
-        next();
-    })        
+    if(!doc.id){
+        let planetModel = mongoose.model('planet', planetSchema);
+        planetModel.count(function(err,count){
+            doc.id = count + 1;
+            next();
+        });
+    }else next();
 });
 
 module.exports = mongoose.model('planet', planetSchema);

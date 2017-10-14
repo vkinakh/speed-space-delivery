@@ -16,11 +16,13 @@ let shipSchema = new Schema({
 
 shipSchema.pre('save', function(next) {
     var doc = this;
-    let shipModel = mongoose.model('ship', shipSchema);
-    shipModel.count(function(err,count){
-        doc.id = count + 1;
-        next();
-    })        
+    if(!doc.id){
+        let shipModel = mongoose.model('ship', shipSchema);
+        shipModel.count(function(err,count){
+            doc.id = count + 1;
+            next();
+        });
+    }else next();
 });
 
 module.exports = mongoose.model('ship', shipSchema);

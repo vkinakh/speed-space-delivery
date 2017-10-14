@@ -13,11 +13,13 @@ let pathSchema = new Schema({
 
 pathSchema.pre('save', function(next) {
     var doc = this;
-    let pathModel = mongoose.model('path', pathSchema);
-    pathModel.find().sort('id').exec(function(err, paths){
-        doc.id = paths[paths.length-1].id + 1;
-        next();
-    })
+    if(!doc.id){
+        let pathModel = mongoose.model('path', pathSchema);
+        pathModel.find().sort('id').exec(function(err, paths){
+            doc.id = paths[paths.length-1].id + 1;
+            next();
+        });
+    }else next();
 });
 
 module.exports = mongoose.model('path', pathSchema);

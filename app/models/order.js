@@ -16,23 +16,25 @@ let orderSchema = new Schema({
     type: {type: String, enum: deliveryType, lowercase: true},
     containerID: Number,
     reg_date: {type: Date, default: new Date()},
-    send_date: {type: Date, default: new Date()},
-    delivery_date: {type: Date, default: new Date()},
-    recieve_date: {type: Date, default: new Date()},
+    send_date: Date,
+    delivery_date: Date,
+    recieve_date: Date,
     status: {type: String, enum: deliveryState, default: 'registered', lowercase: true}
 });
 
 orderSchema.pre('save', function(next) {
     var doc = this;
-    let orderModel = mongoose.model('order', orderSchema);
-    orderModel.find().sort('trackID').exec(function(err, orders){
-        if(orders.length>0){
-            doc.trackID = orders[orders.length-1].trackID + 1;
-        }else{
-            doc.trackID = 1;   
-        }
-        next();
-    })
+    if(!doc.trackID){
+        let orderModel = mongoose.model('order', orderSchema);
+        orderModel.find().sort('trackID').exec(function(err, orders){
+            if(orders.length>0){
+                doc.trackID = orders[orders.length-1].trackID + 1;
+            }else{
+                doc.trackID = 1;   
+            }
+            next();
+        }) 
+    }else next();
 });
 
 module.exports = mongoose.model('order', orderSchema);
