@@ -46,7 +46,12 @@ router.route('/')
                             res.json(result);
                         }else res.sendStatus(502);
                     });
-                }else res.sendStatus(401);
+                }else{
+                    planetModel.find({}, 'name moonOf galactic -_id',function(err, result){
+                        if (err) res.sendStatus(502);
+                        else res.json(result);
+                    });
+                }
             }else res.sendStatus(401);
         });
     })
@@ -59,7 +64,7 @@ router.route('/')
             if (err) res.sendStatus(502);
             else if(person){
                 if(person.permission==='admin'){
-                    if(newPlanet!==null&&newPlanet.name!==undefined&&newPlanet.type!==undefined&&newPlanet.galactic!==undefined
+                    if(newPlanet&&newPlanet.name!==undefined&&newPlanet.type!==undefined&&newPlanet.galactic!==undefined
                         &&newPlanet.position.x!==undefined&&newPlanet.position.y!==undefined&&newPlanet.image!==undefined
                         &&newPlanet.diameter!==undefined&&newPlanet.color!==undefined){
                             if(newPlanet.type==='moon'&&newPlanet.moonOf===undefined) res.sendStatus(502);

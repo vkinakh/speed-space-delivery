@@ -2,6 +2,7 @@ let express = require('express')
 let router = express.Router()
 let pathModel = require('../models/path.js');
 let userModel = require('../models/user.js');
+let planetModel = require('../models/planet.js');
 
 router.route('/')
     .get(function (req, res) {
@@ -54,7 +55,7 @@ router.route('/')
             if (err) res.sendStatus(502);
             else if(person){
                 if(person.permission==='admin'){
-                    if(newPath!==null&&newPath.source!==undefined&&newPath.target!==undefined&&newPath['length']!==undefined
+                    if(newPath&&newPath.source!==undefined&&newPath.target!==undefined&&newPath['length']!==undefined
                         &&newPath.capacity!==undefined&&newPath.difficulty!==undefined&&newPath.price!==undefined){
                         
                         planetModel.find({$or: [{name: newPath.source}, {name: newPath.target}]}, function(err, res){

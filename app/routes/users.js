@@ -46,6 +46,7 @@ router.route('/')
         });
     })
     .post(function(req, res) {
+        console.log(req.body);
         let email = req.body.email;
         let password = req.body.password;
         if(!validator.validate(email)||password===undefined){
@@ -203,13 +204,13 @@ router.route('/addAdmin')
                             let tempPass = randomstring.generate(20);
                             let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
                             let pass = crypto.createHash('sha256').update(tempPass+salt).digest('hex');
-                            let operator = new userModel({'email':operatorlogin, 'password': pass, 'salt':salt, 'SID':'unconfirmed', 'permission':'admin'});
+                            let operator = new userModel({'email':email, 'password': pass, 'salt':salt, 'SID':'unconfirmed', 'permission':'admin'});
                             operator.save(function (err) {
                                 if (err) res.sendStatus(502);
                                 else{
                                     let mailOptions = {
                                         from: 'speedspacedeliveries@gmail.com',
-                                        to: operatorlogin,
+                                        to: email,
                                         subject: 'One time password',
                                         text: 'You were promoted to admin. Login with your email and this temporaty password: '+tempPass
                                     };
