@@ -1,6 +1,9 @@
 /*
-*  This file contains functions<, which are used for all pages with cytoscape map/graph
+*  This file contains functions, which are used for all pages with cytoscape map/graph
 */
+// Global variable for saving planets
+let planets;
+
 // Function for creating array from elements with specific selector 
 let $$ = selector => Array.from( document.querySelectorAll( selector ) );
 
@@ -43,7 +46,7 @@ let applyStylesheetFromSelect = () => Promise.resolve( "style.json" ).then( getS
 *  Takes: filename
 *  Return: dataset in .json format
 */
-let getDataset = name => fetch(`datasets/${name}`).then( toJson );
+let getDataset = name => fetch(name).then( toJson );
 
 /* Function for applying dataset to cytoscape map
 *  Takes: dataset
@@ -52,14 +55,76 @@ let getDataset = name => fetch(`datasets/${name}`).then( toJson );
 let applyDataset = dataset => {
     cy.zoom(0.001);
     cy.pan({ x: -9999999, y: -9999999 });
+	
+	// Save planets 
+	planets = dataset;
 
     // replace eles
     cy.elements().remove();
     cy.add( dataset );
 };
 
+/* Function for applying paths to cytoscape map
+*  Takes: dataset
+*  Applies dataset to map
+*/
+let applyPaths = dataset => {
+	cy.zoom(0.001);
+	cy.pan({ x: -9999999, y: -9999999 });
+	
+	// Reorganize ids 
+	for(let i = 0; i < dataset.length; ++i)
+	{
+		dataset[i]["data"]["id"] = cy.elements().length + 1 + i;
+		
+		let source = dataset[i]["data"]["source"];
+		// Find element with name == source
+		let findSource = -1;
+		for(let j = 0; j < planets.length; ++j)
+		{
+			if(source == planets[j]["data"]["name"])
+			{
+				findSource = j + 1;
+				dataset[i]["data"]["source"] = planets[j]["data"]["id"];
+				break;
+			}
+		}
+		
+		// Source wasnt founded
+		if(findSource == -1)
+		{
+			dataset = dataset.filter(item => item !== dataset[i]);
+		}	
+		
+		let target = dataset[i]["data"]["target"];
+		
+		let findTarget = -1;
+		// Find element with name == target
+		for(let k = 0; k < planets.length; ++k)
+		{
+			if(target == planets[k]["data"]["name"])
+			{
+				findTarget = k + 1;
+				dataset[i]["data"]["target"] = planets[k]["data"]["id"];
+				break;
+			}
+		}
+		
+		if(findTarget == -1)
+		{
+			dataset = dataset.filter(item => item !== dataset[i]);
+		}
+	}		
+	
+	// add elements
+	cy.add(dataset);
+};
+
 /*Promise for applying dataset from select*/
-let applyDatasetFromSelect = () => Promise.resolve( "planets.json" ).then( getDataset ).then( applyDataset );
+let applyDatasetFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/planets?SID=c226e8f3d141b7c84125550af112e5ebb8520888528288f2821722499ebc90a8" ).then( getDataset ).then( applyDataset );
+
+/*Promise for applying paths*/
+let applyPathsFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/paths?SID=c226e8f3d141b7c84125550af112e5ebb8520888528288f2821722499ebc90a8" ).then(getDataset).then(applyPaths)
 
 /*
 * Function for calculating cached centrality

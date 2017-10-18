@@ -156,7 +156,7 @@
 	}
 	
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve( "deliveries.json" ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=c226e8f3d141b7c84125550af112e5ebb8520888528288f2821722499ebc90a8" ).then( getDataset ).then( applyDatasetDeliveries );
 	
 	let createRowListeners = () => {
 		// Add event listener for each row in created table
@@ -196,7 +196,7 @@
     });
 	
 	// All promises and events
-    tryPromise( applyDatasetFromSelect ).then( applyStylesheetFromSelect ).then( applyLayoutFromSelect );
+    tryPromise( applyDatasetFromSelect ).then( applyPathsFromSelect ).then( applyStylesheetFromSelect ).then( applyLayoutFromSelect );
 
   });
 })();
