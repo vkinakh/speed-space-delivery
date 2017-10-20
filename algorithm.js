@@ -505,6 +505,44 @@ function QuickDelivery(planets, path, ships, fuelPrice, conteiner)
 				}
 			}
 
+		//check if B is also satellite for this base planet
+		if (planets[ IndexInArrayByName(planets,conteiner.from) ].data.basePlanet == planets[ IndexInArrayByName(planets,conteiner.to) ].data.basePlanet)
+		{
+			//delivery from one satellite to another satellite of the same base planet
+			var temp = [];
+			for(var i = 0;i < checkASatellite.length; i++)
+			{
+				var rout = [];
+				rout.push(conteiner.from);
+				rout.push( planets[ IndexInArrayByName(planets,conteiner.from) ].data.basePlanet );
+				rout.push(conteiner.to);
+
+				//search index for path from satellite B to its base planet
+				var indexPathB;
+				for(var z = 0; z < path.length; z++)
+				{
+					if (path[z].data.source == conteiner.to && path[z].data.target == planets[ IndexInArrayByName(planets,conteiner.to) ].data.basePlanet)
+					{
+						indexPathB = z;
+						break;
+					}
+					if (path[z].data.target == conteiner.to && path[z].data.source == planets[ IndexInArrayByName(planets,conteiner.to) ].data.basePlanet)
+					{
+						indexPathB = z;
+						break;
+					}
+				}
+
+
+
+				var tempTime = (path[indexPathA].data.length * path[indexPathA].data.difficulty + path[indexPathB].data.length * path[indexPathB].data.difficulty) / checkASatellite[i].speed;
+				var tempPrice = TripCost(checkASatellite[i].consumption, path[indexPathA].data.length * path[indexPathA].data.difficulty, fuelPrice) +
+				TripCost(checkASatellite[i].consumption, path[indexPathB].data.length * path[indexPathB].data.difficulty, fuelPrice);
+				temp.push({time : tempTime, price : tempPrice, shipId : checkASatellite[i].id, path : rout});
+			}
+			return temp;/////////////////////////////////////////////////////
+
+		}
 		//if B is base planet for this satellite - return free satellite ships 
 		if (conteiner.to == planets[ IndexInArrayByName(planets,conteiner.from) ].data.basePlanet)
 		{
@@ -826,7 +864,32 @@ function QuickDelivery(planets, path, ships, fuelPrice, conteiner)
 }
 
 
+//only for base planets
+function FirstPriceAndTime(conteiner,planets, ships,path, fuelPrice)
+{
+	var mainPlanets = GetMainPlanets(planets);
+	var mainPath = GetMainPath(planets,path);
+	var mainShips = GetMainShips(ships);
+	
+	//array of free ships in freeShips
+	var freeShips = ShuttleExistence(conteiner.from, conteiner, mainShips, "main");
+	if (freeShips == 0)
+		return "Ships on this main planet don't exist or too small for this conteiner";
 
+	var checkRout = LevitAlgorithm(mainPlanets, mainPath, conteiner.from, conteiner.to);
+	if (Array.isArray(checkRout))
+	{
+		var minWeigth = checkRout[0];
+		var tempPrice = TripCost(freeShips[0].consumption,minWeigth, fuelPrice);
+		var tempTime = minWeigth / freeShips[0].speed;
+		var temp = {time : tempTime, price : tempPrice};
+		return temp;
+	}
+	else
+	{
+		return checkRout;//rout doesnt exist
+	}
+}
 
 function Test()
 {
@@ -957,9 +1020,27 @@ function Test()
 	//destinations.push("Pih");
 
 	//var conteiner = {from : "Earth", to : destinations, weight : 20, volume : 200};
-	var conteiner = {from : "Moon", to : "Pih3", weight : 20, volume : 200};
+	var conteiner = {from : "Earth", to : "Venus", weight : 20, volume : 200};
 
+	//testing FirstPriceAndTime function
+	var temp = FirstPriceAndTime(conteiner,planets, ships,path, fuelPrice);
+	if (typeof temp === "string")
+	{
+		//path doesnt exist
+		var select = document.getElementById("insertHere");
+		p = document.createElement("p");
+		p.innerHTML = temp;
+		select.appendChild(p);
+	}	
+	else
+	{
+		var select = document.getElementById("insertHere");
+		p = document.createElement("p");
+		p.innerHTML = "Time: " + temp.time + "Price:" + temp.price;
+		select.appendChild(p);
+	}
 
+	
 	if (Array.isArray(conteiner.to))
 	{
 		//ordinary delivery
