@@ -15,7 +15,7 @@ let shipSchema = new Schema({
 });
 
 shipSchema.pre('save', function(next) {
-    var doc = this;
+    let doc = this;
     if(!doc.id){
         let shipModel = mongoose.model('ship', shipSchema);
         shipModel.count(function(err,count){

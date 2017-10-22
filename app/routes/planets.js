@@ -114,9 +114,9 @@ router.route('/')
                                 if(newPlanet.diameter!==undefined) planet.diameter = newPlanet.diameter;
                                 if(newPlanet.color!==undefined) planet.color = newPlanet.color;
                                 if(newPlanet.moonOf!==undefined&&planet.type==='moon'){
-                                    planetModel.findOne({name: newPlanet.moonOf}, function(err, res){
+                                    planetModel.findOne({name: newPlanet.moonOf}, function(err, result){
                                         if (err) res.sendStatus(502);
-                                        else if(res){
+                                        else if(result){
                                             planet.moonOf = newPlanet.moonOf;
                                             planet.save(function(err){
                                                 if (err) res.sendStatus(502);
@@ -170,4 +170,4 @@ router.route('/getAll')
         });
     });
 
-module.exports = router
+module.exports = router;    

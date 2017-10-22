@@ -1,12 +1,12 @@
-let express = require('express')
-let router = express.Router()
+let express = require('express');
+let router = express.Router();
 let planetModel = require('../models/planet.js');
 let shipModel = require('../models/ship.js');
 let userModel = require('../models/user.js');
 
 router.route('/')
     .get(function (req, res) {
-        let SID = req.body.SID;
+        let SID = req.query.SID;
         let query = req.query;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
@@ -71,20 +71,29 @@ router.route('/')
             else if(person){
                 if(person.permission==='admin'){
                     if(ship.id!==undefined){
-                        shipModel.findOne({id: ship.id}, function(err, res){
+                        shipModel.findOne({id: ship.id}, function(err, result){
                             if (err) res.sendStatus(502);
-                            else if(res){
-                                if(ship.location!==undefined) res.length = ship.length;
-                                if(ship.capacity!==undefined) res.capacity = ship.capacity;
-                                if(ship.volume!==undefined) res.volume = ship.volume;
-                                if(ship.ability!==undefined) res.ability = ship.ability;
-                                if(ship.speed!==undefined) res.speed = ship.speed;
-                                if(ship.consumption!==undefined) res.consumption = ship.consumption;
-                                if(ship.available!==undefined) res.available = ship.available;
-                                res.save(function(err){
-                                    if (err) res.sendStatus(502);
-                                    else res.sendStatus(200);
-                                });
+                            else if(result){
+                                if(ship.capacity!==undefined) result.capacity = ship.capacity;
+                                if(ship.volume!==undefined) result.volume = ship.volume;
+                                if(ship.ability!==undefined) result.ability = ship.ability;
+                                if(ship.speed!==undefined) result.speed = ship.speed;
+                                if(ship.consumption!==undefined) result.consumption = ship.consumption;
+                                if(ship.available!==undefined) result.available = ship.available;
+                                if(ship.location!==undefined){
+                                    planetModel.findOne({name: ship.location}, function(err, planet){
+                                        if(err) res.sendStatus(502);
+                                        else if(planet){
+                                            result.location = ship.location;
+                                            result.save(function(err){
+                                                if (err) res.sendStatus(502);
+                                                else res.sendStatus(200);
+                                            });
+                                        }else res.sendStatus(502);
+                                    })
+                                }
+                                
+                                
                             }else res.sendStatus(502);
                         });
                     }else res.sendStatus(502);
@@ -125,6 +134,6 @@ router.route('/')
                 }else res.sendStatus(401);
             }else res.sendStatus(401);
         });
-    })
+    });
 
-module.exports = router
+module.exports = router;

@@ -10,6 +10,7 @@ let orderSchema = new Schema({
     trackID: {type: Number, index:true, unique: true },
     from: {type: String, default: ''},
     to: {type: String, default: ''},
+    location: {type: String, default: ''},
     weight: {type: Number, default: 1.0},
     volume: {type: Number, default: 1.0},
     price: {type: Number, default: 15},
@@ -23,7 +24,7 @@ let orderSchema = new Schema({
 });
 
 orderSchema.pre('save', function(next) {
-    var doc = this;
+    let doc = this;
     if(!doc.trackID){
         let orderModel = mongoose.model('order', orderSchema);
         orderModel.find().sort('trackID').exec(function(err, orders){

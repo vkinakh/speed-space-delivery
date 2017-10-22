@@ -28,14 +28,14 @@ function addAdmin(){
 
 router.route('/')
     .get(function(req, res){
-        let SID = req.body.SID;
+        let SID = req.query.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         
-        userModel.findOne({'SID': SID, 'ip': ip}, 'permission' , function (err, person) {
+        userModel.findOne({'SID': SID, 'ip': ip}, '-_id -__v' , function (err, person) {
             if (err) res.sendStatus(502);
             else if(person){
                 if(person.permission==='admin'){        
-                    userModel.find({}, "-_id -__v", function(err, data){
+                    userModel.find({}, "-_id -__v -SID -ip -password -salt", function(err, data){
                         if (err) res.sendStatus(502);
                         else if(data.length>0){
                             res.json(data);
@@ -68,7 +68,7 @@ router.route('/')
                     else{
                         if(person.SID!=="changingPass"){
                             person.SID = crypto.createHash('sha256').update('SSD'+salt+person._id+person.ip+Date.now()).digest('hex');
-                            let response = {'SID': person.SID, 'permission': person.permission};
+                            let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
                             person.save(function (err) {
                                 if (err) res.sendStatus(502);
                                 else res.json(response);
@@ -80,7 +80,6 @@ router.route('/')
         }
     })
     .put(function(req,res){
-        if(req.body.lelkekcheburek) addAdmin();
         let userEmail = req.body.email;
         let password = req.body.password;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
@@ -165,9 +164,10 @@ router.route('/addOperator')
                                             };
 
                                             smtpTransport.sendMail(mailOptions, (error, info) => {
-                                                if (err) res.sendStatus(502);
-                                                else res.sendStatus(200);
+                                                if (err) console.log(err);
                                             });
+                                            
+                                            res.sendStatus(200);
                                         }
                                     });
                                 }
@@ -216,9 +216,10 @@ router.route('/addAdmin')
                                     };
 
                                     smtpTransport.sendMail(mailOptions, (error, info) => {
-                                        if (err) res.sendStatus(502);
-                                        else res.sendStatus(200);
+                                        if (err) console.log(err);
                                     });
+                                    
+                                    res.sendStatus(200);
                                 }
                             });
                         }
@@ -253,15 +254,40 @@ router.route('/register')
                             };
 
                             smtpTransport.sendMail(mailOptions, (err, info) => {
-                                if (err) res.sendStatus(502);
-                                else res.sendStatus(200);
+                                if (err) console.log(err);
                             });
                             
+                            res.sendStatus(502);
                         }
                     });
                 }else res.sendStatus(401);
             });
         }
+    });
+
+router.route('/removePermission')
+    .post(function (req, res){
+        let email = req.body.email;
+        let SID = req.body.SID;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    
+        userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
+            if (err) res.sendStatus(502);
+            else if(person){
+                if(person.permission==='admin'&&email!=='ssd@ssd.com'){
+                    userModel.findOne({'email': email}, function (err, result) {
+                        if (err) res.sendStatus(502);
+                        else if(result){
+                            result.permission = 'default';
+                            result.save(function(err){
+                                if(err) res.sendStatus(502);
+                                else res.sendStatus(200);
+                            });
+                        }else res.sendStatus(502);
+                    });
+                }else res.sendStatus(401);
+            }else res.sendStatus(401);
+        }) 
     });
 
 router.route('/confirm')
@@ -301,4 +327,4 @@ router.route('/logout')
         });
     });
 
-module.exports = router
+module.exports = router;

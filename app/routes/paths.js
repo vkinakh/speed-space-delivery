@@ -1,13 +1,13 @@
-let express = require('express')
-let router = express.Router()
+let express = require('express');
+let router = express.Router();
 let pathModel = require('../models/path.js');
 let userModel = require('../models/user.js');
 let planetModel = require('../models/planet.js');
 
 router.route('/')
     .get(function (req, res) {
-        let SID = req.body.SID;
-        let params = req.body.path;
+        let SID = req.query.SID;
+        let params = req.query;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission email SID' , function (err, person) {
@@ -58,11 +58,20 @@ router.route('/')
                     if(newPath&&newPath.source!==undefined&&newPath.target!==undefined&&newPath['length']!==undefined
                         &&newPath.capacity!==undefined&&newPath.difficulty!==undefined&&newPath.price!==undefined){
                         
-                        planetModel.find({$or: [{name: newPath.source}, {name: newPath.target}]}, function(err, res){
+                        planetModel.find({$or: [{name: newPath.source}, {name: newPath.target}]}, function(err, result){
                             if (err) res.sendStatus(502);
-                            else if(res.length==2){
+                            else if(result.length==2){
+                                if(newPath.source===result[0].name){
+                                    newPath.source = result[0];
+                                    newPath.target = result[1];
+                                }else{
+                                    newPath.target = result[0];
+                                    newPath.source = result[1];
+                                }
                                 if(newPath.source.type==='moon'&&newPath.target.type==='planet'){
                                     if(newPath.source.moonOf==newPath.target.name){
+                                        newPath.source = newPath.source.name;
+                                        newPath.target = newPath.target.name;
                                         let path = new pathModel(newPath);
                                         path.save(function(err){
                                             if (err) res.sendStatus(502);
@@ -71,6 +80,8 @@ router.route('/')
                                     }else res.sendStatus(502);
                                 }else if(newPath.target.type==='moon'&&newPath.source.type==='planet'){
                                     if(newPath.target.moonOf==newPath.source.name){
+                                        newPath.source = newPath.source.name;
+                                        newPath.target = newPath.target.name;
                                         let path = new pathModel(newPath);
                                         path.save(function(err){
                                             if (err) res.sendStatus(502);
@@ -78,7 +89,10 @@ router.route('/')
                                         });
                                     }else res.sendStatus(502);
                                 }else if(newPath.target.type==='planet'&&newPath.source.type==='planet'){
+                                    newPath.source = newPath.source.name;
+                                    newPath.target = newPath.target.name;
                                     let path = new pathModel(newPath);
+                                    console.log(path);
                                     path.save(function(err){
                                         if (err) res.sendStatus(502);
                                         else res.sendStatus(200);
@@ -108,14 +122,14 @@ router.route('/')
                         query.target = path.target
                     }
                     if (query!=={}){
-                        pathModel.findOne(query, function(err, res){
+                        pathModel.findOne(query, function(err, result){
                             if (err) res.sendStatus(502);
-                            else if(res){
-                                if(path.length!==undefined) res.length = path.length;
-                                if(path.capacity!==undefined) res.capacity = path.capacity;
-                                if(path.difficulty!==undefined) res.difficulty = path.difficulty;
-                                if(path.price!==undefined) res.price = path.price;
-                                res.save(function(err){
+                            else if(result){
+                                if(path.length!==undefined) result.length = path.length;
+                                if(path.capacity!==undefined) result.capacity = path.capacity;
+                                if(path.difficulty!==undefined) result.difficulty = path.difficulty;
+                                if(path.price!==undefined) result.price = path.price;
+                                result.save(function(err){
                                     if (err) res.sendStatus(502);
                                     else res.sendStatus(200);
                                 });
@@ -153,6 +167,6 @@ router.route('/')
                 }else res.sendStatus(401);
             }else res.sendStatus(401);
         });
-    })
+    });
 
-module.exports = router
+module.exports = router;

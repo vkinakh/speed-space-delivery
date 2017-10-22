@@ -10,8 +10,8 @@ let containerSchema = new Schema({
     source: String,
     type: {type: String, enum: contType},
     destinationsArray: [String],
-    pathsArray: [Number],
-    properties: [{length: Number, duration: Number, price: Number}],
+    pathsArray: [[String]],
+    properties: [],
     weight: {type: Number, default: 0},
     volume: {type: Number, default: 0},
     available_weigth: {type: Number, default: 0},
@@ -19,7 +19,7 @@ let containerSchema = new Schema({
 });
 
 containerSchema.pre('save', function(next) {
-    var doc = this;
+    let doc = this;
     if(!doc.id){
         let containerModel = mongoose.model('container', containerSchema);
         containerModel.count(function(err,count){

@@ -1,14 +1,16 @@
-var express = require('express');
-var path = require('path');
-var bodyParser = require('body-parser')
-var morgan = require('morgan');
-var helmet = require('helmet');
+let express = require('express');
+let path = require('path');
+let bodyParser = require('body-parser')
+let morgan = require('morgan');
+let helmet = require('helmet');
 let mongoose = require('mongoose');
+let cors = require('cors')
 
-var app = express();
+let app = express();
 
-var port = process.env.PORT || 8080; 
+let port = process.env.PORT || 8080; 
 
+app.use(cors());
 app.use(helmet());
 app.use(morgan('short'));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,15 +22,13 @@ mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://heroku_9h8w2nr5:37cm6rs1clvgsnvdnrj1ti71fr@ds119675.mlab.com:19675/heroku_9h8w2nr5');
 
 // REGISTER ROUTES -------------------------------
-var users = require('./app/routes/users')
-var planets = require('./app/routes/planets')
-var orders = require('./app/routes/orders')
-var paths = require('./app/routes/paths')
-var ships = require('./app/routes/ships')
+let users = require('./app/routes/users')
+let planets = require('./app/routes/planets')
+let orders = require('./app/routes/orders')
+let paths = require('./app/routes/paths')
+let ships = require('./app/routes/ships')
 
 app.all('/*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "PUT");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
 });

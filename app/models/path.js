@@ -12,13 +12,17 @@ let pathSchema = new Schema({
 });
 
 pathSchema.pre('save', function(next) {
-    var doc = this;
+    let doc = this;
     if(!doc.id){
         let pathModel = mongoose.model('path', pathSchema);
         pathModel.find().sort('id').exec(function(err, paths){
-            doc.id = paths[paths.length-1].id + 1;
+            if(paths.length>0){
+                doc.id = paths[paths.length-1].id + 1;
+            }else{
+                doc.id = 1;   
+            }
             next();
-        });
+        }); 
     }else next();
 });
 

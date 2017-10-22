@@ -16,7 +16,7 @@ let planetSchema = new Schema({
 });
 
 planetSchema.pre('save', function(next) {
-    var doc = this;
+    let doc = this;
     if(!doc.id){
         let planetModel = mongoose.model('planet', planetSchema);
         planetModel.count(function(err,count){
