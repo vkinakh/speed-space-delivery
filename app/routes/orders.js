@@ -216,7 +216,7 @@ router.route('/')
                                 });
                             }
                             order.save(function(err){
-                                if(err) console.log(err);
+                                if(err) res.sendStatus(502);
                                 else res.sendStatus(200);
                             });
                         }else res.sendStatus(502);
