@@ -12,7 +12,7 @@ let utils = require('../utils/algorithm.js');
 router.route('/')
     .get(function (req, res){
         let SID = req.query.SID;
-        let trackID = req.query.SID;
+        let trackID = req.query.trackID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission email location SID' , function (err, person) {
