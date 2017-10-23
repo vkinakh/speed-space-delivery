@@ -57,7 +57,7 @@ router.route('/')
                     if(req.query.status) queryparams.status = req.query.status;
                     //
                     
-                    orderModel.find( queryparams , '-_id -__v', function(err,respose){
+                    orderModel.find( queryparams , '-_id -__v', function(err, response){
                         if (err) res.sendStatus(502);
                         else{
                             response.map(function(el){
