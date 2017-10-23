@@ -12,18 +12,21 @@ let utils = require('../utils/algorithm.js');
 router.route('/')
     .get(function (req, res){
         let SID = req.query.SID;
+        let trackID = req.query.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission email location SID' , function (err, person) {
             if (err) res.sendStatus(502);
             else if(person){
                 if(person.permission==='operator'){
-                    orderModel.find({ $or:[
-                                            { $and: [ {'from': person.location}, { $or: [ {'status':'registered'}, {'status':'accepted'} ] } ] },
-                                            { $and: [ {'location': person.location}, {'status':'inprogress'} ] },
-                                            { $and: [ {'to': person.location}, { $or: [ {'status':'waitingpickup'}, {'status':'delivered'} ] } ] }
-                                        ]
-                                    }, '-_id -__v', function(err, response){
+                    let query = { $or:[
+                                    { $and: [ {'from': person.location}, { $or: [ {'status':'registered'}, {'status':'accepted'} ] } ] },
+                                    { $and: [ {'location': person.location}, {'status':'inprogress'} ] },
+                                    { $and: [ {'to': person.location}, { $or: [ {'status':'waitingpickup'}, {'status':'delivered'} ] } ] }
+                                    ]
+                                };
+                    if(trackID) query.trackID = trackID;
+                    orderModel.find(query, '-_id -__v', function(err, response){
                         if (err) res.sendStatus(502);
                         else{
                             response.map(function(el){
@@ -37,6 +40,7 @@ router.route('/')
                     
                     //Getting search parameters from url ?location=Earth&from=2017-09-18&status=inprogress"
                     let queryparams = {};
+                    if(trackID) queryparams.trackID = trackID;
                     if(req.query.location) queryparams['$or'] = [{'from': req.query.location}, {'to': req.query.location}, {'location': req.query.location}];
                     if(req.query.weigth) queryparams.weigth = req.query.weigth;
                     if(req.query.volume) queryparams.volume = req.query.volume;
@@ -497,18 +501,23 @@ router.route('/acceptContainer')
 router.route('/containers')
     .get(function (req,res){
         let SID = req.query.SID;
+        let id = req.query.containerID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission email location SID' , function (err, person) {
             if (err) res.sendStatus(502);
             else if(person){
                 if(person.permission==='operator'){
-                    containerModel.find({$or: [{source: person.location}, {destinationsArray: person.location}], 'destinationsArray': { $exists: true, $ne: [] }}, '-_id -__v', function(err,containers){
+                    let query = {$or: [{source: person.location}, {destinationsArray: person.location}], 'destinationsArray': { $exists: true, $ne: [] } };
+                    if(id) query.id = id;
+                    containerModel.find(query, '-_id -__v', function(err,containers){
                         if(err) res.sendStatus(502);
                         else res.json(containers);
                     });
                 }else if(person.permission==='admin'){
-                    containerModel.find({'destinationsArray': { $exists: true, $ne: [] }}, '-_id -__v', function(err,containers){
+                    let query = {'destinationsArray': { $exists: true, $ne: [] }};
+                    if(id) query.id = id;
+                    containerModel.find(query, '-_id -__v', function(err,containers){
                         if(err) res.sendStatus(502);
                         else res.json(containers);
                     });
