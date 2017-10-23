@@ -431,66 +431,63 @@ router.route('/acceptContainer')
                         let query = {'id': containerID, 'shipID': { $exists: true, $ne: null } }; //can't accept container without a ship
                         
                         if(person.permission==='operator') query["destinationsArray.0"] = person.location;
-                        else if(req.body.location) query["destinationsArray.0"] = req.body.location;
+                        
+                        containerModel.findOne(query, function(err, result){
+                            if (err) res.sendStatus(502);
+                            else if(result){
+                                query["destinationsArray.0"] = result.destinationsArray[0];
+                                //Remove current location from destination array
+                                result.destinationsArray.shift();
 
-                        if(query["destinationsArray.0"]){
-                            containerModel.findOne(query, function(err, result){
-                                if (err) res.sendStatus(502);
-                                else if(result){
-                                    
-                                    //Remove current location from destination array
-                                    result.destinationsArray.shift();
-                                    
-                                    //Update availability of ship if last delivery
-                                    let obj = {};
-                                    let shipID = result.shipID;
-                                    if(result.destinationsArray.length===0){
-                                        result.shipID = undefined;
-                                        obj.available = true;
-                                    } 
-                                    //Update ship location if interplanetary delivery
-                                    if(result.type!=='satellite'){
-                                        obj.location = query["destinationsArray.0"];
-                                    }
-                                    shipModel.findOneAndUpdate({'id': shipID}, obj, function(err){
-                                        if (err) res.sendStatus(502);
-                                    });
-                                    
-                                    
-                                    let locRegexp = new RegExp('^'+query["destinationsArray.0"]);
+                                //Update availability of ship if last delivery
+                                let obj = {};
+                                let shipID = result.shipID;
+                                if(result.destinationsArray.length===0){
+                                    result.shipID = undefined;
+                                    obj.available = true;
+                                } 
+                                //Update ship location if interplanetary delivery
+                                if(result.type!=='satellite'){
+                                    obj.location = query["destinationsArray.0"];
+                                }
+                                shipModel.findOneAndUpdate({'id': shipID}, obj, function(err){
+                                    if (err) res.sendStatus(502);
+                                });
 
-                                    orderModel.find({'trackID': {$in: result.ordersIDArray}, $or: [{to: locRegexp}, {from: locRegexp}], 'status': 'inprogress'}, function(err, orders){
-                                        if (err) res.sendStatus(502);
-                                        else if(orders&&orders.length>0){
-                                            orders.map(function(el, i){
-                                                //If final destination change status, if satellite location left change from and status fields
-                                                if(el.to === query["destinationsArray.0"]){
-                                                    el.status = 'waitingpickup';
-                                                    el.location = el.to;
-                                                    el.delivery_date = new Date();
-                                                }else{
-                                                    el.location = query["destinationsArray.0"];
-                                                }
-                                                
-                                                //Recalculate free space and remove containerID from order
-                                                result.available_weigth += el.weight;
-                                                result.available_volume += el.volume;
-                                                el.containerID = undefined;
-                                                
-                                                el.save(function(err){
-                                                    if (err) res.sendStatus(502);
-                                                });
-                                                
-                                            });
-                                            result.save(function(err){
+
+                                let locRegexp = new RegExp('^'+query["destinationsArray.0"]);
+
+                                orderModel.find({'trackID': {$in: result.ordersIDArray}, $or: [{to: locRegexp}, {from: locRegexp}], 'status': 'inprogress'}, function(err, orders){
+                                    if (err) res.sendStatus(502);
+                                    else if(orders&&orders.length>0){
+                                        orders.map(function(el, i){
+                                            //If final destination change status, if satellite location left change from and status fields
+                                            if(el.to === query["destinationsArray.0"]){
+                                                el.status = 'waitingpickup';
+                                                el.location = el.to;
+                                                el.delivery_date = new Date();
+                                            }else{
+                                                el.location = query["destinationsArray.0"];
+                                            }
+
+                                            //Recalculate free space and remove containerID from order
+                                            result.available_weigth += el.weight;
+                                            result.available_volume += el.volume;
+                                            el.containerID = undefined;
+
+                                            el.save(function(err){
                                                 if (err) res.sendStatus(502);
-                                                else res.sendStatus(200);
-                                            });   
-                                        }else res.sendStatus(502);
-                                    });
-                                }else res.sendStatus(502);
-                            }); 
-                        }else res.sendStatus(502);
+                                            });
+
+                                        });
+                                        result.save(function(err){
+                                            if (err) res.sendStatus(502);
+                                            else res.sendStatus(200);
+                                        });   
+                                    }else res.sendStatus(502);
+                                });
+                            }else res.sendStatus(502);
+                        }); 
                     }else res.sendStatus(502);
                 }else res.sendStatus(401);
             }else res.sendStatus(401);

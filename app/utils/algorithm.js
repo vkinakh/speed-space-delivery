@@ -337,7 +337,7 @@ function GetMainShips(ships){
 	var mainShips = [];
 	for(var i = 0;i < ships.length; ++i)
 	{
-		if (ships[i].ability == "innerGalactic"||ships[i].ability == "everywhere")
+		if (ships[i].ability == "innerGalactic"||ships[i].ability == "innerGalactic")
 			mainShips.push(ships[i]);
 	}
 	return mainShips;
@@ -398,7 +398,7 @@ function IsSatellite(data, planets, ships, container, path){
 			return "Path between satellite and base planet doesn't exist";
 
 		//check if base planet has a shuttle for satellites(big enought for container)
-		var freeSatelliteships = ShuttleExistence(moonOf, container, ships, "everywhere");
+		var freeSatelliteships = ShuttleExistence(moonOf, container, ships, "nearPlanet");
 		if (freeSatelliteships == 0)
 			return "Shuttle on base planet for satellites doesn't exist or your container is too big for this satellite shuttle";
 
@@ -423,7 +423,7 @@ function IsBSatelliteForThisMain(container, planets, ships, path){
                     return "Path between satellite and base planet doesn't exist";
 
                 //check if exist satellite shuttle on A(big enought)
-                var freeSatelliteships = ShuttleExistence(container.from, container, ships, "everywhere");
+                var freeSatelliteships = ShuttleExistence(container.from, container, ships, "nearPlanet");
                 if (freeSatelliteships == 0)
                     return "Shuttle on base planet for satellites doesn't exist or your container is too big for this satellite shuttle";
 
@@ -526,7 +526,7 @@ module.exports.QuickDelivery = function QuickDelivery(planets, path, ships, fuel
 			var moonOfForA = planets[numberInArrayA].moonOf;
 
 					//moonOfForA is base planet and B is not satellite for this base planet moonOfForA
-					var checkBaseShuttle = ShuttleExistence(moonOfForA,container,ships, "everywhere");
+					var checkBaseShuttle = ShuttleExistence(moonOfForA,container,ships, "innerGalactic");
 					if (checkBaseShuttle == 0)
 					{
 						return "Base ships for planet moonOfForA dont exist";
@@ -715,7 +715,7 @@ module.exports.QuickDelivery = function QuickDelivery(planets, path, ships, fuel
 	
 
 	//A is base planet and B is not satellite for this base planet A
-	var checkBaseShuttle = ShuttleExistence(container.from, container, ships, "everywhere");
+	var checkBaseShuttle = ShuttleExistence(container.from, container, ships, "innerGalactic");
 	if (checkBaseShuttle == 0)
 	{
 		return "Base ships for planet A dont exist";
@@ -828,7 +828,7 @@ module.exports.FirstPriceAndTime = function FirstPriceAndTime(order, planets, sh
 	var mainShips = GetMainShips(ships);
 	
 	//array of free ships in freeShips
-	var freeShips = ShuttleExistence(order.from, order, mainShips, "everywhere");
+	var freeShips = ShuttleExistence(order.from, order, mainShips, "innerGalactic");
 	if (freeShips == 0)
 		return "Ships on this main planet don't exist or too small for this container";
 
