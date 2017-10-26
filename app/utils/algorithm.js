@@ -337,7 +337,7 @@ function GetMainShips(ships){
 	var mainShips = [];
 	for(var i = 0;i < ships.length; ++i)
 	{
-		if (ships[i].ability == "innerGalactic"||ships[i].ability == "innerGalactic")
+		if (ships[i].ability == "innerGalactic"||ships[i].ability == "everywhere")
 			mainShips.push(ships[i]);
 	}
 	return mainShips;
@@ -814,34 +814,6 @@ module.exports.QuickDelivery = function QuickDelivery(planets, path, ships, fuel
 				temp.push({time : tempTime, price : tempPrice, 'length': minWeigth, shipId : checkBaseShuttle[i].id, path : minPath});
 			}
 			return temp;/////////////////////////////////////////////////////
-	}
-	else
-	{
-		return checkRoute;//Route doesnt exist
-	}
-}
-
-//only for base planets
-module.exports.FirstPriceAndTime = function FirstPriceAndTime(order, planets, ships, path, fuelPrice){
-	var mainPlanets = GetMainPlanets(planets);
-	var mainPath = GetMainPath(planets, path);
-	var mainShips = GetMainShips(ships);
-	
-	//array of free ships in freeShips
-	var freeShips = ShuttleExistence(order.from, order, mainShips, "innerGalactic");
-	if (freeShips == 0)
-		return "Ships on this main planet don't exist or too small for this container";
-
-	var checkRoute = LevitAlgorithm(mainPlanets, mainPath, order.from, order.to);
-	if (Array.isArray(checkRoute))
-	{
-		var minWeigth = checkRoute[0];
-		var tempPrice = TripCost(freeShips[0].consumption, minWeigth, fuelPrice);
-        if(order.type === 'quick') tempPrice *= 1.4;
-        else if(order.type === 'cheap') tempPrice *= 0.89;
-        var tempTime = minWeigth / freeShips[0].speed;
-		var temp = {time : tempTime, price : tempPrice};
-		return temp;
 	}
 	else
 	{

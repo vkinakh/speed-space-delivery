@@ -11,27 +11,27 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission' , function (err, person) {
-            if (err) res.sendStatus(502);
+            if (err) res.status(502).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'||person.permission==='operator'){
                     let params = {};
-                    if(query.id!==undefined) params.id = query.id;
-                    if(query.location!==undefined) params.location = query.location;
-                    if(query.capacity!==undefined) params.capacity = query.capacity;
-                    if(query.volume!==undefined) params.volume = query.volume;
-                    if(query.ability!==undefined) params.ability = query.ability;
-                    if(query.speed!==undefined) params.speed = query.speed;
-                    if(query.consumption!==undefined) params.consumption = query.consumption;
-                    if(query.available!==undefined) params.available = query.available;
+                    if(query.id) params.id = query.id;
+                    if(query.location) params.location = query.location;
+                    if(query.capacity) params.capacity = query.capacity;
+                    if(query.volume) params.volume = query.volume;
+                    if(query.ability) params.ability = query.ability;
+                    if(query.speed) params.speed = query.speed;
+                    if(query.consumption) params.consumption = query.consumption;
+                    if(query.available) params.available = query.available;
                     
                     shipModel.find(params, function(err, data){
-                        if (err) res.sendStatus(502);
+                        if (err) res.status(502).send('Error while querying ship database');
                         else if(data.length>0){
                             res.json(data);
-                        }else res.sendStatus(502);
+                        }else res.status(502).send('Can not find any ships');
                     });
-                }else res.sendStatus(401);
-            }else res.sendStatus(401);
+                }else res.status(401).send('Not enough permission');
+            }else res.status(401).send('User not found');
         });
     })
     .post(function (req, res) {
@@ -40,25 +40,26 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission' , function (err, person) {
-            if (err) res.sendStatus(502);
+            if (err) res.status(502).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
-                    if(newShip!==null&&newShip.location!==undefined&&newShip.capacity!==undefined&&newShip.volume!==undefined
-                        &&newShip.ability!==undefined&&newShip.speed!==undefined&&newShip.consumption!==undefined){
+                    if(newShip&&newShip.location&&newShip.capacity&&newShip.volume
+                        &&newShip.ability&&newShip.speed&&newShip.consumption){
                         
                         planetModel.findOne({name: newShip.location}, function(err, result){
-                            if (err) res.sendStatus(502);
+                            if (err) res.status(502).send('Error while querying planet database');
                             else if(result){
+                                if(result.moonOf) newShip.location = result.moonOf;
                                 let ship = new shipModel(newShip);
                                 ship.save(function(err){
-                                    if (err) res.sendStatus(502);
+                                    if (err) res.status(502).send('Error while saving ship to database');
                                     else res.sendStatus(200);
                                 })
-                            }else res.sendStatus(502);
+                            }else res.status(502).send('Can not find given location');
                         });
-                    }else res.sendStatus(502);
-                }else res.sendStatus(401);
-            }else res.sendStatus(401);
+                    }else res.status(502).send('Please specify all ship parameters');
+                }else res.status(401).send('Not enough permission');
+            }else res.status(401).send('User not found');
         });
     })
     .put(function(req, res){
@@ -67,38 +68,38 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission' , function (err, person) {
-            if (err) res.sendStatus(502);
+            if (err) res.status(502).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
-                    if(ship.id!==undefined){
+                    if(ship.id){
                         shipModel.findOne({id: ship.id}, function(err, result){
-                            if (err) res.sendStatus(502);
+                            if (err) res.status(502).send('Error while querying ship database');
                             else if(result){
-                                if(ship.capacity!==undefined) result.capacity = ship.capacity;
-                                if(ship.volume!==undefined) result.volume = ship.volume;
-                                if(ship.ability!==undefined) result.ability = ship.ability;
-                                if(ship.speed!==undefined) result.speed = ship.speed;
-                                if(ship.consumption!==undefined) result.consumption = ship.consumption;
-                                if(ship.available!==undefined) result.available = ship.available;
-                                if(ship.location!==undefined){
+                                if(ship.capacity) result.capacity = ship.capacity;
+                                if(ship.volume) result.volume = ship.volume;
+                                if(ship.ability) result.ability = ship.ability;
+                                if(ship.speed) result.speed = ship.speed;
+                                if(ship.consumption) result.consumption = ship.consumption;
+                                if(ship.available) result.available = ship.available;
+                                if(ship.location){
                                     planetModel.findOne({name: ship.location}, function(err, planet){
-                                        if(err) res.sendStatus(502);
+                                        if(err) res.status(502).send('Error while querying planet database');
                                         else if(planet){
                                             result.location = ship.location;
                                             result.save(function(err){
-                                                if (err) res.sendStatus(502);
+                                                if (err) res.status(502).send('Error saving changes');
                                                 else res.sendStatus(200);
                                             });
-                                        }else res.sendStatus(502);
+                                        }else res.status(502).send('Can not find given location');
                                     })
                                 }
                                 
                                 
-                            }else res.sendStatus(502);
+                            }else res.status(502).send('Ship not found');
                         });
-                    }else res.sendStatus(502);
-                }else res.sendStatus(401);
-            }else res.sendStatus(401);
+                    }else res.status(502).send('Please specify ship id');
+                }else res.status(401).send('Not enough permission');
+            }else res.status(401).send('User not found');
         });
     })
     .delete(function(req, res){
@@ -107,32 +108,32 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission' , function (err, person) {
-            if (err) res.sendStatus(502);
+            if (err) res.status(502).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
                     let params = {};
-                    if(query.id!==undefined) params.id = query.id;
-                    if(query.location!==undefined) params.location = query.location;
-                    if(query.capacity!==undefined) params.capacity = query.capacity;
-                    if(query.volume!==undefined) params.volume = query.volume;
-                    if(query.ability!==undefined) params.ability = query.ability;
-                    if(query.speed!==undefined) params.speed = query.speed;
-                    if(query.consumption!==undefined) params.consumption = query.consumption;
-                    if(query.available!==undefined) params.available = query.available;
+                    if(query.id) params.id = query.id;
+                    if(query.location) params.location = query.location;
+                    if(query.capacity) params.capacity = query.capacity;
+                    if(query.volume) params.volume = query.volume;
+                    if(query.ability) params.ability = query.ability;
+                    if(query.speed) params.speed = query.speed;
+                    if(query.consumption) params.consumption = query.consumption;
+                    if(query.available) params.available = query.available;
                     
                     shipModel.find(params, function(err, data){
-                        if (err) res.sendStatus(502);
+                        if (err) res.status(502).send('Error while querying ship database');
                         else if(data.length>0){
-                            data.forEach(function(el){
+                            data.forEach(function(el, i){
                                shipModel.remove({_id: el._id}, function(err){
-                                   if (err) res.sendStatus(502);
+                                   if (err) res.status(502).send('Error while removing ships from database');
+                                   else if(i===data.length-1) res.sendStatus(200);
                                }); 
                             });
-                            res.sendStatus(200);
-                        }else res.sendStatus(502);
+                        }else res.status(502).send('No ships found with given parameters');
                     });
-                }else res.sendStatus(401);
-            }else res.sendStatus(401);
+                }else res.status(401).send('Not enough permission');
+            }else res.status(401).send('User not found');
         });
     });
 
