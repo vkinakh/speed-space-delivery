@@ -5,6 +5,7 @@ let morgan = require('morgan');
 let helmet = require('helmet');
 let mongoose = require('mongoose');
 let cors = require('cors')
+var autoParse = require('auto-parse')
 
 let app = express();
 
@@ -29,6 +30,7 @@ let paths = require('./app/routes/paths')
 let ships = require('./app/routes/ships')
 
 app.all('/*', function(req, res, next) {
+    req.body = autoParse(req.body);
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
 });
