@@ -27,7 +27,11 @@ router.route('/')
                                 };
                     if(trackID) query.trackID = trackID;
                     orderModel.find(query, '-_id -__v', function(err, response){
+<<<<<<< HEAD
                         if (err) res.status(502).send('Error while querying orders database');
+=======
+                        if (err) res.sendStatus(502);
+>>>>>>> 58deb5a7a4e3b94b368642db1be751cf7ebd63db
                         else{
                             response.map(function(el){
                                 if (el.to.indexOf('.')!==-1) el.to = el.to.split('.')[1];
@@ -58,7 +62,11 @@ router.route('/')
                     //
                     
                     orderModel.find( queryparams , '-_id -__v', function(err, response){
+<<<<<<< HEAD
                         if (err) res.status(502).send('Error while querying orders database');
+=======
+                        if (err) res.sendStatus(502);
+>>>>>>> 58deb5a7a4e3b94b368642db1be751cf7ebd63db
                         else{
                             response.map(function(el){
                                 if (el.to.indexOf('.')!==-1) el.to = el.to.split('.')[1];
@@ -517,14 +525,22 @@ router.route('/containers')
                     let query = {$or: [{source: person.location}, {destinationsArray: person.location}], 'destinationsArray': { $exists: true, $ne: [] } };
                     if(id) query.id = id;
                     containerModel.find(query, '-_id -__v', function(err,containers){
+<<<<<<< HEAD
                         if(err) res.status(502).send('Error while querying container database');
+=======
+                        if(err) res.sendStatus(502);
+>>>>>>> 58deb5a7a4e3b94b368642db1be751cf7ebd63db
                         else res.json(containers);
                     });
                 }else if(person.permission==='admin'){
                     let query = {'destinationsArray': { $exists: true, $ne: [] }};
                     if(id) query.id = id;
                     containerModel.find(query, '-_id -__v', function(err,containers){
+<<<<<<< HEAD
                         if(err) res.status(502).send('Error while querying container database');
+=======
+                        if(err) res.sendStatus(502);
+>>>>>>> 58deb5a7a4e3b94b368642db1be751cf7ebd63db
                         else res.json(containers);
                     });
                 }else res.status(401).send('Not enough permission');
