@@ -1,8 +1,8 @@
 /*
 *  This file contains functions, which are used for all pages with cytoscape map/graph
 */
-// Global variable for saving planets
-let planets;
+// Global variable for saving planets and paths
+let planets, paths;
 
 // Function for creating array from elements with specific selector 
 let $$ = selector => Array.from( document.querySelectorAll( selector ) );
@@ -69,6 +69,8 @@ let applyDataset = dataset => {
 *  Applies dataset to map
 */
 let applyPaths = dataset => {
+	// Save paths
+	paths = dataset;
 	cy.zoom(0.001);
 	cy.pan({ x: -9999999, y: -9999999 });
 	
@@ -121,10 +123,10 @@ let applyPaths = dataset => {
 };
 
 /*Promise for applying dataset from select*/
-let applyDatasetFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/planets?SID=c226e8f3d141b7c84125550af112e5ebb8520888528288f2821722499ebc90a8" ).then( getDataset ).then( applyDataset );
+let applyDatasetFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/planets?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2" ).then( getDataset ).then( applyDataset );
 
 /*Promise for applying paths*/
-let applyPathsFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/paths?SID=c226e8f3d141b7c84125550af112e5ebb8520888528288f2821722499ebc90a8" ).then(getDataset).then(applyPaths)
+let applyPathsFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/paths?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2").then(getDataset).then(applyPaths)
 
 /*
 * Function for calculating cached centrality
@@ -206,13 +208,39 @@ let applyLayoutFromSelect = () => Promise.resolve( "cola" ).then( getLayout ).th
 *  Takes: name of algorithm
 *  Return: promise with algorithm
 */
-let getAlgorithm = (name) => {
-    switch (name) {
-		case 'astar':return Promise.resolve(cy.elements().aStar.bind(cy.elements()));
-        case 'path': return Promise.resolve(cy.elements().aStar.bind(cy.elements())); // replaced with created algorithm
-        default: return Promise.resolve(undefined);
-    }
+let getAlgorithm = () => {
+	return Promise.resolve(cy.elements().aStar.bind(cy.elements()));
 };
+
+/* Helper function for finding if of planet id by name
+*  Takes: string name 
+*  Returns: string id for this planet
+*/
+let findPlanetIdByName = (name) =>{
+	for(let i = 0; i < planets.length; ++i)
+	{
+		if(planets[i]["data"]["name"] == name)
+		{
+			return planets[i]["data"]["id"];
+		}				
+	}
+	return -1;
+}
+	
+/* Helper function for finding path id by source and target
+*  Takes: string target id, string source id
+*  Return: id of path 
+*/
+let findPathIdById = (sourceID, targetID) =>{
+	for(let i = 0; i < paths.length; ++i)
+	{
+		if(paths[i]["data"]["sourceID"] == sourceID && paths[i]["data"]["targetID"] == targetID)
+		{
+			return paths[i]["data"]["id"];
+		}
+	}
+	return -1;
+}
 
 
 

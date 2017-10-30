@@ -2,36 +2,33 @@
   document.addEventListener('DOMContentLoaded', function(){
 	// Help variables 
 	// Begin and end are reqiured for aStar algorithm
-	// Path for custom algorithm
-	// Algo variable for changing algorithm
-	// speed variable for speed of shutle
-	let begin, end, path, algo, speed;
+	let begin, end;
 
 	// Initialize cytoscape map for future adding graph
     let cy;
-		
+	
 	/* Function for running aStar algorithm
 	*  As custom algorithm is aStar - based 
 	*  Takes: algrorithm as promise
 	*  Sets option from global variables
 	*  Return: resolve promise algorithm with options
 	*/
-    let runAlgorithm = (algorithm) => {
-      if (algorithm === undefined) {
-        return Promise.resolve(undefined);
-      } else{
-        let options = {
-          root: '#' + begin,
-          // astar requires target; goal property is ignored for other algorithms
-          goal: '#' + end,
-		  weight : function(edge){
-			  return Number(edge.data("weight"));
-		  }
-        };
-        return Promise.resolve(algorithm(options));
-      }
-    }
-	
+	let runAlgorithm = (algorithm) => {
+		if (algorithm === undefined) {
+			return Promise.resolve(undefined);
+		} else{
+			let options = {
+				root: '#' + begin,
+				// astar requires target; goal property is ignored for other algorithms
+				goal: '#' + end,
+				weight : function(edge){
+					return Number(edge.data("length")) * Number(edge.data("difficult"));
+				}
+			};
+			return Promise.resolve(algorithm(options));
+		}
+	}
+				
 	/*Varible for saving curret algorithm*/
     let currentAlgorithm;
 	
@@ -49,17 +46,6 @@
       }
       else {
         let i = 0;
-		// for path algorithm
-		if(algo == "path")
-		{
-			// get all path ids
-			var ids = path.split(',');
-			algResults.path.length = ids.length;
-			for(var k = 1; k < ids.length - 1; ++k)
-			{
-				algResults.path[k] = cy.getElementById(ids[k]);
-			}
-		}
         // for astar, highlight first and final before showing path
         if (algResults.distance) {
           // Among DFS, BFS, A*, only A* will have the distance property defined
@@ -95,68 +81,33 @@
       }
     };
 	
-	/*Promise for appplying algorithm*/
-    let applyAlgorithmFromSelect = () => Promise.resolve( algo ).then( getAlgorithm ).then( runAlgorithm ).then( animateAlgorithm );
 	
-	
-	let applyDatasetDeliveries = dataset => {
-		// Sort dataset
-		// Get todays date
-		var today = new Date();
-		
-		// Arrays with deliveries
-		var pastDeliveries = new Array();
-		var activeDeliveries = new Array();
-		var futureDeliveries = new Array();
-		
-		//  Sort dataset
-		for(var i = 0; i < dataset.length; ++i)
-		{
-			// Check for active and past deliveries 
-			if(new Date(dataset[i]["departure_date"]) < today)
-			{
-				// Past deliveries
-				if(new Date(dataset[i]["receiving_date"]) < today)
-				{
-					pastDeliveries.push(dataset[i]);
-				}else{
-					activeDeliveries.push(dataset[i]);
-				}
-			}else{
-				futureDeliveries.push(dataset[i]);
-			}
-		}
-		
-		$("#past").append("<tr><th> Id </th><th> Mass </th><th> Start point </th><th>End point</th><th> Path </th><th> Type </th><th> Departure date</th><th> Receiving date</th></tr>");		
-		// Add past deliveries
-		for(var i = 0; i < pastDeliveries.length; ++i)
-		{
-			$("#past").append("<tr><td>" + pastDeliveries[i]['id'] + "</td><td>" + pastDeliveries[i]['mass'] + "</td><td>" + 
-			pastDeliveries[i]['start'] + "</td><td>" + pastDeliveries[i]['end'] + "</td><td>" + pastDeliveries[i]['path'] + "</td><td>" + 
-			pastDeliveries[i]['type'] +"</td><td>" + pastDeliveries[i]['departure_date'] +"</td><td>" +  pastDeliveries[i]['receiving_date'] + "</td></tr>");
-		}
-		
-		$("#active").append("<tr><th> Id </th><th> Mass </th><th> Start point </th><th>End point</th><th> Path </th><th> Type </th><th> Departure date</th><th> Receiving date</th></tr>");	
-		// Add active deliveries
-		for(var i = 0; i < activeDeliveries.length; ++i)
-		{
-			$("#active").append("<tr><td>" + activeDeliveries[i]['id'] + "</td><td>" + activeDeliveries[i]['mass'] + "</td><td>" + 
-			activeDeliveries[i]['start'] + "</td><td>" + activeDeliveries[i]['end'] + "</td><td>" + activeDeliveries[i]['path'] + "</td><td>" + 
-			activeDeliveries[i]['type'] +"</td><td>" + activeDeliveries[i]['departure_date'] +"</td><td>" +  activeDeliveries[i]['receiving_date'] + "</td></tr>");
-		}
-		
-		$("#future").append("<tr><th> Id </th><th> Mass </th><th> Start point </th><th>End point</th><th> Path </th><th> Type </th><th> Departure date</th><th> Receiving date</th></tr>");	
-		// Add past deliveries
-		for(var i = 0; i < futureDeliveries.length; ++i)
-		{
-			$("#future").append("<tr><td>" + futureDeliveries[i]['id'] + "</td><td>" + futureDeliveries[i]['mass'] + "</td><td>" + 
-			futureDeliveries[i]['start'] + "</td><td>" + futureDeliveries[i]['end'] + "</td><td>" + futureDeliveries[i]['path'] + "</td><td>" + 
-			futureDeliveries[i]['type'] +"</td><td>" + futureDeliveries[i]['departure_date'] +"</td><td>" +  futureDeliveries[i]['receiving_date'] + "</td></tr>");
-		}
+	let applyDatasetDeliveries = data => {
+		var table='<table class="table table-bordered table-hover">';
+        table+='<tr><th>trackID</th><th>from</th><th>to</th><th>ContainerID</th><th>sender</th><th>reciever</th><th>status</th><th>type</th>';
+		table+='<th>volume</th><th>weight</th><th>price</th><th>reg_date</th><th>weight</th></tr>'
+        for(i=0;i<data.length;++i){
+        table+="<tr>"
+            table+="<td>"+data[i].trackID+"</td>";
+            table+="<td>"+data[i].from+"</td>";
+            table+="<td>"+data[i].to+"</td>";
+            table+="<td>"+data[i].containerID+"</td>";
+            table+="<td>"+data[i].sender+"</td>";
+            table+="<td>"+data[i].reciever+"</td>";
+            table+="<td>"+data[i].status+"</td>";
+            table+="<td>"+data[i].type+"</td>";
+            table+="<td>"+data[i].volume+"</td>";
+            table+="<td>"+data[i].weight+"</td>";
+			table+="<td>"+data[i].price+"</td>";
+			table+="<td>"+data[i].reg_date+"</td>";
+        table+="</tr>"
+        }
+        table+='</table>';
+        document.getElementById("orders").innerHTML=table;
 	}
-	
+		
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=c226e8f3d141b7c84125550af112e5ebb8520888528288f2821722499ebc90a8" ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2" ).then( getDataset ).then( applyDatasetDeliveries );
 	
 	let createRowListeners = () => {
 		// Add event listener for each row in created table
@@ -165,35 +116,27 @@
 			var rows = tables[j].getElementsByTagName("tr");
 			for(var i = 1; i < rows.length; ++i)
 			{
-				rows[i].addEventListener('click', function(){									
-					if(this.cells[4].innerHTML == "astar")
+				rows[i].addEventListener('click', function(){
+					// Get begin and end values					
+					begin = findPlanetIdByName(this.cells[1].innerHTML);
+					end = findPlanetIdByName(this.cells[2].innerHTML);
+					
+					if(begin != -1 && end != -1)
 					{
-						// Quick delivery
-						speed = 10;
-						begin = this.cells[2].innerHTML, end = this.cells[3].innerHTML;
-						algo = "astar";
-						tryPromise(applyAlgorithmFromSelect);
-					}else{
-						// In this case path was created manyally or using some other algorithms
-						// In DB this case is specified using just list on path nodes
-						speed = 5;
-						algo = "path";
-						path = this.cells[4].innerHTML;
-						begin = this.cells[2].innerHTML, end = this.cells[3].innerHTML;
-						tryPromise(applyAlgorithmFromSelect);
+						tryPromise( getAlgorithm ).then( runAlgorithm ).then( animateAlgorithm );
 					}
 				});
 			}
 		}
 	}		
 	// </Helper functions>
-	
-	// Write data to page
-	tryPromise(applyDatasetD).then(createRowListeners);
 	// Create cytoscape map for graph
     cy = window.cy = cytoscape({
       container: $('#cy')
     });
+	
+	// Write data to page
+	tryPromise(applyDatasetD).then(createRowListeners);
 	
 	// All promises and events
     tryPromise( applyDatasetFromSelect ).then( applyPathsFromSelect ).then( applyStylesheetFromSelect ).then( applyLayoutFromSelect );

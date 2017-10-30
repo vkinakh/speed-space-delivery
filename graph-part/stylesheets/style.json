@@ -193,7 +193,7 @@
   {
 	"selector" : "node.delivery-place",
 	 "style": {
-	  "label" : "data(name)",
+	  "label" : "data(planet)",
       "border-width": "8px",
       "border-color": "#ff0000",
       "border-opacity": "0.85",
@@ -210,7 +210,7 @@
   { 
 	"selector" : "edge.delivery-place",
 	"style" : {
-		"label" : "data(source)",
+		"label" : "data(path)",
 		"line-color" : "#ff0000",
 		"width" : "10px"
 	}
@@ -235,7 +235,7 @@
   {
   "selector" : "node.end-delivery-place",
 	 "style": {
-	  "label" : "data(name)",
+	  "label" : "data(path)",
       "border-width": "8px",
       "border-color": "#ff0000",
       "border-opacity": "0.85",

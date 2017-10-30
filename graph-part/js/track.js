@@ -23,29 +23,7 @@
 	
 	// Initialize cytoscape map for future adding graph
 	let cy;
-				
-	/* Function for running aStar algorithm
-	*  As custom algorithm is aStar - based 
-	*  Takes: algrorithm as promise
-	*  Sets option from global variables
-	*  Return: resolve promise algorithm with options
-	*/
-	let runAlgorithm = (algorithm) => {
-      if (algorithm === undefined) {
-        return Promise.resolve(undefined);
-      } else{
-        let options = {
-          root: '#' + begin,
-          // astar requires target; goal property is ignored for other algorithms
-          goal: '#' + end,
-		  weight : function(edge){
-			  return Number(edge.data("weight"));
-		  }
-        };
-        return Promise.resolve(algorithm(options));
-      }
-    }
-	
+						
 	/*Varible for saving curret algorithm*/
 	let currentAlgorithm;
 	
@@ -65,49 +43,20 @@
 		else {
 			let i = 0;
 			let timeUnitsTodayBeginDiff;
-			// for path algorithm
-			if(algo == "path")
+			// Case astar path algorithm
+			time = 4;
+			for(var k = 1; k < algResults.path.length - 1; ++k)
 			{
-				// get all path ids
-				var ids = path.split(',');
-				algResults.path.length = ids.length;
-				for(var k = 1; k < ids.length - 1; ++k)
+				if(algResults.path[k].group() == "edges")
 				{
-					algResults.path[k] = cy.getElementById(ids[k]);
-				}	
-				// Set right distance
-				var distance = 0;
-				// Time, which is needed for path
-				time = 4;
-				for(var k = 1; k < ids.length - 1; ++k)
-				{
-					if(algResults.path[k].group() == "edges")
+					time += (Number(algResults.path[k].data("weight")) / speed);
+				}else{
+					if(algResults.path[k].group() == "nodes")
 					{
-						distance += Number(algResults.path[k].data("weight"));
-						time += (Number(algResults.path[k].data("weight")) / speed);
-					}else{
-						if(algResults.path[k].group() == "nodes")
-						{
-							time += 2.0;
-						}
+						time += 2.0;
 					}
 				}
-				algResults.distance = distance;
-			}else{
-				// Case astar path algorithm
-				time = 4;
-				for(var k = 1; k < algResults.path.length - 1; ++k)
-				{
-					if(algResults.path[k].group() == "edges")
-					{
-						time += (Number(algResults.path[k].data("weight")) / speed);
-					}else{
-						if(algResults.path[k].group() == "nodes")
-						{
-							time += 2.0;
-						}
-					}
-				}
+			}
 		}	
 		// Compute abstract time to real time
 		let beginEndTimeDiff = Math.abs(beginTime.getTime() - endTime.getTime());
@@ -133,7 +82,7 @@
 			    {
 					timeUnitsTodayBeginDiff -= 2;
 			    }else{
-					timeUnitsTodayBeginDiff -= algResults.path[i].data("weight") / speed;
+					timeUnitsTodayBeginDiff -= algResults.path[i].data("length") * algResults.path[i].data("difficulty") / speed;
 				}
 				algResults.path[i].addClass('highlighted');
 				setTimeout(highlightNext, 500);
@@ -175,8 +124,19 @@
 		deliveryData = dataset;	
 	};
 	
+	/* Variable for saving containers */
+	let containers;
+	
+	/* Function for saving constiners to variable */
+	let applyContainers = dataset =>{
+		containers = dataset;
+	}
+
+	/* Promise for getting container dataset*/
+	let applyDatasetContainers = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders/containers?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2").then(getDataset).then(applyDatasetContainers);
+	
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=c226e8f3d141b7c84125550af112e5ebb8520888528288f2821722499ebc90a8"  ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2"  ).then( getDataset ).then( applyDatasetDeliveries );
 	
 	// Function for adding event listeners to submit
 	let setEventListeners = () => {
@@ -191,99 +151,98 @@
 			if($("#truck-number").val() != "" && $("#truck-number").val() != undefined)
 			{
 				// Simple search
+				let currentDelivery, currentShip;
 				for(var i = 0; i < deliveryData.length; ++i)
 				{
 					if(deliveryData[i]["id"] == $("#truck-number").val())
 					{
-						// Algo for getting lenght of all path 
-						// Quick path
-						if(deliveryData[i]["path"] == "astar")
+						currentDelivery = deliveryData[i];
+						for(var j = 0; j < containers.length; ++j)
 						{
-							if(today == undefined)
+							if(containers[j]["id"] == currentDelivery["containerID"])
 							{
-								today = new Date();
+								currentShip = containers[j];
 							}
-							speed = speedQuick;
-							begin = deliveryData[i]["start"];
-							end = deliveryData[i]["end"];
-							algo = "astar";
-							beginTime = new Date(deliveryData[i]["departure_date"]);
-							endTime = new Date(deliveryData[i]["receiving_date"]);
-							// Get today date to compare
-							if(today.getTime() < endTime.getTime()){
-								tryPromise(applyAlgorithmFromSelect);
-							}else if(today.getTime() < beginTime.getTime())
-							{
-								
-								cy.getElementById(begin).addClass("start-delivery-place");
-								cy.animate({
-									fit: {
-										eles: cy.getElementById(begin),
-										padding: 200
-									},
-									duration: 700,
-									easing: 'ease',
-									queue: true
-								});
-							}
-							else{
-								cy.getElementById(end).addClass("end-delivery-place");
-								cy.animate({
-									fit: {
-										eles: cy.getElementById(end),
-										padding: 200
-									},
-									duration: 700,
-									easing: 'ease',
-									queue: true
-								});
-							}
-						}else{
-							if(today == undefined)
-							{
-								today = new Date();
-							}
-							// Regular delivery
-							speed = speedRegular;
-							begin = deliveryData[i]["start"];
-							end = deliveryData[i]["end"];
-							algo = "path";
-							path = deliveryData[i]["path"];
-							beginTime = new Date(deliveryData[i]["departure_date"]);
-							endTime = new Date(deliveryData[i]["receiving_date"]);
-							// Get today date to compare
-							var today = new Date();
-							if(today.getTime() < endTime.getTime()){
-								tryPromise(applyAlgorithmFromSelect);
-							}else if(today < beginTime)
-							{
-								cy.getElementById(begin).addClass("start-delivery-place");
-								cy.animate({
-									fit: {
-										eles: cy.getElementById(begin),
-										padding: 200
-									},
-									duration: 700,
-									easing: 'ease',
-									queue: true
-								});
-							}
-							else{
-								cy.getElementById(end).addClass("end-delivery-place");
-								cy.animate({
-									fit: {
-										eles: cy.getElementById(end),
-										padding: 200
-									},
-									duration: 700,
-									easing: 'ease',
-									queue: true
-								});
-							}
+							break;
 						}
-						return true;
+						break;
 					}
 				}
+				
+				if(currentDelivery["status"] == "registered" || currentDelivery["status"] == "accepted")
+				{
+					let begin = findPlanetIdByName(currentDelivery["location"]);
+					if(begin != -1)
+					{
+						cy.getElementById(begin).addClass("start-delivery-place");
+						cy.animate({
+							fit: {
+								eles: cy.getElementById(begin),
+								padding: 200
+							},
+							duration: 700,
+							easing: 'ease',		
+							queue: true
+						});
+					}
+				}else if(currentDelivery["status"] == "inprogress")
+				{
+					let containerID = this.cells[0].innerHTML;
+					let currentPath;
+					for(var k = 0; k < containers.length; ++k)
+					{
+						// Find container with currecnt delivery
+						if(containers[k]["id"] == containerID)
+						{
+							currentPath = String(containers[k]["pathsArray"]).split(',');
+							break;
+						}
+					}
+					// Get current contaier path
+					let posSource = currentPath.indexOf(this.cells[1].innerHTML);
+					let posTarget = currentPath.indexOf(this.cells[2].innerHTML);
+						
+					// Add planets to path
+					planetPath = [];
+						
+					// Check if container goes into source first
+					if(posSource < posTarget)
+					{
+						for(let index = posSource; posTarget <= posTarget; ++index)
+						{
+							let idOfPlanet = findPlanetIdByName(currentPath[index]);
+							if(idOfPlanet != -1)
+							{
+								planetPath.push(idOfPlanet);
+							}else{
+								// Some handlers 
+								// Maybe for erroe as a span line 
+								return;
+							}
+						}
+							
+						path = []
+						path.push(planetPath[0]);
+						// Now all planets are in array
+						for(let index = 1; index < planetPath.length; ++index)
+						{
+							let pathId = findPathIdById(planetPath[index-1], planetPath[index]);
+							if(pathId != -1){
+								path.push(pathId);
+								path.push(planetPath[index]);
+							}else{
+								// Also some error
+								return;
+							}
+								
+						}
+						// Apply algorithm
+						algo = "path";
+						begin = planetPath[0], end = planetPath[planetPath.length - 1];
+						tryPromise(applyAlgorithmFromSelect);
+					}
+				}
+				
 			}
 		});
 	}

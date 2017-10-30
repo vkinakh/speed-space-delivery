@@ -11,12 +11,11 @@
     <link rel="stylesheet" href="css/open-sans.css" />
     <link rel="stylesheet" href="css/index.css" />
     <link rel="stylesheet" href="css/tooltipster.bundle.min.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="js/jquery-3.1.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="js/cytoscape.min.js"></script>
 	<script src="js/cola.js"></script>
     <script src="js/cytoscape-cola.js"></script>
-    <script src="js/jquery-3.1.1.min.js"></script>
     <script src="js/tooltipster.bundle.min.js"></script>
 	<script src="js/index.js"></script>
     <script src="js/table.js"></script>
@@ -38,26 +37,9 @@
         </div>
     </nav> 
     <div class="container tools">
-  <h2>List of order</h2>    
- <button class="accordion">Past deliveries</button>
- <div class=panel>
-    <div class="table-responsive">
-     <table class="table" id="past"></table>
-     </div>
- </div>
-  <button class="accordion">Active deliveries</button>
- <div class=panel>
-    <div class="table-responsive">
-     <table class="table" id="active"></table>
-     </div>
- </div>
-  <button class="accordion">Future deliveries</button>
- <div class=panel>
-    <div class="table-responsive">
-     <table class="table" id="future">
-     </table>
-     </div>
- </div>
+	<h2>List of order</h2>    
+	<table id="orders">
+	</table>
     </div>
 	<div id="cy" class="main"></div>
 	<footer>
