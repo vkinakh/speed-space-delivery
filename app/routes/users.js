@@ -50,7 +50,7 @@ router.route('/')
                 else if(person){
                     if (person.SID==='unconfirmed'){
                         person.SID='changingPass';
-                        person.ip = ip;
+                        person.ip = 'LUL' + ip;
                         person.save(function (err) {
                             if (err) res.status(502).send('Error while saving data');
                             else res.status(409).send('Please create new password');
@@ -78,7 +78,7 @@ router.route('/')
     .put(function(req,res){
         let userEmail = req.body.email;
         let password = req.body.password;
-        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+        let ip = 'LUL' + req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!validator.validate(userEmail)||!password){
             res.status(400).send('Bad email or password');
         }else{
