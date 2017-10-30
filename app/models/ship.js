@@ -1,10 +1,11 @@
 let mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
 let Schema = mongoose.Schema;
 
 let flyAbility = ['everywhere', 'innerGalactic', 'nearPlanet']
 
 let shipSchema = new Schema({
-    id: Number,
+    id: {type: Number, index:true, unique: true },
     location: String,
     capacity: {type: Number, min: 0.0},
     volume: {type: Number, min: 0.0},
@@ -14,15 +15,7 @@ let shipSchema = new Schema({
     available: {type: Boolean, default: true}
 });
 
-shipSchema.pre('save', function(next) {
-    let doc = this;
-    if(!doc.id){
-        let shipModel = mongoose.model('ship', shipSchema);
-        shipModel.count(function(err,count){
-            doc.id = count + 1;
-            next();
-        });
-    }else next();
-});
+autoIncrement.initialize(mongoose.connection);
+shipSchema.plugin(autoIncrement.plugin, { model: 'ship', field: 'id', startAt: 1 });
 
 module.exports = mongoose.model('ship', shipSchema);

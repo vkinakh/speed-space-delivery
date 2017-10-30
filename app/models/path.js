@@ -1,8 +1,9 @@
 let mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
 let Schema = mongoose.Schema;
 
 let pathSchema = new Schema({
-    id: Number,
+    id: {type: Number, index:true, unique: true },
     source: {type: String, default: ''},
     target: {type: String, default: ''},
     length: {type: Number, min: 0.0},
@@ -11,19 +12,7 @@ let pathSchema = new Schema({
     price: {type:Number, default: 0.0}
 });
 
-pathSchema.pre('save', function(next) {
-    let doc = this;
-    if(!doc.id){
-        let pathModel = mongoose.model('path', pathSchema);
-        pathModel.find().sort('id').exec(function(err, paths){
-            if(paths.length>0){
-                doc.id = paths[paths.length-1].id + 1;
-            }else{
-                doc.id = 1;   
-            }
-            next();
-        }); 
-    }else next();
-});
+autoIncrement.initialize(mongoose.connection);
+pathSchema.plugin(autoIncrement.plugin, { model: 'path', field: 'id', startAt: 1 });
 
 module.exports = mongoose.model('path', pathSchema);

@@ -1,10 +1,11 @@
 let mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
 let Schema = mongoose.Schema;
 
 let contType = ['satellite', 'planets'];
 
 let containerSchema = new Schema({
-    id: Number,
+    id: {type: Number, index:true, unique: true },
     shipID: Number,
     ordersIDArray: [Number],
     source: String,
@@ -18,15 +19,7 @@ let containerSchema = new Schema({
     available_volume: {type: Number, default: 0}
 });
 
-containerSchema.pre('save', function(next) {
-    let doc = this;
-    if(!doc.id){
-        let containerModel = mongoose.model('container', containerSchema);
-        containerModel.count(function(err,count){
-            doc.id = count + 1;
-            next();
-        });
-    }else next();
-});
+autoIncrement.initialize(mongoose.connection);
+containerSchema.plugin(autoIncrement.plugin, { model: 'container', field: 'id', startAt: 1 });
 
 module.exports = mongoose.model('container', containerSchema);

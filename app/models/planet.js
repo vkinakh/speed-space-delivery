@@ -1,4 +1,5 @@
 let mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
 let Schema = mongoose.Schema;
 
 let planetType = ['star', 'planet', 'moon', 'comet', 'asteroid'];
@@ -15,15 +16,7 @@ let planetSchema = new Schema({
     color: String
 });
 
-planetSchema.pre('save', function(next) {
-    let doc = this;
-    if(!doc.id){
-        let planetModel = mongoose.model('planet', planetSchema);
-        planetModel.count(function(err,count){
-            doc.id = count + 1;
-            next();
-        });
-    }else next();
-});
+autoIncrement.initialize(mongoose.connection);
+planetSchema.plugin(autoIncrement.plugin, { model: 'planet', field: 'id', startAt: 1 });
 
 module.exports = mongoose.model('planet', planetSchema);

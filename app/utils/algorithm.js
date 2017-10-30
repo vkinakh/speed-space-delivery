@@ -305,7 +305,6 @@ function PriceAndTime(mainPlanets, mainPath, container, freeShips, fuelPrice){
         var tempObj = {'shipID': freeShips[i].id, 'properties': sections};
 		result.properties.push(tempObj);
 	}
-    console.log(result);
 	return result;
 }
 

@@ -1,4 +1,5 @@
 let mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
 let Schema = mongoose.Schema;
 
 let deliveryState = ['registered', 'accepted', 'inprogress', 'waitingpickup', 'delivered', 'canceled', 'returned'];
@@ -23,19 +24,7 @@ let orderSchema = new Schema({
     status: {type: String, enum: deliveryState, default: 'registered', lowercase: true}
 });
 
-orderSchema.pre('save', function(next) {
-    let doc = this;
-    if(!doc.trackID){
-        let orderModel = mongoose.model('order', orderSchema);
-        orderModel.find().sort('trackID').exec(function(err, orders){
-            if(orders.length>0){
-                doc.trackID = orders[orders.length-1].trackID + 1;
-            }else{
-                doc.trackID = 1;   
-            }
-            next();
-        }) 
-    }else next();
-});
+autoIncrement.initialize(mongoose.connection);
+orderSchema.plugin(autoIncrement.plugin, { model: 'order', field: 'trackID', startAt: 1 });
 
 module.exports = mongoose.model('order', orderSchema);

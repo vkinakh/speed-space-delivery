@@ -22,7 +22,7 @@ router.route('/')
                     if(params.capacity) query.capacity = params.capacity;
                     if(params.difficulty) query.difficulty = params.difficulty;
                     if(params.price) query.price = params.price;
-                    pathModel.find(query, function(err, result){
+                    pathModel.find(query, '-_id -__v', {sort: {id: 1}}, function(err, result){
                         if (err) res.status(502).send('Error while querying paths database');
                         else if(result&&result.length>0){
                             result = result.map(function(el){
@@ -92,7 +92,6 @@ router.route('/')
                                     newPath.source = newPath.source.name;
                                     newPath.target = newPath.target.name;
                                     let path = new pathModel(newPath);
-                                    console.log(path);
                                     path.save(function(err){
                                         if (err) res.status(502).send('Error while saving path to database');
                                         else res.sendStatus(200);
@@ -153,16 +152,25 @@ router.route('/')
                     if(query.id) params.id = query.id;
                     if(query.source) params.source = query.source;
                     if(query.target) params.target = query.target;
-                    pathModel.find(params, function(err, data){
-                        if (err) res.status(502).send('Error while querying path database');
-                        else if(data.length>0){
-                            data.forEach(function(el){
-                               pathModel.remove({_id: el._id}, function(err){
-                                   if (err) res.status(502).send('Error while removing path');
-                                   else if(i===result.length-1) res.sendStatus(200);
-                               }); 
+                    containerModel.findOne({$and: [{'pathsArray': {$elemMatch: {$elemMatch: {$in: [params.source]}}}}, {'pathsArray': {$elemMatch: {$elemMatch: {$in: [params.target]}}}}]}, function(err, container){
+                        if(err) res.status(502).send('Error while querying container database');
+                        else if(!container){
+                            pathModel.find(params, function(err, data){
+                                if (err) res.status(502).send('Error while querying path database');
+                                else if(data.length>0){
+                                    let err0r = false;
+                                    data.forEach(function(el){
+                                        pathModel.remove({_id: el._id}, function(err){
+                                            if (err) res.status(502).send('Error while removing path');
+                                            if (err){
+                                                res.status(502).send('Error while saving order to database');
+                                                err0r = true;
+                                            }else if(i===result.length-1&&!err0r) res.sendStatus(200);
+                                        }); 
+                                    });
+                                }else res.status(502).send('No paths found with given parameters');
                             });
-                        }else res.status(502).send('No paths found with given parameters');
+                        }else res.status(502).send('Can not remove visited paths');
                     });
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');

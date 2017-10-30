@@ -2,6 +2,7 @@ let express = require('express');
 let router = express.Router();
 let planetModel = require('../models/planet.js');
 let shipModel = require('../models/ship.js');
+let containerModel = require('../models/container.js');
 let userModel = require('../models/user.js');
 
 router.route('/')
@@ -24,7 +25,7 @@ router.route('/')
                     if(query.consumption) params.consumption = query.consumption;
                     if(query.available) params.available = query.available;
                     
-                    shipModel.find(params, function(err, data){
+                    shipModel.find(params, '-_id -__v', {sort: {id: 1}}, function(err, data){
                         if (err) res.status(502).send('Error while querying ship database');
                         else if(data.length>0){
                             res.json(data);
@@ -49,7 +50,10 @@ router.route('/')
                         planetModel.findOne({name: newShip.location}, function(err, result){
                             if (err) res.status(502).send('Error while querying planet database');
                             else if(result){
-                                if(result.moonOf) newShip.location = result.moonOf;
+                                if(result.moonOf){
+                                    newShip.location = result.moonOf;
+                                    newShip.ability = 'nearPlanet';
+                                } 
                                 let ship = new shipModel(newShip);
                                 ship.save(function(err){
                                     if (err) res.status(502).send('Error while saving ship to database');
@@ -92,9 +96,12 @@ router.route('/')
                                             });
                                         }else res.status(502).send('Can not find given location');
                                     })
+                                }else{
+                                    result.save(function(err){
+                                        if (err) res.status(502).send('Error saving changes');
+                                        else res.sendStatus(200);
+                                    });
                                 }
-                                
-                                
                             }else res.status(502).send('Ship not found');
                         });
                     }else res.status(502).send('Please specify ship id');
@@ -119,16 +126,24 @@ router.route('/')
                     if(query.ability) params.ability = query.ability;
                     if(query.speed) params.speed = query.speed;
                     if(query.consumption) params.consumption = query.consumption;
-                    if(query.available) params.available = query.available;
+                    params.available = true;
                     
                     shipModel.find(params, function(err, data){
                         if (err) res.status(502).send('Error while querying ship database');
                         else if(data.length>0){
+                            let err0r = false;
                             data.forEach(function(el, i){
-                               shipModel.remove({_id: el._id}, function(err){
-                                   if (err) res.status(502).send('Error while removing ships from database');
-                                   else if(i===data.length-1) res.sendStatus(200);
-                               }); 
+                                containerModel.findOne({'shipID': el.id}, function(err, result){
+                                    if(err) res.status(502).send('Error while querying container database');
+                                    else if(!result){
+                                        shipModel.remove({_id: el._id}, function(err){
+                                            if (err){
+                                                res.status(502).send('Error while removing ships from database');
+                                                err0r = true;
+                                            }else if(i===data.length-1&&!err0r) res.sendStatus(200);
+                                        }); 
+                                    }
+                                });
                             });
                         }else res.status(502).send('No ships found with given parameters');
                     });

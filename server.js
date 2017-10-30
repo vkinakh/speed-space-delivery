@@ -1,10 +1,10 @@
 let express = require('express');
 let path = require('path');
-let bodyParser = require('body-parser')
+let bodyParser = require('body-parser');
 let morgan = require('morgan');
 let helmet = require('helmet');
 let mongoose = require('mongoose');
-let cors = require('cors')
+let cors = require('cors');
 var autoParse = require('auto-parse')
 
 let app = express();
@@ -17,10 +17,13 @@ app.use(morgan('short'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use(function (err, req, res, next) {
+    if(err) res.status(502).send('Bad request body');
+    else next();
+})
 //CONNECTING TO DATABASE
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://heroku_9h8w2nr5:37cm6rs1clvgsnvdnrj1ti71fr@ds119675.mlab.com:19675/heroku_9h8w2nr5');
+mongoose.connect(process.env.MONGODB_URI);
 
 // REGISTER ROUTES -------------------------------
 let users = require('./app/routes/users')
@@ -30,7 +33,14 @@ let paths = require('./app/routes/paths')
 let ships = require('./app/routes/ships')
 
 app.all('/*', function(req, res, next) {
-    req.body = autoParse(req.body);
+    if(Object.keys(req.body).length !== 0){
+        req.body = autoParse(req.body);
+        console.log(req.body);
+    }
+    if(Object.keys(req.query).length !== 0){
+        req.query = autoParse(req.query);
+        console.log(req.query);
+    }
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
 });

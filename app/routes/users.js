@@ -37,7 +37,6 @@ router.route('/')
         });
     })
     .post(function(req, res) {
-        console.log(req.body);
         let email = req.body.email;
         let password = req.body.password;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
@@ -161,10 +160,9 @@ router.route('/addOperator')
                                             };
 
                                             smtpTransport.sendMail(mailOptions, (error, info) => {
-                                                if (err) console.log(err);
+                                                if (err) res.status(502).send('Error sending email to specified adress');
+                                                else res.sendStatus(200);
                                             });
-                                            
-                                            res.sendStatus(200);
                                         }
                                     });
                                 }
@@ -213,10 +211,9 @@ router.route('/addAdmin')
                                     };
 
                                     smtpTransport.sendMail(mailOptions, (error, info) => {
-                                        if (err) console.log(err);
+                                        if (err) res.status(502).send('Error sending email to specified adress');
+                                        else res.sendStatus(200);
                                     });
-                                    
-                                    res.sendStatus(200);
                                 }
                             });
                         }
@@ -251,10 +248,9 @@ router.route('/register')
                             };
 
                             smtpTransport.sendMail(mailOptions, (err, info) => {
-                                if (err) console.log(err);
+                                if (err) res.status(502).send('Error sending email to specified adress');
+                                else res.sendStatus(200);
                             });
-                            
-                            res.sendStatus(200);
                         }
                     });
                 }else res.status(502).send('This email is already taken');
@@ -276,6 +272,7 @@ router.route('/removePermission')
                         if (err) res.status(502).send('Error while querying database');
                         else if(result){
                             result.permission = 'default';
+                            result.location = undefined;
                             result.save(function(err){
                                 if(err) res.status(502).send('Error while saving data');
                                 else res.sendStatus(200);

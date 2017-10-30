@@ -1,6 +1,7 @@
 let express = require('express');
 let router = express.Router();
 let planetModel = require('../models/planet.js');
+let containerModel = require('../models/container.js');
 let userModel = require('../models/user.js');
 
 router.route('/')
@@ -21,7 +22,7 @@ router.route('/')
                     if(galactic) query.galactic = galactic;
                     if(type) query.type = type;
                     if(moonOf) query.moonOf = moonOf;
-                    planetModel.find(query, '-_id -__v', function(err, result){
+                    planetModel.find(query, '-_id -__v', {sort: {id: 1}}, function(err, result){
                         if (err) res.status(502).send('Error while querying planet database');
                         else if(result&&result.length>0){
                             result = result.map(function(el){
@@ -42,7 +43,7 @@ router.route('/')
                         }else res.status(502).send('Can not find any planers');
                     });
                 }else{
-                    planetModel.find({}, 'name moonOf galactic -_id',function(err, result){
+                    planetModel.find({}, 'name moonOf galactic -_id -__v', {sort: {id: 1}}, function(err, result){
                         if (err) res.status(502).send('Error while querying planet database');
                         else res.json(result);
                     });
@@ -141,16 +142,25 @@ router.route('/')
             if (err) res.status(502).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
-                    planetModel.find( {$or: [ {'moonOf': planet}, {'name': planet}] }, function(err, result){
-                        if (err) res.status(502).send('Error while querying planet database');
-                        else if(result&&result.length>0){
-                            result.forEach(function(planet, i){
-                                planetModel.remove({'_id': planet._id}, function (err) {
-                                    if (err) res.status(502).send('Error while removing planet');
-                                    else if(i===result.length-1) res.sendStatus(200);
-                                });
+                    containerModel.findOne({'pathsArray': {$elemMatch: {$elemMatch: {$in: [planet]}}} }, function(err, container){
+                        if(err) res.status(502).send('Error while querying container database');
+                        else if(!container){
+                            planetModel.find( {$or: [ {'moonOf': planet}, {'name': planet}] }, function(err, result){
+                                if (err) res.status(502).send('Error while querying planet database');
+                                else if(result&&result.length>0){
+                                    let err0r = false;
+                                    result.forEach(function(planet, i){
+                                        planetModel.remove({'_id': planet._id}, function (err) {
+                                            if (err){
+                                                res.status(502).send('Error while removing planet');
+                                                err0r = true;
+                                            }else if(i===result.length-1&&!err0r) res.sendStatus(200);
+                                        });
+                                    });
+                                    res.sendStatus(200);
+                                }else res.status(502).send('Can not find specified planet');
                             });
-                        }else res.status(502).send('Can not find specified planet');
+                        }else res.status(502).send('Can not remove visited planet');
                     });
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');
@@ -159,7 +169,7 @@ router.route('/')
 
 router.route('/getAll')
     .get(function(req,res){
-        planetModel.find({$or: [{'type':'planet'}, {'type': 'moon'}] }, 'name moonOf galactic -_id',function(err, result){
+        planetModel.find({$or: [{'type':'planet'}, {'type': 'moon'}] }, 'name moonOf galactic -_id -__v', {sort: {id: 1}}, function(err, result){
             if (err) res.status(502).send('Error while querying planet database');
             else res.json(result);
         });

@@ -26,12 +26,8 @@ router.route('/')
                                     ]
                                 };
                     if(trackID) query.trackID = trackID;
-                    orderModel.find(query, '-_id -__v', function(err, response){
-<<<<<<< HEAD
+                    orderModel.find(query, '-_id -__v', {sort: {trackID: 1}}, function(err, response){
                         if (err) res.status(502).send('Error while querying orders database');
-=======
-                        if (err) res.sendStatus(502);
->>>>>>> 58deb5a7a4e3b94b368642db1be751cf7ebd63db
                         else{
                             response.map(function(el){
                                 if (el.to.indexOf('.')!==-1) el.to = el.to.split('.')[1];
@@ -62,11 +58,7 @@ router.route('/')
                     //
                     
                     orderModel.find( queryparams , '-_id -__v', function(err, response){
-<<<<<<< HEAD
                         if (err) res.status(502).send('Error while querying orders database');
-=======
-                        if (err) res.sendStatus(502);
->>>>>>> 58deb5a7a4e3b94b368642db1be751cf7ebd63db
                         else{
                             response.map(function(el){
                                 if (el.to.indexOf('.')!==-1) el.to = el.to.split('.')[1];
@@ -175,7 +167,7 @@ router.route('/')
                                         });
                                     }
                                 });
-                            }res.status(502).send('Send/Recieve locations not valid');
+                            }else res.status(502).send('Send/Recieve locations not valid');
                         });
                     }
                 }else res.status(502).send('Please specify all order parameters');
@@ -209,6 +201,7 @@ router.route('/')
                         delete query.from;
                         delete query.to;
                     }
+                    let err0r = false;
                     orderModel.findOne(query, function(err, order){
                         if(err) res.status(502).send('Error while querying orders database');
                         else if(order){
@@ -228,12 +221,15 @@ router.route('/')
                                 order.status = 'returned';
                                 let returnOrder = new orderModel({'reciever': order.sender, 'sender': order.reciever, 'from': order.to, 'to': order.from, 'weight': order.weight, 'volume': order.volume, 'price': 2*order.price, 'status':'accepted'});
                                 returnOrder.save(function(err){
-                                    if(err) console.log(err);
+                                    if(err){
+                                        res.status(502).send('Error while saving order to database');
+                                        err0r = true;
+                                    }
                                 });
                             }
                             order.save(function(err){
                                 if(err) res.status(502).send('Error while saving order to database');
-                                else res.sendStatus(200);
+                                else if(!err0r) res.sendStatus(200);
                             });
                         }else res.status(502).send('Order not found');
                     });
@@ -255,14 +251,13 @@ router.route('/createContainer')
             if (err) res.status(502).send('Error while querying database');
             else if(person){
                 if(person.permission==='operator'||person.permission==='admin'){
-                    if(!orderArray.some(isNaN)){
+                    if(orderArray&&!orderArray.some(isNaN)){
                         let query = {};
                         query.trackID = { $in: orderArray };
                         query['$or'] = [{status: 'accepted'}, {status: 'inprogress'}];
                         query.containerID = undefined;
                         if(person.permission==='operator') query.location = person.location;
                         else if(req.body.location&&person.permission==='admin') query.location = req.body.location;
-                        
                         if (query.location){
                             orderModel.find( query, function(err, result){
                                 if (err) res.status(502).send('Error while querying orders database');
@@ -347,7 +342,7 @@ router.route('/createContainer')
                                                                     });
                                                                     
                                                                     container.save(function(err, scontainer){
-                                                                        if (err) res.status(502).send('Error while saving order to database');
+                                                                        if (err) res.status(502).send('Error while saving container to database');
                                                                         else{
                                                                             let response = {'id': scontainer.id, 'options': calculations.properties};
                                                                             res.json(response);
@@ -365,7 +360,6 @@ router.route('/createContainer')
                                 }else res.status(502).send('Not all orders can be added');
                             });
                         }else res.status(502).send('Please specify your location');
-                        
                     }else res.status(502).send('Please specify integer array');
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');
@@ -408,13 +402,17 @@ router.route('/confirmContainer')
                                                         result.save(function(err){
                                                             if (err) res.status(502).send('Error while saving container to database');
                                                             else{
+                                                                let err0r = false;
                                                                 orders.map(function(el, i){
                                                                     el.containerID = containerID;
                                                                     el.status = 'inprogress';
                                                                     el.send_date = new Date();
                                                                     el.save(function(err){
-                                                                        if (err) res.status(502).send('Error while saving order to database');
-                                                                        else if(i===orders.length-1) res.sendStatus(200);
+                                                                        if (err){
+                                                                            res.status(502).send('Error while saving order to database');
+                                                                            err0r = true;
+                                                                        } 
+                                                                        else if(i===orders.length-1&&!err0r) res.sendStatus(200);
                                                                     });
                                                                 });
                                                                 
@@ -470,39 +468,45 @@ router.route('/acceptContainer')
                                 }
                                 shipModel.findOneAndUpdate({'id': shipID}, obj, function(err){
                                     if (err) res.status(502).send('Error while updating ship in database');
-                                });
+                                    else{
+                                        let locRegexp = new RegExp('^'+query["destinationsArray.0"]);
 
+                                        orderModel.find({'trackID': {$in: result.ordersIDArray}, $or: [{to: locRegexp}, {from: locRegexp}], 'status': 'inprogress'}, function(err, orders){
+                                            if (err) res.status(502).send('Error while querying orders database');
+                                            else if(orders&&orders.length>0){
+                                                orders.map(function(el, i){
+                                                    //If final destination change status, if satellite location left change from and status fields
+                                                    if(el.to === query["destinationsArray.0"]){
+                                                        el.status = 'waitingpickup';
+                                                        el.location = el.to;
+                                                        el.delivery_date = new Date();
+                                                    }else{
+                                                        el.location = query["destinationsArray.0"];
+                                                    }
 
-                                let locRegexp = new RegExp('^'+query["destinationsArray.0"]);
+                                                    //Recalculate free space and remove containerID from order
+                                                    result.available_weigth += el.weight;
+                                                    result.available_volume += el.volume;
+                                                    el.containerID = undefined;
 
-                                orderModel.find({'trackID': {$in: result.ordersIDArray}, $or: [{to: locRegexp}, {from: locRegexp}], 'status': 'inprogress'}, function(err, orders){
-                                    if (err) res.status(502).send('Error while querying orders database');
-                                    else if(orders&&orders.length>0){
-                                        orders.map(function(el, i){
-                                            //If final destination change status, if satellite location left change from and status fields
-                                            if(el.to === query["destinationsArray.0"]){
-                                                el.status = 'waitingpickup';
-                                                el.location = el.to;
-                                                el.delivery_date = new Date();
-                                            }else{
-                                                el.location = query["destinationsArray.0"];
-                                            }
+                                                    el.save(function(err){
+                                                        let err0r = false;
+                                                        if (err){
+                                                            res.status(502).send('Error while saving orders to database');
+                                                            err0r = true;
+                                                        }else if(i===orders.length-1&&!err0r){
+                                                            result.save(function(err){
+                                                                if (err) res.status(502).send('Error while saving container to database');
+                                                                else res.sendStatus(200);
+                                                            });   
+                                                        }
+                                                    });
 
-                                            //Recalculate free space and remove containerID from order
-                                            result.available_weigth += el.weight;
-                                            result.available_volume += el.volume;
-                                            el.containerID = undefined;
-
-                                            el.save(function(err){
-                                                if (err) res.status(502).send('Error while saving orders to database');
-                                            });
-
+                                                });
+                                                
+                                            }else res.status(502).send('No orders to remove');
                                         });
-                                        result.save(function(err){
-                                            if (err) res.status(502).send('Error while saving container to database');
-                                            else res.sendStatus(200);
-                                        });   
-                                    }else res.status(502).send('No orders to remove');
+                                    }
                                 });
                             }else res.status(502).send('Container not found');
                         }); 
@@ -524,33 +528,20 @@ router.route('/containers')
                 if(person.permission==='operator'){
                     let query = {$or: [{source: person.location}, {destinationsArray: person.location}], 'destinationsArray': { $exists: true, $ne: [] } };
                     if(id) query.id = id;
-                    containerModel.find(query, '-_id -__v', function(err,containers){
-<<<<<<< HEAD
+                    containerModel.find(query, '-_id -__v', {sort: {id: 1}}, function(err,containers){
                         if(err) res.status(502).send('Error while querying container database');
-=======
-                        if(err) res.sendStatus(502);
->>>>>>> 58deb5a7a4e3b94b368642db1be751cf7ebd63db
                         else res.json(containers);
                     });
                 }else if(person.permission==='admin'){
                     let query = {'destinationsArray': { $exists: true, $ne: [] }};
                     if(id) query.id = id;
-                    containerModel.find(query, '-_id -__v', function(err,containers){
-<<<<<<< HEAD
+                    containerModel.find(query, '-_id -__v', {sort: {id: 1}}, function(err,containers){
                         if(err) res.status(502).send('Error while querying container database');
-=======
-                        if(err) res.sendStatus(502);
->>>>>>> 58deb5a7a4e3b94b368642db1be751cf7ebd63db
                         else res.json(containers);
                     });
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');
         });
-    });
-
-router.route('/reloadContainer')
-    .post(function (req, res){
-        res.send('LUL');
     });
 
 router.route('/track/:trackID(\\d+)')
