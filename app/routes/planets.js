@@ -169,8 +169,8 @@ router.route('/')
 
 router.route('/getAll')
     .get(function(req,res){
-        planetModel.find({$or: [{'type':'planet'}, {'type': 'moon'}] }, 'name moonOf galactic -_id -__v', {sort: {id: 1}}, function(err, result){
-            if (err) console.log(err);
+        planetModel.find({$or: [{'type':'planet'}, {'type': 'moon'}] }, 'name moonOf galactic -_id', {sort: {id: 1}}, function(err, result){
+            if (err) res.status(502).send('Error while querying planet database');
             else res.json(result);
         });
     });
