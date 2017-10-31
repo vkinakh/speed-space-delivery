@@ -123,10 +123,10 @@ let applyPaths = dataset => {
 };
 
 /*Promise for applying dataset from select*/
-let applyDatasetFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/planets?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2" ).then( getDataset ).then( applyDataset );
+let applyDatasetFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/planets?SID=95b7f8bcab2eb50b6b8f4a09e0296bad1f7da270d5ed1967d315ac05cf01ab39" ).then( getDataset ).then( applyDataset );
 
 /*Promise for applying paths*/
-let applyPathsFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/paths?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2").then(getDataset).then(applyPaths)
+let applyPathsFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/paths?SID=95b7f8bcab2eb50b6b8f4a09e0296bad1f7da270d5ed1967d315ac05cf01ab39").then(getDataset).then(applyPaths)
 
 /*
 * Function for calculating cached centrality
@@ -242,6 +242,19 @@ let findPathIdById = (sourceID, targetID) =>{
 	return -1;
 }
 
-
+/* Helper function for converting time from DB into 
+*  format: days hours minutes seconds
+*  Takes: number from DB
+*  Return: string
+*/
+function formatTime(val){
+    let date = new Date(0);
+ date.setHours(date.getHours()-Math.abs(date.getTimezoneOffset()/60));
+ let formatString = '';
+    date.setSeconds(val*24*3600);
+    if(date.getDate()-1>0) formatString += date.getDate()-1 + ' days ';
+  formatString += date.toTimeString().split(' ')[0];
+    return formatString;
+}
 
 

@@ -84,22 +84,23 @@
 	
 	let applyDatasetDeliveries = data => {
 		var table='<table class="table table-bordered table-hover">';
-        table+='<tr><th>trackID</th><th>from</th><th>to</th><th>ContainerID</th><th>sender</th><th>reciever</th><th>status</th><th>type</th>';
-		table+='<th>volume</th><th>weight</th><th>price</th><th>reg_date</th><th>weight</th></tr>'
+        table+='<tr><th>trackID</th><th>esttime</th><th>sender</th><th>reciever</th><th>type</th><th>status</th><th>reg_date</th><th>price</th>';
+		table+='<th>volume</th><th>weight</th><th>location</th><th>to</th><th>from</th></tr>'
         for(i=0;i<data.length;++i){
         table+="<tr>"
             table+="<td>"+data[i].trackID+"</td>";
-            table+="<td>"+data[i].from+"</td>";
-            table+="<td>"+data[i].to+"</td>";
-            table+="<td>"+data[i].containerID+"</td>";
+            table+="<td>"+formatTime(data[i].esttime)+"</td>";
             table+="<td>"+data[i].sender+"</td>";
             table+="<td>"+data[i].reciever+"</td>";
-            table+="<td>"+data[i].status+"</td>";
             table+="<td>"+data[i].type+"</td>";
+            table+="<td>"+data[i].status+"</td>";
+            table+="<td>"+data[i].reg_date+"</td>";
+            table+="<td>"+data[i].price+"</td>";
             table+="<td>"+data[i].volume+"</td>";
             table+="<td>"+data[i].weight+"</td>";
-			table+="<td>"+data[i].price+"</td>";
-			table+="<td>"+data[i].reg_date+"</td>";
+			table+="<td>"+data[i].location+"</td>";
+			table+="<td>"+data[i].to+"</td>";
+			table+="<td>"+data[i].from+"</td>";
         table+="</tr>"
         }
         table+='</table>';
@@ -107,7 +108,7 @@
 	}
 		
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2" ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=95b7f8bcab2eb50b6b8f4a09e0296bad1f7da270d5ed1967d315ac05cf01ab39" ).then( getDataset ).then( applyDatasetDeliveries );
 	
 	let createRowListeners = () => {
 		// Add event listener for each row in created table
@@ -118,8 +119,8 @@
 			{
 				rows[i].addEventListener('click', function(){
 					// Get begin and end values					
-					begin = findPlanetIdByName(this.cells[1].innerHTML);
-					end = findPlanetIdByName(this.cells[2].innerHTML);
+					begin = findPlanetIdByName(this.cells[12].innerHTML);
+					end = findPlanetIdByName(this.cells[11].innerHTML);
 					
 					if(begin != -1 && end != -1)
 					{

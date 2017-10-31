@@ -5,24 +5,42 @@
 	// Begin and end are reqiured for aStar algorithm
 	// Path for custom algorithm
 	// Algo variable for changing algorithm
-	let begin, end, path, algo;
-
-	// Set speed variables for different paths
-	var speed;
-	var speedQuick = 10, speedRegular = 10;
+	let begin, end;
 	
 	// Abstract value for time spent in journey
 	var time = 0;
 	
 	// Todays date
-	var today = new Date();
+	var today;
 	
 	// Values for start of jpurney time and for end of journey time
-	let beginTime, endTime;
+	let beginTime, expectedDeliveryTime;
 	/*<global variables>*/
 	
 	// Initialize cytoscape map for future adding graph
 	let cy;
+	
+	/* Function for running aStar algorithm
+	*  As custom algorithm is aStar - based 
+	*  Takes: algrorithm as promise
+	*  Sets option from global variables
+	*  Return: resolve promise algorithm with options
+	*/
+	let runAlgorithm = (algorithm) => {
+		if (algorithm === undefined) {
+			return Promise.resolve(undefined);
+		} else{
+			let options = {
+				root: '#' + begin,
+				// astar requires target; goal property is ignored for other algorithms
+				goal: '#' + end,
+				weight : function(edge){
+					return Number(edge.data("length")) * Number(edge.data("difficult"));
+				}
+			};
+			return Promise.resolve(algorithm(options));
+		}
+	}
 						
 	/*Varible for saving curret algorithm*/
 	let currentAlgorithm;
@@ -49,7 +67,7 @@
 			{
 				if(algResults.path[k].group() == "edges")
 				{
-					time += (Number(algResults.path[k].data("weight")) / speed);
+					time += Number(algResults.path[k].data("weight"));
 				}else{
 					if(algResults.path[k].group() == "nodes")
 					{
@@ -59,8 +77,7 @@
 			}
 		}	
 		// Compute abstract time to real time
-		let beginEndTimeDiff = Math.abs(beginTime.getTime() - endTime.getTime());
-		let secondsInAbsractTime = beginEndTimeDiff / time;
+		let secondsInAbsractTime = expectedDeliveryTime / time;
 			
 		// Compute how many abstract time goes thtow from start to today
 		let todayBeginTimeDiff = Math.abs(today.getTime() - beginTime.getTime());
@@ -82,7 +99,7 @@
 			    {
 					timeUnitsTodayBeginDiff -= 2;
 			    }else{
-					timeUnitsTodayBeginDiff -= algResults.path[i].data("length") * algResults.path[i].data("difficulty") / speed;
+					timeUnitsTodayBeginDiff -= algResults.path[i].data("length") * algResults.path[i].data("difficulty");
 				}
 				algResults.path[i].addClass('highlighted');
 				setTimeout(highlightNext, 500);
@@ -107,7 +124,6 @@
 		algResults.path[i].addClass('delivery-place');
 		highlightNext();
         });
-      }
     };
 	
 	/*Promise for appplying algorithm*/
@@ -133,10 +149,10 @@
 	}
 
 	/* Promise for getting container dataset*/
-	let applyDatasetContainers = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders/containers?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2").then(getDataset).then(applyDatasetContainers);
+	let applyDatasetContainers = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders/containers?SID=95b7f8bcab2eb50b6b8f4a09e0296bad1f7da270d5ed1967d315ac05cf01ab39").then(getDataset).then(applyDatasetContainers);
 	
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=5a425a70c3f5382a0c485de05ca5c1cfa285b91deabcc85defeb1ae803063fa2"  ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=95b7f8bcab2eb50b6b8f4a09e0296bad1f7da270d5ed1967d315ac05cf01ab39"  ).then( getDataset ).then( applyDatasetDeliveries );
 	
 	// Function for adding event listeners to submit
 	let setEventListeners = () => {
@@ -151,103 +167,95 @@
 			if($("#truck-number").val() != "" && $("#truck-number").val() != undefined)
 			{
 				// Simple search
-				let currentDelivery, currentShip;
+				let currentDelivery = -1;
 				for(var i = 0; i < deliveryData.length; ++i)
 				{
-					if(deliveryData[i]["id"] == $("#truck-number").val())
+					if(deliveryData[i]["trackID"] == $("#truck-number").val())
 					{
 						currentDelivery = deliveryData[i];
-						for(var j = 0; j < containers.length; ++j)
-						{
-							if(containers[j]["id"] == currentDelivery["containerID"])
-							{
-								currentShip = containers[j];
-							}
-							break;
-						}
 						break;
 					}
 				}
 				
-				if(currentDelivery["status"] == "registered" || currentDelivery["status"] == "accepted")
-				{
-					let begin = findPlanetIdByName(currentDelivery["location"]);
-					if(begin != -1)
+				if(currentDelivery != -1){
+					if(currentDelivery["status"] == "registered" || currentDelivery["status"] == "accepted")
 					{
-						cy.getElementById(begin).addClass("start-delivery-place");
-						cy.animate({
-							fit: {
-								eles: cy.getElementById(begin),
-								padding: 200
-							},
-							duration: 700,
-							easing: 'ease',		
-							queue: true
-						});
-					}
-				}else if(currentDelivery["status"] == "inprogress")
-				{
-					let containerID = this.cells[0].innerHTML;
-					let currentPath;
-					for(var k = 0; k < containers.length; ++k)
-					{
-						// Find container with currecnt delivery
-						if(containers[k]["id"] == containerID)
+						let begin = findPlanetIdByName(currentDelivery["from"]);
+						if(begin != -1)
 						{
-							currentPath = String(containers[k]["pathsArray"]).split(',');
-							break;
+							cy.getElementById(begin).addClass("start-delivery-place");
+							cy.animate({
+								fit: {
+									eles: cy.getElementById(begin),
+									padding: 200
+								},
+								duration: 700,
+								easing: 'ease',		
+								queue: true
+							});
 						}
-					}
-					// Get current contaier path
-					let posSource = currentPath.indexOf(this.cells[1].innerHTML);
-					let posTarget = currentPath.indexOf(this.cells[2].innerHTML);
-						
-					// Add planets to path
-					planetPath = [];
-						
-					// Check if container goes into source first
-					if(posSource < posTarget)
+					}else if(currentDelivery["status"] == "inprogress")
 					{
-						for(let index = posSource; posTarget <= posTarget; ++index)
+						let beginPlanet = currentDelivery["from"];
+						let endPlanet = currentDelivery["to"];
+					
+						begin = findPlanetIdByName(beginPlanet);
+						end = findPlanetIdByName(endPlanet);
+						if(begin != -1 && end != -1)
 						{
-							let idOfPlanet = findPlanetIdByName(currentPath[index]);
-							if(idOfPlanet != -1)
+							if(today == undefined)
 							{
-								planetPath.push(idOfPlanet);
-							}else{
-								// Some handlers 
-								// Maybe for erroe as a span line 
-								return;
-							}
-						}
+								today = new Date();
+							}	
 							
-						path = []
-						path.push(planetPath[0]);
-						// Now all planets are in array
-						for(let index = 1; index < planetPath.length; ++index)
-						{
-							let pathId = findPathIdById(planetPath[index-1], planetPath[index]);
-							if(pathId != -1){
-								path.push(pathId);
-								path.push(planetPath[index]);
-							}else{
-								// Also some error
-								return;
+							if(currentDelivery["send_date"] != undefined)
+							{
+								beginTime = new Date(currentDelivery["send_date"]);
+								expectedDeliveryTime = currentDelivery["esttime"] * 24 * 60 * 60 * 1000; // in milliseconds
+								tryPromise(applyAlgorithmFromSelect);
 							}
-								
 						}
-						// Apply algorithm
-						algo = "path";
-						begin = planetPath[0], end = planetPath[planetPath.length - 1];
-						tryPromise(applyAlgorithmFromSelect);
+					}else if(currentDelivery["status"] == "waitingpickup" || currentDelivery["status"] == "delivered")
+					{
+						let end = findPlanetIdByName(currentDelivery["to"]);
+						if(begin != -1)
+						{
+							cy.getElementById(end).addClass("end-delivery-place");
+							cy.animate({
+								fit: {
+									eles: cy.getElementById(end),
+									padding: 200
+								},
+								duration: 700,
+								easing: 'ease',		
+								queue: true
+							});
+						}
+					}else if(currentDelivery["status"] == "canceled")
+					{
+						$("#error").html("<b>Error!</b>This delivery was canceled!");
+						$("#error").css("visibility","visible");
+					}else if(currentDelivery["status"] == "returned")
+					{
+						$("#error").html("<b>Error!</b>This delivery was returned!");
+						$("#error").css("visibility","visible");
 					}
+				}else{
+					$("#error").html("<b>Error!</b>Invalid track ID!");
+					$("#error").css("visibility","visible");
 				}
-				
+			}else{
+					$("#error").html("<b>Error!</b>Please, enter track ID!");
+					$("#error").css("visibility","visible");
 			}
 		});
 	}
 		
 	// </Helper functions>
+	
+	$("#truck-number").on("input", function(){
+		$("#error").css("visibility","hidden");
+	});
 	
 	// Write data to page
 	tryPromise(applyDatasetD).then(setEventListeners);
@@ -255,7 +263,6 @@
     cy = window.cy = cytoscape({
       container: $('#cy')
     });
-	
 	
 	// All promises and events
     tryPromise( applyDatasetFromSelect ).then( applyPathsFromSelect ).then( applyStylesheetFromSelect ).then( applyLayoutFromSelect );
