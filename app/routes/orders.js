@@ -152,7 +152,7 @@ router.route('/')
                                                             resJson.price = order.price = totPrice/calculations.length;
                                                             resJson.time = utils.formatEstTime(totTime/calculations.length);
                                                             
-                                                            order.esttime = resJson.time;
+                                                            order.esttime = totTime/calculations.length;
                                                             
                                                             order.save(function(err, sorder){
                                                                 if (err) res.status(502).send('Error while saving order to database');
