@@ -137,7 +137,12 @@ router.route('/')
                                                         
                                                         //Get array of posible ways of delivery and price/time properties
                                                         let calculations = utils.QuickDelivery(planets, paths, ships, 15, modifiedOrder);
-
+                                                        
+                                                        //Тут чисто по преколу
+                                                        if(newOrder.type==='quick') console.log(calculations);
+                                                        else console.log(utils.OrdinaryDelivery(planets, paths, ships, 15, modifiedOrder));
+                                                        
+                                                        
                                                         if (Array.isArray(calculations)){
                                                             let totTime = 0, totPrice = 0;
                                                         
@@ -154,14 +159,18 @@ router.route('/')
                                                             
                                                             order.esttime = totTime/calculations.length;
                                                             
-                                                            order.save(function(err, sorder){
-                                                                if (err) res.status(502).send('Error while saving order to database');
-                                                                else{
-                                                                    resJson.trackID = sorder.trackID;
-                                                                    res.json(resJson); 
-                                                                } 
-                                                            });
-                                                            
+                                                            if(req.body.estimate){
+                                                                resJson.trackID = sorder.trackID;
+                                                                res.json(resJson); 
+                                                            }else{
+                                                                order.save(function(err, sorder){
+                                                                    if (err) res.status(502).send('Error while saving order to database');
+                                                                    else{
+                                                                        resJson.trackID = sorder.trackID;
+                                                                        res.json(resJson); 
+                                                                    } 
+                                                                });
+                                                            }   
                                                         }else res.status(404).send(calculations);
                                                     }
                                                 });
