@@ -48,7 +48,7 @@ app.all('/*', function(err, req, res, next) {
 function modifyResponseBody(req, res, next) {
     var oldSend = res.send;
     res.send = function(data){
-        if(typeof data === 'string'){
+        if(typeof autoParse(data) === 'string'){
             let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
             console.log('REQUEST FROM IP ( ' +ip+ ' ):');
             if(Object.keys(req.body).length !== 0){
