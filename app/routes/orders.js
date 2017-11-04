@@ -138,11 +138,6 @@ router.route('/')
                                                         //Get array of posible ways of delivery and price/time properties
                                                         let calculations = utils.QuickDelivery(planets, paths, ships, 15, modifiedOrder);
                                                         
-                                                        //Тут чисто по преколу
-                                                        if(newOrder.type==='quick') console.log(calculations);
-                                                        else console.log(utils.OrdinaryDelivery(planets, paths, ships, 15, modifiedOrder));
-                                                        
-                                                        
                                                         if (Array.isArray(calculations)){
                                                             let totTime = 0, totPrice = 0;
                                                         
@@ -154,11 +149,21 @@ router.route('/')
 
                                                             let resJson = {};
                                                             
-                                                            resJson.price = order.price = totPrice/calculations.length;
-                                                            resJson.time = utils.formatEstTime(totTime/calculations.length);
-                                                            
-                                                            order.esttime = totTime/calculations.length;
-                                                            
+                                                            //Тут чисто по преколу
+                                                            if(newOrder.type==='quick'){
+                                                                resJson.price = order.price = 1.2*totPrice/calculations.length;
+                                                                resJson.time = utils.formatEstTime(totTime/calculations.length);
+                                                                order.esttime = totTime/calculations.length;
+                                                            }else if(newOrder.type==='regular'){
+                                                                resJson.price = order.price = totPrice/calculations.length;
+                                                                resJson.time = utils.formatEstTime(1.2*totTime/calculations.length);
+                                                                order.esttime = 1.2*totTime/calculations.length;
+                                                            }else if(newOrder.type==='cheap'){
+                                                                resJson.price = order.price = 0.8*totPrice/calculations.length;
+                                                                resJson.time = utils.formatEstTime(1.5*totTime/calculations.length);
+                                                                order.esttime = 1.5*totTime/calculations.length;
+                                                            }
+
                                                             if(req.body.estimate){
                                                                 resJson.trackID = sorder.trackID;
                                                                 res.json(resJson); 
