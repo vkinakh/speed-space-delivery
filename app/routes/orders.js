@@ -164,7 +164,7 @@ router.route('/')
                                                                 order.esttime = 1.5*totTime/calculations.length;
                                                             }
 
-                                                            if(mewOrder.estimate){
+                                                            if(newOrder.estimate){
                                                                 res.json(resJson); 
                                                             }else{
                                                                 order.save(function(err, sorder){
