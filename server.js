@@ -13,14 +13,11 @@ let port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(helmet());
-app.use(morgan('short'));
+app.use(morgan('tiny'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(function (err, req, res, next) {
-    if(err) res.status(502).send('Bad request body');
-    else next();
-})
+
 //CONNECTING TO DATABASE
 mongoose.Promise = global.Promise;
 mongoose.connect(process.env.MONGODB_URI);
@@ -32,18 +29,45 @@ let orders = require('./app/routes/orders')
 let paths = require('./app/routes/paths')
 let ships = require('./app/routes/ships')
 
-app.all('/*', function(req, res, next) {
+//Check if request is valid and parse numbers represented as string etc
+app.use(function (err, req, res, next) {
+    if(err) res.status(502).send('Bad request body');
+    else next();
+});
+app.all('/*', function(err, req, res, next) {
     if(Object.keys(req.body).length !== 0){
         req.body = autoParse(req.body);
-        console.log(req.body);
     }
     if(Object.keys(req.query).length !== 0){
         req.query = autoParse(req.query);
-        console.log(req.query);
     }
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
 });
+
+//Log if error
+function modifyResponseBody(req, res, next) {
+    var oldSend = res.send;
+    res.send = function(data){
+        if(typeof data === 'string'){
+            let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+            console.log('REQUEST FROM IP ( ' +ip+ ' ):');
+            if(Object.keys(req.body).length !== 0){
+                console.log(req.body);
+            }
+            if(Object.keys(req.query).length !== 0){
+                console.log(req.query);
+            }
+            console.log();
+            console.log('RESPONSE:');
+            console.log(data);
+            console.log();
+        }
+        res.send=oldSend;
+        oldSend.apply(res, arguments);
+    }
+    next();
+}
+app.use(modifyResponseBody);
 
 app.use('/api/users', users);
 app.use('/api/planets', planets);

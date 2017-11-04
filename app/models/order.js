@@ -21,6 +21,7 @@ let orderSchema = new Schema({
     send_date: Date,
     delivery_date: Date,
     recieve_date: Date,
+    esttime: Number,
     status: {type: String, enum: deliveryState, default: 'registered', lowercase: true}
 });
 

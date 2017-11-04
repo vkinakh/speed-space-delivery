@@ -136,8 +136,8 @@ router.route('/')
                                                         if (modifiedOrder.from.indexOf('.')!==-1) modifiedOrder.from = modifiedOrder.from.split('.')[1];
                                                         
                                                         //Get array of posible ways of delivery and price/time properties
-                                                        let calculations = utils.QuickDelivery(planets, paths, ships, 15, modifiedOrder);
-
+                                                        let calculations = utils.QuickDelivery(planets, paths, ships, process.env.fuelPrice, modifiedOrder);
+                                                        
                                                         if (Array.isArray(calculations)){
                                                             let totTime = 0, totPrice = 0;
                                                         
@@ -149,17 +149,32 @@ router.route('/')
 
                                                             let resJson = {};
                                                             
-                                                            resJson.price = order.price = totPrice/calculations.length;
-                                                            resJson.time = utils.formatEstTime(totTime/calculations.length);
-                                                            
-                                                            order.save(function(err, sorder){
-                                                                if (err) res.status(502).send('Error while saving order to database');
-                                                                else{
-                                                                    resJson.trackID = sorder.trackID;
-                                                                    res.json(resJson); 
-                                                                } 
-                                                            });
-                                                            
+                                                            //Тут чисто по преколу
+                                                            if(newOrder.type==='quick'){
+                                                                resJson.price = order.price = 1.2*totPrice/calculations.length;
+                                                                resJson.time = utils.formatEstTime(totTime/calculations.length);
+                                                                order.esttime = totTime/calculations.length;
+                                                            }else if(newOrder.type==='regular'){
+                                                                resJson.price = order.price = totPrice/calculations.length;
+                                                                resJson.time = utils.formatEstTime(1.2*totTime/calculations.length);
+                                                                order.esttime = 1.2*totTime/calculations.length;
+                                                            }else if(newOrder.type==='cheap'){
+                                                                resJson.price = order.price = 0.8*totPrice/calculations.length;
+                                                                resJson.time = utils.formatEstTime(1.5*totTime/calculations.length);
+                                                                order.esttime = 1.5*totTime/calculations.length;
+                                                            }
+
+                                                            if(newOrder.estimate){
+                                                                res.json(resJson); 
+                                                            }else{
+                                                                order.save(function(err, sorder){
+                                                                    if (err) res.status(502).send('Error while saving order to database');
+                                                                    else{
+                                                                        resJson.trackID = sorder.trackID;
+                                                                        res.json(resJson); 
+                                                                    } 
+                                                                });
+                                                            }   
                                                         }else res.status(404).send(calculations);
                                                     }
                                                 });
@@ -321,8 +336,8 @@ router.route('/createContainer')
                                                                 }
                                                                 else modifiedContainer.to = modifiedContainer.destinationsArray;
                                                                 
-                                                                if(deliveryTypeTrack='quick') calculations = utils.PerpareResponse(utils.QuickDelivery(planets, paths, ships, 15, modifiedContainer));
-                                                                else calculations = utils.OrdinaryDelivery(planets, paths, ships, 15, modifiedContainer);
+                                                                if(deliveryTypeTrack === 'quick') calculations = utils.PerpareResponse(utils.QuickDelivery(planets, paths, ships, process.env.fuelPrice, modifiedContainer));
+                                                                else calculations = utils.OrdinaryDelivery(planets, paths, ships, process.env.fuelPrice, modifiedContainer);
 
                                                                 if (typeof calculations !== 'string'){
                                                                     
