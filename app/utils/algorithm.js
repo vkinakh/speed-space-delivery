@@ -150,6 +150,9 @@ function LevitAlgorithm(mainPlanets, mainPath, nameA, nameB){
 
 	var minWeigth = d[v2];
 	var minPath = [];
+    console.log(mainPlanets);
+    console.log(v2);
+    console.log(mainPlanets[v2]);
 	if (p[v2] != -1)
 	{	
 			//rebuilding mimimal path by planets names
@@ -351,12 +354,12 @@ module.exports.OrdinaryDelivery = function OrdinaryDelivery(planets, path, ships
 	var mainPath = GetMainPath(planets, path);
 	
 	var mainShips = GetMainShips(ships);
-
+    console.log(mainPlanets);
 	//array of free ships in freeShips
 	var freeShips = ShuttleExistence(container.from, container, mainShips, "innerGalactic");
 	if (freeShips == 0)
 		return "Ships on this main planet don't exist or too small for this container";
-
+    console.log(freeShips);
 	var result = PriceAndTime(mainPlanets, mainPath, container, freeShips, fuelPrice);
 
 	if (typeof result === "string")
