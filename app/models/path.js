@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-var autoIncrement = require('mongoose-auto-increment');
+var autoIncrement = require('./mongoose-auto-increment.js');
 let Schema = mongoose.Schema;
 
 let pathSchema = new Schema({

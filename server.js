@@ -20,7 +20,15 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //CONNECTING TO DATABASE
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI);
+var options = {
+  useMongoClient: true,
+  reconnectTries: Number.MAX_VALUE,
+  reconnectInterval: 100,
+  poolSize: 10,
+  bufferMaxEntries: 0
+};
+let uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/ssd';
+mongoose.connect(uri, options);
 
 // REGISTER ROUTES -------------------------------
 let users = require('./app/routes/users')
@@ -47,8 +55,9 @@ app.all('/*', function(err, req, res, next) {
 //Log if error
 function modifyResponseBody(req, res, next) {
     var oldSend = res.send;
+
     res.send = function(data){
-        if(typeof data === 'string'){
+        if(typeof autoParse(data) === 'string'){
             let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
             console.log('REQUEST FROM IP ( ' +ip+ ' ):');
             if(Object.keys(req.body).length !== 0){
