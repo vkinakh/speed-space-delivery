@@ -353,7 +353,7 @@ module.exports.OrdinaryDelivery = function OrdinaryDelivery(planets, path, ships
 	var mainShips = GetMainShips(ships);
 
 	//array of free ships in freeShips
-	var freeShips = ShuttleExistence(container.from, container, mainShips, "main");
+	var freeShips = ShuttleExistence(container.from, container, mainShips, "innerGalactic");
 	if (freeShips == 0)
 		return "Ships on this main planet don't exist or too small for this container";
 
