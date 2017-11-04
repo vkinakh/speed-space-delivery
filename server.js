@@ -35,15 +35,35 @@ let ships = require('./app/routes/ships')
 app.all('/*', function(req, res, next) {
     if(Object.keys(req.body).length !== 0){
         req.body = autoParse(req.body);
-        console.log(req.body);
     }
     if(Object.keys(req.query).length !== 0){
         req.query = autoParse(req.query);
-        console.log(req.query);
     }
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
     next();
 });
+
+function modifyResponseBody(req, res, next) {
+    var oldSend = res.send;
+    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    console.log('REQUEST FROM IP ( ' +ip+ ' ):');
+    if(Object.keys(req.body).length !== 0){
+        console.log(req.body);
+    }
+    if(Object.keys(req.query).length !== 0){
+        console.log(req.query);
+    }
+    console.log();
+    
+    res.send = function(data){
+        console.log('RESPONSE:');
+        console.log(data);
+        console.log();
+        res.send=oldSend;
+        oldSend.apply(res, arguments);
+    }
+    next();
+}
+app.use(modifyResponseBody);
 
 app.use('/api/users', users);
 app.use('/api/planets', planets);
