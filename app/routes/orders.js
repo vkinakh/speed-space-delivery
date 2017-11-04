@@ -136,7 +136,7 @@ router.route('/')
                                                         if (modifiedOrder.from.indexOf('.')!==-1) modifiedOrder.from = modifiedOrder.from.split('.')[1];
                                                         
                                                         //Get array of posible ways of delivery and price/time properties
-                                                        let calculations = utils.QuickDelivery(planets, paths, ships, 15, modifiedOrder);
+                                                        let calculations = utils.QuickDelivery(planets, paths, ships, process.env.fuelPrice, modifiedOrder);
                                                         
                                                         if (Array.isArray(calculations)){
                                                             let totTime = 0, totPrice = 0;
@@ -336,8 +336,8 @@ router.route('/createContainer')
                                                                 }
                                                                 else modifiedContainer.to = modifiedContainer.destinationsArray;
                                                                 
-                                                                if(deliveryTypeTrack='quick') calculations = utils.PerpareResponse(utils.QuickDelivery(planets, paths, ships, 15, modifiedContainer));
-                                                                else calculations = utils.OrdinaryDelivery(planets, paths, ships, 15, modifiedContainer);
+                                                                if(deliveryTypeTrack === 'quick') calculations = utils.PerpareResponse(utils.QuickDelivery(planets, paths, ships, process.env.fuelPrice, modifiedContainer));
+                                                                else calculations = utils.OrdinaryDelivery(planets, paths, ships, process.env.fuelPrice, modifiedContainer);
 
                                                                 if (typeof calculations !== 'string'){
                                                                     
