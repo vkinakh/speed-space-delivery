@@ -220,7 +220,7 @@ function AllCombinations(n){
 
 function LengthPathCombination(combination, container, mainPlanets, mainPath){
 	var len = 0;
-    console.log(combination);
+
 	var temp = LevitAlgorithm(mainPlanets, mainPath, container.from, container.to[ combination[0] ]);
 
 	if ( !(Array.isArray(temp)) )
