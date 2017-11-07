@@ -6,10 +6,7 @@
 	// Path for custom algorithm
 	// Algo variable for changing algorithm
 	let begin, end;
-	
-	// Abstract value for time spent in journey
-	var time = 0;
-	
+		
 	// Todays date
 	var today;
 	
@@ -35,7 +32,7 @@
 				// astar requires target; goal property is ignored for other algorithms
 				goal: '#' + end,
 				weight : function(edge){
-					return Number(edge.data("length")) * Number(edge.data("difficult"));
+					return Number(edge.data().length) * Number(edge.data().difficulty);
 				}
 			};
 			return Promise.resolve(algorithm(options));
@@ -44,7 +41,7 @@
 						
 	/*Varible for saving curret algorithm*/
 	let currentAlgorithm;
-	
+		
 	/* Function for animating algorithm
 	*  In this case it will show the position of delivery 
 	*  Takes: algResults returned by runAlgorithm
@@ -60,14 +57,15 @@
 		}
 		else {
 			let i = 0;
-			let timeUnitsTodayBeginDiff;
+			// for path algorithm
 			// Case astar path algorithm
-			time = 4;
-			for(var k = 1; k < algResults.path.length - 1; ++k)
+			let time = 4;
+			for(let k = 1; k < algResults.path.length - 1; ++k)
 			{
+				//alert(time);
 				if(algResults.path[k].group() == "edges")
 				{
-					time += Number(algResults.path[k].data("weight"));
+					time += Number(algResults.path[k].data().length * algResults.path[k].data().difficulty);
 				}else{
 					if(algResults.path[k].group() == "nodes")
 					{
@@ -75,59 +73,58 @@
 					}
 				}
 			}
-		}	
-		// Compute abstract time to real time
-		let secondsInAbsractTime = expectedDeliveryTime / time;
-			
-		// Compute how many abstract time goes thtow from start to today
-		let todayBeginTimeDiff = Math.abs(today.getTime() - beginTime.getTime());
-		timeUnitsTodayBeginDiff = todayBeginTimeDiff / secondsInAbsractTime + 4;
-		
-        // for astar, highlight first and final before showing path
-        if (algResults.distance) {
-          // Among DFS, BFS, A*, only A* will have the distance property defined
-          algResults.path[0].addClass('highlighted start');
-          algResults.path[algResults.path.length - 1].addClass('highlighted end');
-          // i is not advanced to 1, so start node is effectively highlighted twice.
-          // this is intentional; creates a short pause between highlighting ends and highlighting the path
-        }
-        return new Promise(resolve => {
-          let highlightNext = () => {
-            if (currentAlgorithm === algResults && i < algResults.path.length) {
-			  while(timeUnitsTodayBeginDiff > 0){
-			    if(algResults.path[i].group() == "nodes")
-			    {
-					timeUnitsTodayBeginDiff -= 2;
-			    }else{
-					timeUnitsTodayBeginDiff -= algResults.path[i].data("length") * algResults.path[i].data("difficulty");
-				}
-				algResults.path[i].addClass('highlighted');
-				setTimeout(highlightNext, 500);
-				
-				i++;
-			  }
 
-            } else {
-              // resolve when finished or when a new algorithm has started visualization
-              resolve();
-            }
-          }
-		  cy.animate({
-			fit: {
-				eles: algResults.path[i],
-				padding: 200
-			},
-			duration: 700,
-			easing: 'ease',
-			queue: true
-		});
-		algResults.path[i].addClass('delivery-place');
-		highlightNext();
-        });
+			// Compute abstract time to real time
+			let secondsInAbsractTime = expectedDeliveryTime / time;
+			
+			// Compute how many abstract time goes thtow from start to today
+			let todayBeginTimeDiff = Math.abs(today.getTime() - beginTime.getTime());
+			let timeUnitsTodayBeginDiff = todayBeginTimeDiff / secondsInAbsractTime + 4;
+		
+			// for astar, highlight first and final before showing path
+			if (algResults.distance) {
+				// Among DFS, BFS, A*, only A* will have the distance property defined
+				algResults.path[0].addClass('highlighted start');
+				algResults.path[algResults.path.length - 1].addClass('highlighted end');
+				// i is not advanced to 1, so start node is effectively highlighted twice.
+				// this is intentional; creates a short pause between highlighting ends and highlighting the path
+			}
+			return new Promise(resolve => {
+				let highlightNext = () => {
+					if (currentAlgorithm === algResults && i < algResults.path.length && timeUnitsTodayBeginDiff > 0) {
+						while(timeUnitsTodayBeginDiff > 0){
+							if(algResults.path[i].group() == "nodes")
+							{
+								timeUnitsTodayBeginDiff -= 2;
+							}else{
+								timeUnitsTodayBeginDiff -= algResults.path[i].data("length") * algResults.path[i].data("difficulty");
+							}
+							i++;
+						}
+						cy.animate({
+							fit: {
+								eles: algResults.path[i],
+								padding: 200
+							},
+							duration: 700,
+							easing: 'ease',
+							queue: true
+						});
+						algResults.path[i].addClass('delivery-place');
+						highlightNext();
+					} else {
+						// resolve when finished or when a new algorithm has started visualization
+						resolve();
+					}
+				}
+				highlightNext();
+			});
+		}
     };
 	
+	
 	/*Promise for appplying algorithm*/
-    let applyAlgorithmFromSelect = () => Promise.resolve( algo ).then( getAlgorithm ).then( runAlgorithm ).then( animateAlgorithm );
+    let applyAlgorithmFromSelect = () => tryPromise(getAlgorithm).then( runAlgorithm ).then( animateAlgorithm );
 	
 	/*Variable for saving delivery data*/
 	let deliveryData;
@@ -149,10 +146,10 @@
 	}
 
 	/* Promise for getting container dataset*/
-	let applyDatasetContainers = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders/containers?SID=95b7f8bcab2eb50b6b8f4a09e0296bad1f7da270d5ed1967d315ac05cf01ab39").then(getDataset).then(applyDatasetContainers);
+	let applyDatasetContainers = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders/containers?SID=1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3").then(getDataset).then(applyDatasetContainers);
 	
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=95b7f8bcab2eb50b6b8f4a09e0296bad1f7da270d5ed1967d315ac05cf01ab39"  ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3"  ).then( getDataset ).then( applyDatasetDeliveries );
 	
 	// Function for adding event listeners to submit
 	let setEventListeners = () => {
@@ -161,6 +158,9 @@
 			cy.$().removeClass('delivery-place');
 			cy.$().removeClass('start-delivery-place');
 			cy.$().removeClass('end-delivery-place');
+			cy.$().removeClass('highlighted');
+			cy.$().removeClass('end');
+			cy.$().removeClass('start');
 			
 			cy.stop();
 			// Here must be some validation
@@ -263,6 +263,22 @@
     cy = window.cy = cytoscape({
       container: $('#cy')
     });
+	
+		/* Display planet info on mouseover */
+	cy.on('mouseover', 'node', function(event) {
+		let node = event.cyTarget;
+		let info = "Planet name: " + node.data("name") + "<br/>" + "Galactic: " + node.data("galactic") + "<br/>"+"URL: " + node.data("image");
+		node.qtip({
+			content: info,
+			show: {
+				event: event.type,
+				ready: true
+			},
+			hide: {
+				event: 'mouseout unfocus'
+			}
+		}, event);
+	});
 	
 	// All promises and events
     tryPromise( applyDatasetFromSelect ).then( applyPathsFromSelect ).then( applyStylesheetFromSelect ).then( applyLayoutFromSelect );

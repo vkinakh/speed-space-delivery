@@ -22,7 +22,7 @@
 				// astar requires target; goal property is ignored for other algorithms
 				goal: '#' + end,
 				weight : function(edge){
-					return Number(edge.data("length")) * Number(edge.data("difficult"));
+					return Number(edge.data().length) * Number(edge.data().difficulty);
 				}
 			};
 			return Promise.resolve(algorithm(options));
@@ -68,8 +68,6 @@
 				queue: true
 			  });
 			  setTimeout(highlightNext, 1200);
-			  
-			  
 			   i++;
             } else {
               // resolve when finished or when a new algorithm has started visualization
@@ -108,7 +106,7 @@
 	}
 		
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=95b7f8bcab2eb50b6b8f4a09e0296bad1f7da270d5ed1967d315ac05cf01ab39" ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3" ).then( getDataset ).then( applyDatasetDeliveries );
 	
 	let createRowListeners = () => {
 		// Add event listener for each row in created table
@@ -135,6 +133,22 @@
     cy = window.cy = cytoscape({
       container: $('#cy')
     });
+	
+		/* Display planet info on mouseover */
+	cy.on('mouseover', 'node', function(event) {
+		let node = event.cyTarget;
+		let info = "Planet name: " + node.data("name") + "<br/>" + "Galactic: " + node.data("galactic") + "<br/>"+"URL: " + node.data("image");
+		node.qtip({
+			content: info,
+			show: {
+				event: event.type,
+				ready: true
+			},
+			hide: {
+				event: 'mouseout unfocus'
+			}
+		}, event);
+	});
 	
 	// Write data to page
 	tryPromise(applyDatasetD).then(createRowListeners);

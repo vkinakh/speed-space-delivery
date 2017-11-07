@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Track delivery</title>
+    <title>Register order</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/normalize.css" />
@@ -22,12 +22,12 @@
     <script src="js/tooltipster.bundle.min.js"></script>
 	<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
 	<script src="js/index.js"></script>
-    <script src="js/track.js"></script>
+    <script src="js/register.js"></script>
 <style>
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-default" ><!-- navbar-inverse для темних кольорів . bg-inverse темний колір -->
+    <nav class="navbar navbar-default" ><!-- navbar-inverse ??? ?????? ???????? . bg-inverse ?????? ????? -->
         <div class="container-fluid">
             <div class="navber-header">
                 <a class="navbar-brand" href="#"><img src="images/SSD.jpg" alt="logo" class="img-circle" width="50" height="50"></a>
@@ -40,11 +40,55 @@
     </ul>
         </div>
     </nav> 
+	
+	<div id="dialog-window" class="modal">
+		<!-- Modal content -->
+		<div class="modal-content" id="dialog-content">
+			
+		</div>
+	</div>
+	
     <div class="container tools">
-		<label for="delivery-id">Truck number</label>
-		<input id="truck-number" type="text" value=""></input>
-		<button id="submit">Submit</button>
-		<span id="error" class="err alert-danger"></span>
+		<form class="form-right" id="registration-form">
+		<legend>Register</legend>
+		<dl>
+			<dt><label for="sender">Sender</label></dt>
+			<dd><input class="form-control" id="sender" name="sender" type="email" value=""></dd>
+			<span id="error-sender" class="err alert-danger"><strong>Error!</strong>Enter valid sender email!</span>
+			
+			<dt><label for="receiver">Receiver</label></dt>
+			<dd><input class="form-control" id="receiver" name="receiver" type="email" value=""></dd>
+			<span id="error-receiver" class="err alert-danger"><strong>Error!</strong>Enter valid receiever email!</span> 
+			
+			<dt><label for="from">Click on planet to select start planet</label></dt>
+			<dd><p id="from" name="from"></p><input id="clear-from" name="clear-from" type="button" value="Clear"></input></dd>
+			<span id="error-from" class="err alert-danger"><strong>Error!</strong>Please, select start planet!</span>
+			
+			<dt><label for="to">Click on planet to select end planet</label></dt>
+			<dd><p id="to" name="to"></p><input id="clear-to" name="clear-to" type="button" value="Clear"></input></dd>
+			<span id="error-to" class="err alert-danger"><strong>Error!</strong>Please, select end planet!</span>
+			
+			<dt><label for="weight">Weight</label></dt>
+			<dd><input class="form-control" id="weight" name="weight" type="number" value=""></dd>
+			<span id="error-weight" class="err alert-danger"><strong>Error!</strong>Enter valid weight!</span>
+			
+			<dt><label for="volume">Volume</label></dt>
+			<dd><input class="form-control" id="volume" name="volume" type="number" value=""></dd>
+			<span id="error-volume" class="err alert-danger"><strong>Error!</strong>Enter valid volume!</span>
+			
+			<dt><label for="type">Type</label></dt>
+			<dd><select id="type" name="type" class="form-control">
+				<option value="">None</option>
+				<option value="cheap">Cheap</option>
+				<option value="regular">Regular</option>
+				<option value="quick">Quick</option>
+			</select></dd>
+			<span id="error-type" class="err alert-danger"><strong>Error!</strong>Please select any type!</span>
+			
+		</dl>
+		
+		<p><input id="s" type="button" value="Register">
+	</form>
 	</div>
     </div>
 	<div id="cy" class="main"></div>
@@ -91,7 +135,7 @@
         <!--/.container--> 
    
         
-            <p class="text-center">  ©Footer </p>
+            <p class="text-center">  �Footer </p>
         
     </div>
     <!--/.footer-bottom--> 
