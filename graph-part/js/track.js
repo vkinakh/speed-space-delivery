@@ -66,6 +66,7 @@
 				if(algResults.path[k].group() == "edges")
 				{
 					time += Number(algResults.path[k].data().length * algResults.path[k].data().difficulty);
+					//alert(algResults.path[k].data().length * algResults.path[k].data().difficulty);
 				}else{
 					if(algResults.path[k].group() == "nodes")
 					{
@@ -89,18 +90,21 @@
 				// i is not advanced to 1, so start node is effectively highlighted twice.
 				// this is intentional; creates a short pause between highlighting ends and highlighting the path
 			}
+			
 			return new Promise(resolve => {
 				let highlightNext = () => {
 					if (currentAlgorithm === algResults && i < algResults.path.length && timeUnitsTodayBeginDiff > 0) {
-						while(timeUnitsTodayBeginDiff > 0){
+						do{
 							if(algResults.path[i].group() == "nodes")
 							{
 								timeUnitsTodayBeginDiff -= 2;
 							}else{
-								timeUnitsTodayBeginDiff -= algResults.path[i].data("length") * algResults.path[i].data("difficulty");
+								timeUnitsTodayBeginDiff -= (Number(algResults.path[i].data().length) * Number(algResults.path[i].data().difficulty));
 							}
-							i++;
-						}
+							if(timeUnitsTodayBeginDiff > 0){
+								i++;
+							}
+						}while(timeUnitsTodayBeginDiff > 0);
 						cy.animate({
 							fit: {
 								eles: algResults.path[i],
@@ -110,6 +114,17 @@
 							easing: 'ease',
 							queue: true
 						});
+						
+						// show info
+						if(algResults.path[i].group() == "edges")
+						{
+							$("#delivery-info").html(
+							"Your delivery is on path between " + cy.getElementById(algResults.path[i].data().source).data().name + " and " 
+							+ cy.getElementById(algResults.path[i].data().target).data().name + ".");
+							$("#delivery-info").css("visibility", "visible");
+						}
+						
+						
 						algResults.path[i].addClass('delivery-place');
 						highlightNext();
 					} else {
@@ -161,6 +176,8 @@
 			cy.$().removeClass('highlighted');
 			cy.$().removeClass('end');
 			cy.$().removeClass('start');
+			
+			$("#delivery-info").css("visibility", "hidden");
 			
 			cy.stop();
 			// Here must be some validation
