@@ -161,10 +161,10 @@
 	}
 
 	/* Promise for getting container dataset*/
-	let applyDatasetContainers = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders/containers?SID=1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3").then(getDataset).then(applyDatasetContainers);
+	let applyDatasetContainers = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders/containers?SID=" + SID).then(getDataset).then(applyDatasetContainers);
 	
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3"  ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveries );
 	
 	// Function for adding event listeners to submit
 	let setEventListeners = () => {

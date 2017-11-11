@@ -18,7 +18,7 @@
 		users = dataset;
 	};
 	
-	let applyDatasetUsers = () => Promise.resolve( "https://someleltest.herokuapp.com/api/users?SID=1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3" ).then( getDataset ).then( saveUsers );
+	let applyDatasetUsers = () => Promise.resolve( "https://someleltest.herokuapp.com/api/users?SID=" + SID).then( getDataset ).then( saveUsers );
 	
 	// Create cytoscape map for graph
     cy = window.cy = cytoscape({
@@ -182,14 +182,14 @@
 			url: 'https://someleltest.herokuapp.com/api/orders',
 			type: 'POST',
 			dataType: 'json',
-			data: JSON.parse('{"SID": "1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + false + '}}'),
+			data: JSON.parse('{"SID": "' + SID +'","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + false + '}}'),
 			success: function (data, textStatus, xhr) {
 				$("#dialog-window").css("display", "block");
 				$("#dialog-content").html('<span id="close-dialog" class="close">&times;</span>' + 
 				'<p>Total time:'+ data['time'] + '</p>' + 
 				 '<p>Total price:'+ data['price'] + '</p>' +
 				 '<input type="button" value="Submit" id="submit-order" name="submit-order"></input>' +
-				 '<input type="button" value="Cancel" id="cancel-order" name="submit-order"></input>');
+				 '<input type="button" value="Cancel" id="cancel-order" name="cancel-order"></input>');
 				 
 				 /*Event listeners for dialog window */
 				$("#close-dialog").on("click", function(){
@@ -205,7 +205,7 @@
 						url: 'https://someleltest.herokuapp.com/api/orders',
 						type: 'POST',
 						dataType: 'json',
-						data: JSON.parse('{"SID": "1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + true + '}}'),
+						data: JSON.parse('{"SID":"'+  SID + '","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + true + '}}'),
 						success: function (data, textStatus, xhr) {
 							$("#dialog-content").html('<span id="close-dialog" class="close">&times;</span>' + 
 							'<p>Your order was successfully submitted</p>' + 

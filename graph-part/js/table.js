@@ -7,6 +7,9 @@
 	// Initialize cytoscape map for future adding graph
     let cy;
 	
+	// Variable for storing type of delivery
+	let type;
+	
 	/* Function for running aStar algorithm
 	*  As custom algorithm is aStar - based 
 	*  Takes: algrorithm as promise
@@ -40,7 +43,9 @@
     let animateAlgorithm = (algResults) => {
       // clear old algorithm results
       cy.$().removeClass('highlighted start end');
+	  cy.$().removeClass('cheap regular quick');
       currentAlgorithm = algResults;
+	  
       if (algResults === undefined || algResults.path === undefined) {
         return Promise.resolve();
       }
@@ -57,7 +62,21 @@
         return new Promise(resolve => {
           let highlightNext = () => {
             if (currentAlgorithm === algResults && i < algResults.path.length) {
-              algResults.path[i].addClass('highlighted');
+			  if(algResults.path[i].group() == 'edges')
+			  {
+				if(type == 'cheap')
+				{
+					algResults.path[i].addClass('cheap');
+				}else
+				if(type == 'regular')
+				{
+					algResults.path[i].addClass('regular');
+				}else{
+					algResults.path[i].addClass('quick');
+				}
+			  }else{
+				algResults.path[i].addClass('highlighted');
+			  }
 			  cy.animate({
 				fit: {
 					eles: algResults.path[i],
@@ -106,7 +125,7 @@
 	}
 		
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=1f9474729a96e84a71d51fe2660c18e1f94de4b242b6a66956d54df762bbfbf3" ).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveries );
 	
 	let createRowListeners = () => {
 		// Add event listener for each row in created table
@@ -120,7 +139,9 @@
 					begin = findPlanetIdByName(this.cells[12].innerHTML);
 					end = findPlanetIdByName(this.cells[11].innerHTML);
 					
-					if(begin != -1 && end != -1)
+					type = this.cells[4].innerHTML;
+				
+					if(begin != -1 && end != -1 && type != "" && type != undefined)
 					{
 						tryPromise( getAlgorithm ).then( runAlgorithm ).then( animateAlgorithm );
 					}

@@ -60,7 +60,7 @@
       "haystack-radius": "0.5",
       "opacity": "0.4",
       "line-color": "#bbb",
-      "width": "mapData(weight, 0, 1, 1, 8)",
+      "width": "mapData(lenght, 0, 1, 1, 8)",
       "overlay-padding": "3px"
     }
   },
@@ -191,6 +191,27 @@
       "line-color": "#AAD8FF",
       "width": "10px"
     }
+  },
+  {
+	"selector" : "edge.quick",
+	"style" : {
+		"line-color": "#FFFF00",
+		"width" : "10px"
+	}
+  },
+  {
+	"selector" : "edge.regular",
+	"style" : {
+		"line-color" : "#0040FF",
+		"width" : "10px"
+	}
+  },
+  {
+	"selector" : "edge.cheap",
+	"style" : {
+		"line-color" : "#00FF00",
+		"width" : "10px"
+	}
   },
   {
 	"selector" : "node.delivery-place",
