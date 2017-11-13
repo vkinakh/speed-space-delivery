@@ -3,6 +3,10 @@ let router = express.Router();
 let planetModel = require('../models/planet.js');
 let containerModel = require('../models/container.js');
 let userModel = require('../models/user.js');
+let multer = require('multer');
+let upload = multer({ dest: 'public/planets/'});
+let path = require("path")
+let fs = require('fs');
 
 router.route('/')
     .get(function(req, res){
@@ -61,8 +65,7 @@ router.route('/')
             else if(person){
                 if(person.permission==='admin'){
                     if(newPlanet&&newPlanet.name&&newPlanet.type&&newPlanet.galactic
-                        &&newPlanet.position.x&&newPlanet.position.y&&newPlanet.image
-                        &&newPlanet.diameter&&newPlanet.color){
+                        &&newPlanet.position.x&&newPlanet.position.y&&newPlanet.diameter&&newPlanet.color){
                             if(newPlanet.type==='moon'&&newPlanet.moonOf===undefined) res.status(502).send('Base planet not specified');
                             else{
                                 if(newPlanet.type==='moon'){
@@ -175,4 +178,36 @@ router.route('/getAll')
         });
     });
 
-module.exports = router;    
+router.post('/planetImg', upload.single('file'), function(req, res) {
+    let SID = req.body.SID;
+    let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    
+    userModel.findOne({'SID': SID, 'ip': ip}, 'permission email SID' , function (err, person) {
+        if (err) res.status(502).send('Error while querying database');
+        else if(person){
+            if(person.permission==='admin'){
+                if(req.file){
+                    planetModel.findOne({name: req.file.originalname.split('.')[0]}, function(err, planet){
+                        if (err) res.status(502).send('Error while querying planet database');
+                        else if(planet){
+                            let file = path.join(__dirname, '../../public/planets', req.file.originalname);
+                            console.log(file);
+                            fs.rename(req.file.path, file, function(err) {
+                                if (err) {
+                                    res.status(502).send(err);
+                                } else {
+                                    res.sendStatus(200);
+                                }
+                            });
+                            console.log(req.protocol+'://'+req.hostname+'/planets/'+req.file.originalname);
+                        }else res.status(502).send('Planet not found');
+                    });
+                }else res.status(502).send('Please specify all space object parameters');
+            }else res.status(401).send('Not enough permission');
+        }else res.status(401).send('User not found');
+    });
+    console.log(req.file);
+    
+});
+
+module.exports = router;
