@@ -1,8 +1,8 @@
-var cluster = require('cluster');
-var numCPUs = require('os').cpus().length;
+let cluster = require('cluster');
+let numCPUs = require('os').cpus().length;
 
 if (cluster.isMaster) {
-  for (var i = 0; i < numCPUs; i++) {
+  for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
   cluster.on('exit', function(worker, code, signal) {

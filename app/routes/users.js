@@ -23,14 +23,14 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         
         userModel.findOne({'SID': SID, 'ip': ip}, '-_id -__v' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
+            if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){        
                     userModel.find({}, "-_id -__v -SID -ip -password -salt", function(err, data){
-                        if (err) res.status(502).send('Error while querying database');
+                        if (err) res.status(400).send('Error while querying database');
                         else if(data.length>0){
                             res.json(data);
-                        }else res.status(502).send('No users found');
+                        }else res.status(400).send('No users found');
                     });
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');
@@ -46,13 +46,13 @@ router.route('/')
             let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
             password = crypto.createHash('sha256').update(password+salt).digest('hex');
             userModel.findOne({'email':email, 'password': password, 'salt':salt}, function (err, person) {
-                if (err) res.status(502).send('Error while querying database');
+                if (err) res.status(400).send('Error while querying database');
                 else if(person){
                     if (person.SID==='unconfirmed'){
                         person.SID='changingPass';
                         person.ip = 'LUL' + ip;
                         person.save(function (err) {
-                            if (err) res.status(502).send('Error while saving data');
+                            if (err) res.status(400).send('Error while saving data');
                             else res.status(409).send('Please create new password');
                         });
                     }
@@ -66,7 +66,7 @@ router.route('/')
                             } 
                             let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
                             person.save(function (err) {
-                                if (err) res.status(502).send('Error while saving data');
+                                if (err) res.status(400).send('Error while saving data');
                                 else res.json(response);
                             });
                         }else res.status(409).send('Please create new password');
@@ -85,7 +85,7 @@ router.route('/')
             let salt = crypto.createHash('sha256').update('SSD'+userEmail+'LUL').digest('hex');
             password = crypto.createHash('sha256').update(password+salt).digest('hex');
             userModel.findOne({'email':userEmail, 'SID': 'changingPass', 'ip': ip}, function (err, person) {
-                if (err) res.status(502).send('Error while querying database');
+                if (err) res.status(400).send('Error while querying database');
                 else if(person){
                         person.salt = salt;
                         person.password = password;
@@ -93,7 +93,7 @@ router.route('/')
                         person.SID = crypto.createHash('sha256').update('SSD'+salt+person.ip+Date.now()).digest('hex');
                         let response = {'SID': person.SID, 'permission': person.permission};
                         person.save(function(err){
-                            if (err) res.status(502).send('Error while saving data');
+                            if (err) res.status(400).send('Error while saving data');
                             else res.json(response);
                         });
                 }else res.status(401).send('User not found');
@@ -104,18 +104,21 @@ router.route('/')
         let email = req.body.email;
         let SID = req.body.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-    
-        userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
-            else if(person){
-                if(person.permission==='admin'&&email!=='ssd@ssd.com'){
-                    userModel.remove({'email': email}, function (err) {
-                        if (err) res.status(502).send('Error while removing user from database');
-                        else res.sendStatus(200);
-                    });
-                }else res.status(401).send('Not enough permission');
-            }else res.status(401).send('User not found');
-        })  
+        if(!validator.validate(email)){
+            res.status(400).send('Bad email');
+        }else{
+            userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
+                if (err) res.status(400).send('Error while querying database');
+                else if(person){
+                    if(person.permission==='admin'&&email!=='ssd@ssd.com'){
+                        userModel.remove({'email': email}, function (err) {
+                            if (err) res.status(400).send('Error while removing user from database');
+                            else res.sendStatus(200);
+                        });
+                    }else res.status(401).send('Not enough permission');
+                }else res.status(401).send('User not found');
+            }) 
+        }
     });
 
 router.route('/addOperator')
@@ -129,19 +132,19 @@ router.route('/addOperator')
             res.status(400).send('Bad email or password');
         }else{
             planetModel.findOne({'name':location}, function(err, planet){
-                if (err) res.status(502).send('Error while querying planet database');
+                if (err) res.status(400).send('Error while querying planet database');
                 else if(planet){
                     if (planet.type==='moon') location = planet.moonOf + '.' + location;
                     userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
-                        if (err) res.status(502).send('Error while querying database');
+                        if (err) res.status(400).send('Error while querying database');
                         else if(person&&person.permission==='admin'&&person.SID.length!==0){
                             userModel.findOne({'email': email}, function(err, result){
-                                if (err) res.status(502).send('Error while querying database');
+                                if (err) res.status(400).send('Error while querying database');
                                 else if(result){
                                     result.location = location;
                                     result.permission = 'operator';
                                     result.save(function(err){
-                                        if (err) res.status(502).send('Error while saving data');
+                                        if (err) res.status(400).send('Error while saving data');
                                         else res.sendStatus(200);
                                     });
                                 }else{
@@ -150,7 +153,7 @@ router.route('/addOperator')
                                     let pass = crypto.createHash('sha256').update(tempPass+salt).digest('hex');
                                     let operator = new userModel({'email':email, 'password': pass, 'location':location, 'salt':salt, 'SID':'unconfirmed', 'permission':'operator'});
                                     operator.save(function (err) {
-                                        if (err) res.status(502).send('Error while saving data');
+                                        if (err) res.status(400).send('Error while saving data');
                                         else{
                                             let mailOptions = {
                                                 from: 'speedspacedeliveries@gmail.com',
@@ -160,7 +163,7 @@ router.route('/addOperator')
                                             };
 
                                             smtpTransport.sendMail(mailOptions, (error, info) => {
-                                                if (err) res.status(502).send('Error sending email to specified adress');
+                                                if (err) res.status(400).send('Error sending email to specified adress');
                                                 else res.sendStatus(200);
                                             });
                                         }
@@ -169,7 +172,7 @@ router.route('/addOperator')
                             })
                         }else res.status(401).send('Not enough permission');
                     });
-                }else res.status(502).send('Location not found');
+                }else res.status(400).send('Location not found');
             });
         }
     });
@@ -184,15 +187,15 @@ router.route('/addAdmin')
             res.status(400).send('Bad email or password');
         }else{
             userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
-                if (err) res.status(502).send('Error while querying planet database');
+                if (err) res.status(400).send('Error while querying planet database');
                 else if(person&&person.permission==='admin'&&person.SID.length!==0){
                     userModel.findOne({'email': email}, function(err, result){
-                        if (err) res.status(502).send('Error while querying database');
+                        if (err) res.status(400).send('Error while querying database');
                         else if(result){
                             if(result.location) result.location='';
                             result.permission = 'admin';
                             result.save(function(err){
-                                if (err) res.status(502).send('Error while saving data');
+                                if (err) res.status(400).send('Error while saving data');
                                 else res.sendStatus(200);
                             });
                         }else{
@@ -201,7 +204,7 @@ router.route('/addAdmin')
                             let pass = crypto.createHash('sha256').update(tempPass+salt).digest('hex');
                             let operator = new userModel({'email':email, 'password': pass, 'salt':salt, 'SID':'unconfirmed', 'permission':'admin'});
                             operator.save(function (err) {
-                                if (err) res.status(502).send('Error while saving data');
+                                if (err) res.status(400).send('Error while saving data');
                                 else{
                                     let mailOptions = {
                                         from: 'speedspacedeliveries@gmail.com',
@@ -211,7 +214,7 @@ router.route('/addAdmin')
                                     };
 
                                     smtpTransport.sendMail(mailOptions, (error, info) => {
-                                        if (err) res.status(502).send('Error sending email to specified adress');
+                                        if (err) res.status(400).send('Error sending email to specified adress');
                                         else res.sendStatus(200);
                                     });
                                 }
@@ -231,14 +234,14 @@ router.route('/register')
             res.status(400).send('Bad email or password');
         }else{
             userModel.findOne({'email': email}, function(err, person){
-                if (err) res.status(502).send('Error while querying database');
+                if (err) res.status(400).send('Error while querying database');
                 else if(!person){
                     let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
                     password = crypto.createHash('sha256').update(password+salt).digest('hex');
                     let cCode = randomstring.generate({length: 8, charset: 'numeric'});
                     let unconfirmedUser = new unconfirmedModel({'email':email, 'password': password, 'salt':salt, 'cCode': cCode});
                     unconfirmedUser.save(function (err) {
-                        if (err) res.status(502).send('Error while saving data');
+                        if (err) res.status(400).send('Error while saving data');
                         else{
                             let mailOptions = {
                                 from: 'speedspacedeliveries@gmail.com',
@@ -248,12 +251,12 @@ router.route('/register')
                             };
 
                             smtpTransport.sendMail(mailOptions, (err, info) => {
-                                if (err) res.status(502).send('Error sending email to specified adress');
+                                if (err) res.status(400).send('Error sending email to specified adress');
                                 else res.sendStatus(200);
                             });
                         }
                     });
-                }else res.status(502).send('This email is already taken');
+                }else res.status(400).send('This email is already taken');
             });
         }
     });
@@ -263,25 +266,28 @@ router.route('/removePermission')
         let email = req.body.email;
         let SID = req.body.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-    
-        userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
-            else if(person){
-                if(person.permission==='admin'&&email!=='ssd@ssd.com'){
-                    userModel.findOne({'email': email}, function (err, result) {
-                        if (err) res.status(502).send('Error while querying database');
-                        else if(result){
-                            result.permission = 'default';
-                            result.location = undefined;
-                            result.save(function(err){
-                                if(err) res.status(502).send('Error while saving data');
-                                else res.sendStatus(200);
-                            });
-                        }else res.status(502).send('User not found');
-                    });
-                }else res.status(401).send('Not enough permission');
-            }else res.status(401).send('User not found');
-        }) 
+        if(!validator.validate(email)){
+            res.status(400).send('Bad email');
+        }else{
+            userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
+                if (err) res.status(400).send('Error while querying database');
+                else if(person){
+                    if(person.permission==='admin'&&email!=='ssd@ssd.com'){
+                        userModel.findOne({'email': email}, function (err, result) {
+                            if (err) res.status(400).send('Error while querying database');
+                            else if(result){
+                                result.permission = 'default';
+                                result.location = undefined;
+                                result.save(function(err){
+                                    if(err) res.status(400).send('Error while saving data');
+                                    else res.sendStatus(200);
+                                });
+                            }else res.status(400).send('User not found');
+                        });
+                    }else res.status(401).send('Not enough permission');
+                }else res.status(401).send('User not found');
+            });
+        }
     });
 
 router.route('/confirm')
@@ -292,14 +298,14 @@ router.route('/confirm')
             res.status(400).send('Bad email or password');
         }else{
             unconfirmedModel.findOneAndRemove({'email': email, 'cCode':cCode}, '-_id email password salt', function(err, result){
-                if (err) res.status(502).send('Error while querying database');
+                if (err) res.status(400).send('Error while querying database');
                 else if(result){
                     let user = new userModel(result.toObject());
                     user.save(function(err){
-                        if (err) res.status(502).send('Error while saving data');
+                        if (err) res.status(400).send('Error while saving data');
                         else res.sendStatus(200);
                     });
-                }else res.status(502).send('Wrong confirmation code');
+                }else res.status(400).send('Wrong confirmation code');
             });
         }
     });
@@ -309,12 +315,12 @@ router.route('/logout')
         let SID = req.body.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         userModel.findOne({'SID':SID, 'ip':ip}, 'SID ip', function (err, person){
-            if (err) res.status(502).send('Error while querying database');
+            if (err) res.status(400).send('Error while querying database');
             else if(person){
                 person.SID = "";
                 person.ip = "";
                 person.save(function(err){
-                    if (err) res.status(502).send('Error while saving data');
+                    if (err) res.status(400).send('Error while saving data');
                     else res.sendStatus(200);
                 });
             }else res.status(401).send('User not found');

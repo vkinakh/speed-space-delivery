@@ -16,7 +16,7 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission email location SID' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
+            if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='operator'){
                     let query = { $or:[
@@ -27,7 +27,7 @@ router.route('/')
                                 };
                     if(trackID) query.trackID = trackID;
                     orderModel.find(query, '-_id -__v', {sort: {trackID: 1}}, function(err, response){
-                        if (err) res.status(502).send('Error while querying orders database');
+                        if (err) res.status(400).send('Error while querying orders database');
                         else{
                             response.map(function(el){
                                 if (el.to.indexOf('.')!==-1) el.to = el.to.split('.')[1];
@@ -58,7 +58,7 @@ router.route('/')
                     //
                     
                     orderModel.find( queryparams , '-_id -__v', function(err, response){
-                        if (err) res.status(502).send('Error while querying orders database');
+                        if (err) res.status(400).send('Error while querying orders database');
                         else{
                             response.map(function(el){
                                 if (el.to.indexOf('.')!==-1) el.to = el.to.split('.')[1];
@@ -72,7 +72,7 @@ router.route('/')
                     if(trackID) queryparams.trackID = trackID;
                     queryparams['$or'] = [ {'sender': person.email}, {'reciever': person.email}];
                     orderModel.find(queryparams, '-_id -__v', function(err, response){
-                        if (err) res.status(502).send('Error while querying orders database');
+                        if (err) res.status(400).send('Error while querying orders database');
                         else{
                             response.map(function(el){
                                 if (el.to.indexOf('.')!==-1) el.to = el.to.split('.')[1];
@@ -91,7 +91,7 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission email location SID' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
+            if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='default' && newOrder) newOrder.sender = person.email;
                 if(newOrder && newOrder.sender && newOrder.reciever && newOrder.from
@@ -100,7 +100,7 @@ router.route('/')
                         res.status(400).send('Bad email or password');
                     }else{
                         planetModel.find({$or: [{name: newOrder.from}, {name: newOrder.to}]}, function(err, result){
-                            if (err) res.status(502).send('Error while querying planet database');
+                            if (err) res.status(400).send('Error while querying planet database');
                             else if(result.length==2){
                                 
                                 //Transform name of moon to basePlanet.MoonName
@@ -122,13 +122,13 @@ router.route('/')
                                 
                                 //CALCULATING EST TIME AND PRICE HERE DONT STILL DON'T KNOW HOW NO JUDGE PLZ 
                                 planetModel.find({}, function(err, planets){
-                                    if(err) res.status(502).send('Error while querying planet database');
+                                    if(err) res.status(400).send('Error while querying planet database');
                                     else{
                                         shipModel.find({}, function(err, ships){
-                                            if(err) res.status(502).send('Error while querying ship database');
+                                            if(err) res.status(400).send('Error while querying ship database');
                                             else{
                                                 pathModel.find({}, function(err, paths){
-                                                    if(err) res.status(502).send('Error while querying paths database');
+                                                    if(err) res.status(400).send('Error while querying paths database');
                                                     else{
                                                         //QuickDelivery(planets, path, ships, fuelPrice, container);
                                                         let modifiedOrder = JSON.parse(JSON.stringify(order));
@@ -136,7 +136,7 @@ router.route('/')
                                                         if (modifiedOrder.from.indexOf('.')!==-1) modifiedOrder.from = modifiedOrder.from.split('.')[1];
                                                         
                                                         //Get array of posible ways of delivery and price/time properties
-                                                        let calculations = utils.QuickDelivery(planets, paths, ships, process.env.fuelPrice, modifiedOrder);
+                                                        let calculations = utils.QuickDelivery(planets, paths, ships, 15, modifiedOrder);
                                                         
                                                         if (Array.isArray(calculations)){
                                                             let totTime = 0, totPrice = 0;
@@ -168,7 +168,7 @@ router.route('/')
                                                                 res.json(resJson); 
                                                             }else{
                                                                 order.save(function(err, sorder){
-                                                                    if (err) res.status(502).send('Error while saving order to database');
+                                                                    if (err) res.status(400).send('Error while saving order to database');
                                                                     else{
                                                                         resJson.trackID = sorder.trackID;
                                                                         res.json(resJson); 
@@ -182,10 +182,10 @@ router.route('/')
                                         });
                                     }
                                 });
-                            }else res.status(502).send('Send/Recieve locations not valid');
+                            }else res.status(400).send('Send/Recieve locations not valid');
                         });
                     }
-                }else res.status(502).send('Please specify all order parameters');
+                }else res.status(400).send('Please specify all order parameters');
             }else res.status(401).send('User not found');
         });
     })
@@ -196,7 +196,7 @@ router.route('/')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission email location SID' , function (err, person) {
-            if(err) res.status(502).send('Error while querying database');
+            if(err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='operator'||person.permission==='admin'){
                     let query = {};
@@ -218,7 +218,7 @@ router.route('/')
                     }
                     let err0r = false;
                     orderModel.findOne(query, function(err, order){
-                        if(err) res.status(502).send('Error while querying orders database');
+                        if(err) res.status(400).send('Error while querying orders database');
                         else if(order){
                             if(action==='accept') order.status = 'accepted';
                             if(action==='giveout'){
@@ -237,16 +237,16 @@ router.route('/')
                                 let returnOrder = new orderModel({'reciever': order.sender, 'sender': order.reciever, 'from': order.to, 'to': order.from, 'weight': order.weight, 'volume': order.volume, 'price': 2*order.price, 'status':'accepted'});
                                 returnOrder.save(function(err){
                                     if(err){
-                                        res.status(502).send('Error while saving order to database');
+                                        res.status(400).send('Error while saving order to database');
                                         err0r = true;
                                     }
                                 });
                             }
                             order.save(function(err){
-                                if(err) res.status(502).send('Error while saving order to database');
+                                if(err) res.status(400).send('Error while saving order to database');
                                 else if(!err0r) res.sendStatus(200);
                             });
-                        }else res.status(502).send('Order not found');
+                        }else res.status(400).send('Order not found');
                     });
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');
@@ -263,7 +263,7 @@ router.route('/createContainer')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission location SID' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
+            if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='operator'||person.permission==='admin'){
                     if(orderArray&&!orderArray.some(isNaN)){
@@ -275,7 +275,7 @@ router.route('/createContainer')
                         else if(req.body.location&&person.permission==='admin') query.location = req.body.location;
                         if (query.location){
                             orderModel.find( query, function(err, result){
-                                if (err) res.status(502).send('Error while querying orders database');
+                                if (err) res.status(400).send('Error while querying orders database');
                                 else if(result&&result.length==orderArray.length){
                                     let container = new containerModel({'ordersIDArray': orderArray, 'source': query.location});
                                     container.destinationsArray = [];
@@ -310,17 +310,17 @@ router.route('/createContainer')
                                     });
 
                                     //FIND POSSIBLE SHIPS AND STUFF HERE
-                                    if(container.destinationsArray.length>maxlength) res.status(502).send('Can not have so many destinations');
+                                    if(container.destinationsArray.length>maxlength) res.status(400).send('Can not have so many destinations');
                                     else{
                                         //QuickDelivery(planets, path, ships, fuelPrice, container);
                                         planetModel.find({}, function(err, planets){
-                                            if(err) res.status(502).send('Error while querying planet database');
+                                            if(err) res.status(400).send('Error while querying planet database');
                                             else{
                                                 shipModel.find({}, function(err, ships){
-                                                    if(err) res.status(502).send('Error while querying ship database');
+                                                    if(err) res.status(400).send('Error while querying ship database');
                                                     else{
                                                         pathModel.find({}, function(err, paths){
-                                                            if(err) res.status(502).send('Error while querying paths database');
+                                                            if(err) res.status(400).send('Error while querying paths database');
                                                             else{
                                                                 let calculations;
                                                                 
@@ -336,8 +336,8 @@ router.route('/createContainer')
                                                                 }
                                                                 else modifiedContainer.to = modifiedContainer.destinationsArray;
                                                                 
-                                                                if(deliveryTypeTrack === 'quick') calculations = utils.PerpareResponse(utils.QuickDelivery(planets, paths, ships, process.env.fuelPrice, modifiedContainer));
-                                                                else calculations = utils.OrdinaryDelivery(planets, paths, ships, process.env.fuelPrice, modifiedContainer);
+                                                                if(deliveryTypeTrack === 'quick') calculations = utils.PerpareResponse(utils.QuickDelivery(planets, paths, ships, 15, modifiedContainer));
+                                                                else calculations = utils.OrdinaryDelivery(planets, paths, ships, 15, modifiedContainer);
 
                                                                 if (typeof calculations !== 'string'){
                                                                     
@@ -357,7 +357,7 @@ router.route('/createContainer')
                                                                     });
                                                                     
                                                                     container.save(function(err, scontainer){
-                                                                        if (err) res.status(502).send('Error while saving container to database');
+                                                                        if (err) res.status(400).send('Error while saving container to database');
                                                                         else{
                                                                             let response = {'id': scontainer.id, 'options': calculations.properties};
                                                                             res.json(response);
@@ -372,10 +372,10 @@ router.route('/createContainer')
                                             }
                                         });
                                     }
-                                }else res.status(502).send('Not all orders can be added');
+                                }else res.status(400).send('Not all orders can be added');
                             });
-                        }else res.status(502).send('Please specify your location');
-                    }else res.status(502).send('Please specify integer array');
+                        }else res.status(400).send('Please specify your location');
+                    }else res.status(400).send('Please specify integer array');
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');
         });
@@ -390,7 +390,7 @@ router.route('/confirmContainer')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission location SID' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
+            if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='operator'||person.permission==='admin'){
                     if(shipID&&containerID){
@@ -399,23 +399,23 @@ router.route('/confirmContainer')
                         query['properties.shipID'] = shipID;
                         if(person.permission==='operator') query.source = person.location;
                         containerModel.findOne(query, function(err, result){
-                            if (err) res.status(502).send('Error while querying container database');
+                            if (err) res.status(400).send('Error while querying container database');
                             else if(result){
                                 shipModel.findOne({id: shipID, available: true}, function(err, ship){
-                                    if (err) res.status(502).send('Error while querying ship database');
+                                    if (err) res.status(400).send('Error while querying ship database');
                                     else if(ship){
                                         result.shipID = shipID;
                                         result.properties = result.properties.find(o => o.shipID === shipID).properties;
                                         ship.available = false;
                                         orderModel.find({trackID: {$in : result.ordersIDArray}, $or: [{status: 'accepted'}, {status: 'inprogress'}],
                                                          containerID: undefined}, function(err, orders){
-                                            if (err) res.status(502).send('Error while querying orders database');
+                                            if (err) res.status(400).send('Error while querying orders database');
                                             else if(orders&&orders.length === result.ordersIDArray.length){
                                                 ship.save(function(err){
-                                                    if (err) res.status(502).send('Error while saving ship to database');
+                                                    if (err) res.status(400).send('Error while saving ship to database');
                                                     else{
                                                         result.save(function(err){
-                                                            if (err) res.status(502).send('Error while saving container to database');
+                                                            if (err) res.status(400).send('Error while saving container to database');
                                                             else{
                                                                 let err0r = false;
                                                                 orders.map(function(el, i){
@@ -424,7 +424,7 @@ router.route('/confirmContainer')
                                                                     el.send_date = new Date();
                                                                     el.save(function(err){
                                                                         if (err){
-                                                                            res.status(502).send('Error while saving order to database');
+                                                                            res.status(400).send('Error while saving order to database');
                                                                             err0r = true;
                                                                         } 
                                                                         else if(i===orders.length-1&&!err0r) res.sendStatus(200);
@@ -435,13 +435,13 @@ router.route('/confirmContainer')
                                                         });
                                                     }
                                                 });
-                                            }res.status(502).send('Not all orders can be added');
+                                            }res.status(400).send('Not all orders can be added');
                                         });
-                                    }else res.status(502).send('Ship not found');
+                                    }else res.status(400).send('Ship not found');
                                 });
-                            }else res.status(502).send('Container not found');
+                            }else res.status(400).send('Container not found');
                         });
-                    }else res.status(502).send('Please specify ship/container id');
+                    }else res.status(400).send('Please specify ship/container id');
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');
         });
@@ -455,7 +455,7 @@ router.route('/acceptContainer')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission location SID' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
+            if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='operator'||person.permission==='admin'){
                     if(containerID){
@@ -464,7 +464,7 @@ router.route('/acceptContainer')
                         if(person.permission==='operator') query["destinationsArray.0"] = person.location;
                         
                         containerModel.findOne(query, function(err, result){
-                            if (err) res.status(502).send('Error while querying container database');
+                            if (err) res.status(400).send('Error while querying container database');
                             else if(result){
                                 query["destinationsArray.0"] = result.destinationsArray[0];
                                 //Remove current location from destination array
@@ -482,12 +482,12 @@ router.route('/acceptContainer')
                                     obj.location = query["destinationsArray.0"];
                                 }
                                 shipModel.findOneAndUpdate({'id': shipID}, obj, function(err){
-                                    if (err) res.status(502).send('Error while updating ship in database');
+                                    if (err) res.status(400).send('Error while updating ship in database');
                                     else{
                                         let locRegexp = new RegExp('^'+query["destinationsArray.0"]);
 
                                         orderModel.find({'trackID': {$in: result.ordersIDArray}, $or: [{to: locRegexp}, {from: locRegexp}], 'status': 'inprogress'}, function(err, orders){
-                                            if (err) res.status(502).send('Error while querying orders database');
+                                            if (err) res.status(400).send('Error while querying orders database');
                                             else if(orders&&orders.length>0){
                                                 orders.map(function(el, i){
                                                     //If final destination change status, if satellite location left change from and status fields
@@ -507,11 +507,11 @@ router.route('/acceptContainer')
                                                     el.save(function(err){
                                                         let err0r = false;
                                                         if (err){
-                                                            res.status(502).send('Error while saving orders to database');
+                                                            res.status(400).send('Error while saving orders to database');
                                                             err0r = true;
                                                         }else if(i===orders.length-1&&!err0r){
                                                             result.save(function(err){
-                                                                if (err) res.status(502).send('Error while saving container to database');
+                                                                if (err) res.status(400).send('Error while saving container to database');
                                                                 else res.sendStatus(200);
                                                             });   
                                                         }
@@ -519,13 +519,13 @@ router.route('/acceptContainer')
 
                                                 });
                                                 
-                                            }else res.status(502).send('No orders to remove');
+                                            }else res.status(400).send('No orders to remove');
                                         });
                                     }
                                 });
-                            }else res.status(502).send('Container not found');
+                            }else res.status(400).send('Container not found');
                         }); 
-                    }else res.status(502).send('Please specify container id');
+                    }else res.status(400).send('Please specify container id');
                 }else res.status(401).send('Not enough permission');
             }else res.status(401).send('User not found');
         });
@@ -538,20 +538,20 @@ router.route('/containers')
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'SID': SID, 'ip': ip}, 'permission email location SID' , function (err, person) {
-            if (err) res.status(502).send('Error while querying database');
+            if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='operator'){
                     let query = {$or: [{source: person.location}, {destinationsArray: person.location}], 'destinationsArray': { $exists: true, $ne: [] } };
                     if(id) query.id = id;
                     containerModel.find(query, '-_id -__v', {sort: {id: 1}}, function(err,containers){
-                        if(err) res.status(502).send('Error while querying container database');
+                        if(err) res.status(400).send('Error while querying container database');
                         else res.json(containers);
                     });
                 }else if(person.permission==='admin'){
                     let query = {'destinationsArray': { $exists: true, $ne: [] }};
                     if(id) query.id = id;
                     containerModel.find(query, '-_id -__v', {sort: {id: 1}}, function(err,containers){
-                        if(err) res.status(502).send('Error while querying container database');
+                        if(err) res.status(400).send('Error while querying container database');
                         else res.json(containers);
                     });
                 }else res.status(401).send('Not enough permission');
@@ -562,7 +562,7 @@ router.route('/containers')
 router.route('/track/:trackID(\\d+)')
     .get(function(req, res){
         orderModel.findOne({'trackID': req.params.trackID}, '-_id -__v -containerID -sender -reciever', function(err, order){
-            if (err) res.status(502).send('Error while querying order database');
+            if (err) res.status(400).send('Error while querying order database');
             else if(order){
                 if (order.to.indexOf('.')!==-1) order.to = order.to.split('.')[1];
                 if (order.from.indexOf('.')!==-1) order.from = order.from.split('.')[1];
