@@ -9,11 +9,11 @@ let planetSchema = new Schema({
     name: {type: String, index: true, unique: true},
     moonOf: String,
     type: {type: String, enum: planetType},
-    galactic: String,
+    galactic: {type: String, default: ''},
     position: {x: Number, y: Number},
-    image: String,
+    image: {type: String, default: ''},
     diameter: Number,
-    color: String
+    color: {type: String, default: '#000AAA'}
 });
 
 autoIncrement.initialize(mongoose.connection);
