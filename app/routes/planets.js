@@ -194,12 +194,16 @@ router.post('/planetImg', upload.single('file'), function(req, res) {
                             console.log(file);
                             fs.rename(req.file.path, file, function(err) {
                                 if (err) {
-                                    res.status(502).send(err);
+                                    res.status(502).send("Can't save this file");
                                 } else {
-                                    res.sendStatus(200);
+                                    planet.image = req.protocol+'://'+req.hostname+'/planets/'+req.file.originalname;
+                                    planet.save(function(err){
+                                        if(err) res.status(502).send('Error while saving planet');
+                                        res.sendStatus(200);
+                                    });
+                                    
                                 }
                             });
-                            console.log(req.protocol+'://'+req.hostname+'/planets/'+req.file.originalname);
                         }else res.status(502).send('Planet not found');
                     });
                 }else res.status(502).send('Please specify all space object parameters');
