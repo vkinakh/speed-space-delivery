@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-var autoIncrement = require('./mongoose-auto-increment.js');
+let autoIncrement = require('./mongoose-auto-increment.js');
 let Schema = mongoose.Schema;
 
 let planetType = ['star', 'planet', 'moon', 'comet', 'asteroid'];
@@ -9,11 +9,11 @@ let planetSchema = new Schema({
     name: {type: String, index: true, unique: true},
     moonOf: String,
     type: {type: String, enum: planetType},
-    galactic: {type: String, default: ''},
+    galactic: String,
     position: {x: Number, y: Number},
-    image: {type: String, default: ''},
+    image: String,
     diameter: Number,
-    color: {type: String, default: '#000AAA'}
+    color: String
 });
 
 autoIncrement.initialize(mongoose.connection);

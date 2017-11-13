@@ -5,11 +5,11 @@ let morgan = require('morgan');
 let helmet = require('helmet');
 let mongoose = require('mongoose');
 let cors = require('cors');
-var autoParse = require('auto-parse')
+let autoParse = require('auto-parse');
 
 let app = express();
 
-let port = process.env.PORT || 8080; 
+let port = process.env.PORT || 8080;
 
 app.use(cors());
 app.use(helmet());
@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //CONNECTING TO DATABASE
 mongoose.Promise = global.Promise;
-var options = {
+let options = {
   useMongoClient: true,
   reconnectTries: Number.MAX_VALUE,
   reconnectInterval: 100,
@@ -39,7 +39,7 @@ let ships = require('./app/routes/ships')
 
 //Check if request is valid and parse numbers represented as string etc
 app.use(function (err, req, res, next) {
-    if(err) res.status(502).send('Bad request body');
+    if(err) res.status(400).send('Bad request body');
     else next();
 });
 app.all('/*', function(err, req, res, next) {
@@ -54,7 +54,7 @@ app.all('/*', function(err, req, res, next) {
 
 //Log if error
 function modifyResponseBody(req, res, next) {
-    var oldSend = res.send;
+    let oldSend = res.send;
 
     res.send = function(data){
         if(typeof autoParse(data) === 'string' && data!='OK'){

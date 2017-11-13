@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Try</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<button id="but2">log in</button>
+<button id="reg">Reg</button>
+<button id="confirm">confirm</button>
+<button id="addOperator">Add Operator</button>
+<button id="addAdmin">Add Admin</button>
+<button id="del">delete</button>
+<button id="addShip">addShips</button>
+<button id="getShips">getShips</button>
+<button id="delShip">dell Ship</button>
+<button id="changeShip">change ship</button>
+<button id="addPlanet">add planet</button>
+<button id="showPlanetsOpp">Show plantes as Operator</button>
+<button id="showPlanetsByName">Show planet By name</button>
+<button id="showPlanets">Show planets</button>
+<button id="getUsers">Get all Users</button>
+<button id="logout">Log out</button>
+<button id="makeOrder">Make order</button>
+<button id="showOrders">Show orders</button>
+<button id="createContainer">Create container</button>
+<button id="confirmContainer">confirmContainer</button>
+<button id="confirmOrder">confirmOrder</button>
+ <input type="text" id="name">
+ <input type="text" id="password">
+ <p id="demo"></p>
+ <p id="permission"></p>
+ <p id="users"></p>
+ <p id="orders"></p>
+<img src='https://chart.googleapis.com/chart?cht=qr&chl=SSD0000000009&chs=180x180&choe=UTF-8&chld=L|2' alt='http://www.qrcode-generator.de'>
+<script>
+//https://someleltest.herokuapp.com/api/	
+    $("#addShip").click(function(){
+		$.ajax({
+    type:     "post",
+    data:     {"SID":JSON.parse(localStorage.getItem("SID")),
+                "ship":{
+                    "location":"Mercury",
+                    "capacity":1003,
+                    "volume":100321,
+                    "ability":"nearPlanet",
+                    "speed": 1000,
+                    "consumption":5
+ 
+                }},
+    url:      "https://someleltest.herokuapp.com/api/ships",
+    error: function(xhr, status, error) {
+  /*var err = eval("(" + xhr.responseText + ")");
+  alert(err.Message);*/
+		console.log(xhr.responseText);
+},
+    success: function () {
+        alert(" Done ! ");
+    }
+});
+	})
+      /*  var $.post("https://someleltest.herokuapp.com/api/ships",
+        {
+            "SID":JSON.parse(localStorage.getItem("SID")),
+                "ship":{
+                    "location":"Ioasda",
+                    "capacity":1003,
+                    "volume":100321,
+                    "ability":"innerGalactic",
+                    "speed": 1000,
+                    "consumption":5
+ 
+                }
+            },
+        function(data,status){
+            console.log(status);
+               
+        });
+    });
+*/
+	
+    $("#but2").click(function() {
+        $.post("https://someleltest.herokuapp.com/api/users",
+        {
+            "email":$("#name").val(),
+            "password":$("#password").val()
+        },
+        function (data){
+            localStorage.setItem("SID",JSON.stringify(data.SID));
+			localStorage.setItem("permission",JSON.stringify(data.permission));
+			console.log("O`k`");
+        }
+        )
+       
+    })
+    $("#getShips").click(function ()   {
+		var url="https://someleltest.herokuapp.com/api/ships?SID=";
+       url+=JSON.parse(localStorage.getItem("SID")); 
+		$.get(url,
+   
+            function (data,status)
+            {
+                console.log(data);
+			showShips(data);
+            }
+             )
+ 
+    })
+    $("#reg").click(function(){
+        $.post("https://someleltest.herokuapp.com/api/users/register",
+        {
+            "email":$("#name").val(),
+            "password":$("#password").val()
+        },
+        function(data,status){
+            console.log("O`k");
+        }
+        )
+    })
+    $("#confirm").click(function (){
+        $.post("https://someleltest.herokuapp.com/api/users/confirm",
+        {
+            "email":$("#name").val(),
+            "code":$("#password").val()
+			
+        }),
+        function (status){
+			
+            console.log("O`k");
+        }
+    })
+	$("#addOperator").click(function(){
+	$.post("https://someleltest.herokuapp.com/api/users/addOperator",
+	{
+	"SID":JSON.parse(localStorage.getItem("SID")),
+		"email":$("#name").val(),
+		"location":$("#password").val()
+	}	
+		  ,function (status){console.log(status)});	
+	})
+	$("#changeShip").click(function (){
+		$.ajax({
+			url:"https://someleltest.herokuapp.com/api/ships",
+			type:'PUT',
+			data:{"SID":JSON.parse(localStorage.getItem("SID")),
+			"ship":{
+			"id":5,
+			"location":"Mars",
+			"capacity":1999,
+			"consumption":10
+			}
+		 },success: function(data){
+			 alert("O`k");
+		 }
+					//	function(status){console.log(status)}
+			   })
+			})
+    $("#addAdmin").click(function () {
+$.post("https://someleltest.herokuapp.com/api/users/addAdmin",{
+		"SID":JSON.parse(localStorage.getItem("SID")),
+		"email":$("#name").val(),
+		
+	},
+		  function (status){console.log(status);})
+})
+    $("#addPlanet").click(function(){
+        $.post("https://someleltest.herokuapp.com/api/planets",
+               {
+            "SID":JSON.parse(localStorage.getItem("SID")),
+            "planet":{
+            "name":"Mars",
+            "type":"planet",
+            "galactic":"Mily Way",
+            "position":{
+                "x":10,
+                "y":10
+            },
+            "image":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFb701JHTZDSGHEr0BLPZuhdkksLlkqj_wff29VM4e7byMAWsoNQ",
+            "diameter":"100",
+                color:"red"
+            
+            }
+        },
+               function (status){console.log(status);}
+        )
+    })
+	$("#showPlanetsOpp").click(function(){
+		var url="https://someleltest.herokuapp.com/api/planets?SID=";
+		url+=JSON.parse(localStorage.getItem("SID"));
+		$.get( url, function( planets ) {
+			console.log(planets);
+	showPlanetsOpp(planets);
+		})
+	});
+    $("#showPlanetsByName").click(function(){
+        var url="https://someleltest.herokuapp.com/api/planets?SID=";
+        url+=JSON.parse(localStorage.getItem("SID"));
+        url+="&name=Earth";
+        $.get(url,function (data){console.log(data);})
+    })
+    $("#showPlanets").click(function (){
+	$.get("https://someleltest.herokuapp.com/api/planets/getAll",function (data){
+		showPlanets(data);
+	});
+})
+	$("#getUsers").click(function (){
+		var url="https://someleltest.herokuapp.com/api/users?SID=";
+		url+=JSON.parse(localStorage.getItem("SID"));
+	$.get(url,function (data){
+		console.log(data);
+		show(data);
+	});
+})
+	$("#logout").click(function (){
+		var url="https://someleltest.herokuapp.com/api/";
+		url+="users/logout";
+		$.post(url,{
+			"SID":JSON.parse(localStorage.getItem("SID"))
+		},function (status){
+			console.log(status);
+			localStorage.clear();
+		});
+	})
+	$("#del").click(function(){
+		$.ajax({
+			url:"https://someleltest.herokuapp.com/api/users",
+			type:'DELETE',
+			data:{
+				"email":$("#name").val(),
+				"SID":JSON.parse(localStorage.getItem("SID"))
+			},
+			success:function (status){console.log(status);}
+		})
+	})
+	$("#delShip").click(function ()//доробити видалення кораблів , спитати коли Андрій буду в онлайні
+        {
+     $.ajax({
+        url:"https://someleltest.herokuapp.com/ships",
+		 type:"DELETE",
+		 
+     })
+	})
+	$("#makeOrder").click(function (){
+		/*$.post("https://someleltest.herokuapp.com/api/orders",
+			   {
+			"SID":JSON.parse(localStorage.getItem("SID")),
+			"order":{
+				"sender":"lala@gmail.com",
+				"reciever":"lolo@mail.ru",
+				"from":"Jupiter",
+				"to":"Mars",
+				"weight":1,
+				"volume":2,
+				"type":"quick"
+			}
+		},function(status){
+			console.log(status);
+			console.log("O`k");
+		}
+			   )*/
+		$.ajax({
+				 url:url,
+				 succes:function(){alert("Order was sent")},
+				 error:function(status){alert(responseText)}
+			 })
+	})
+	$("#showOrders").click(function(){
+		var url="https://someleltest.herokuapp.com/api/orders?SID=";
+		url+=JSON.parse(localStorage.getItem("SID"));
+		$.get(url,function(data){
+			console.log(data);
+			showOrders(data);
+		})
+	})
+	$("#createContainer").click(function (){
+		alert("O`k");
+		$.post("https://someleltest.herokuapp.com/api/orders/createContainer",
+			   {
+			"SID":JSON.parse(localStorage.getItem("SID")),
+			"orders":[1],
+			"location":"Jupiter"
+			   }),
+		function(status){console.log(status);}
+	})
+	$("#confirmOrder").click(function (){
+		$.ajax({
+			url:"https://someleltest.herokuapp.com/api/orders",
+			type:'put',
+			data:{
+				"SID":JSON.parse(localStorage.getItem("SID")),
+				"trackID":11,
+				"action":"accept"
+			},
+			success:function(status){console.log(status);}
+		})
+	})
+	$("#confirmContainer").click(function (){
+		var data={
+			"SID":JSON.parse(localStorage.getItem("SID")),
+			"shipID":4,
+			"containerID":1
+		}
+		
+		$.ajax({
+    type:'POST', 
+    url: 'https://someleltest.herokuapp.com/api/orders/confirmContainer', 
+    data: JSON.stringify(data), 
+    contentType: 'application/json',
+			success:function(status){console.log(status);}
+})
+		
+		/*var obj={
+			"SID":JSON.parse(localStorage.getItem("SID")),
+			"shipID":4,
+			"containerID":1
+		}
+		var xhttp=new XMLHttpRequest();
+		xhttp.onreadystatechange=function(){
+			if(this.status==200&&this.readyState==4){
+				console.log("O`k");
+			}
+		}
+	xhttp.open('PUT',"https://someleltest.herokuapp.com/api/orders/confirmContainer",true);
+		xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		xhttp.send(JSON.stringify(obj));
+		console.log(JSON.stringify(obj));
+		*/
+		
+		/*$.post("https://someleltest.herokuapp.com/api/orders/confirmContainer",
+			  {
+			"SID":JSON.parse(localStorage.getItem("SID")),
+			"shipID":4,
+			"containerID":1
+			
+		},function (status){console.log(status);})*/
+	})
+	function showPlanets(data){
+	console.log(data.length)
+var table="<table>";
+	table+="<tr><th>Name</th><th>galactic</th>+<th>moonOf</th></tr>"
+	for (i=0;i<data.length;++i){
+		table+="<tr>";
+		table+="<td>"+data[i].name+"</td>";
+		table+="<td>"+data[i].galactic+"</td>";
+		if(data[i].moonOf) table+="<td>"+data[i].moonOf+"</td>"	;else table+="<td>" + "</td>";
+		table+="</tr>";
+	}
+	table+="</table>";
+document.getElementById("demo").innerHTML=table;
+}	
+ function showShips(data){
+	 var table="<table>";
+		 table+="<tr><th>Id</th><th>location</th><th>capacity</th><th>volume</th><th>ability</th></tr>";
+	 for (i=0;i<data.length;++i)
+		 {
+			
+			 table+="<tr>";
+			 table+="<td>"+data[i].id+"</td>";
+			 table+="<td>"+data[i].location+"</td>";
+			 //table+"<td>"+data[i].speed+"</td>";
+			 table+="<td>"+data[i].capacity+"</td>";
+			 table+="<td>"+data[i].volume+"</td>";
+			 table+="<td>"+data[i].ability+"</td>";
+			 table+="</tr>"
+			 console.log(data[i].speed);
+		 }
+	 table+="</table>";
+	 
+	 document.getElementById("demo").innerHTML=table;
+ }
+	function showPlanetsOpp(data){
+	console.log(data.length)
+var table="<table>";
+	table+="<tr><th>Id</th><th>Galactic</th><th>Name</th><th>type</th>+<th>moonOf</th><th>Diametr</th></tr>"
+	for (i=0;i<data.length;++i){
+		table+="<tr>";
+		table+="<td>"+data[i].data["id"]+"</td>";
+		table+="<td>"+data[i].data["galactic"]+"</td>";
+		table+="<td>"+data[i].data["name"]+"</td>";
+		table+="<td>"+data[i].data["type"]+"</td>";
+		if(data[i].data.moonOf) table+="<td>"+data[i].data.moonOf+"</td>"	;else table+="<td>" + "</td>";
+		table+="<td>"+data[i].data["diameter"]+"</td>";
+		table+="<td"
+		table+="</tr>";
+	}
+	table+="</table>";
+document.getElementById("demo").innerHTML=table;
+	}
+	function show(data){
+	var table="<table><tr>";
+		
+		var res = data.reduce(function(arr, o) {
+  return Object.keys(o).reduce(function(a, k) {
+    if (a.indexOf(k) == -1) a.push(k);
+    return a;
+  }, arr)
+}, []);
+		console.log(res);
+
+		for(i=0;i<res.length;++i){table+="<th>"+res[i]+"</th>";}
+		table+="</tr>";
+		for (i=0;i<data.length;++i){
+			table+="<tr>";
+			var temp=data[i];
+		for (var k in temp){table+="<td>"+temp[k]+"</td>";}
+			table+="</tr>";
+		}
+		table+="</table>"
+		document.getElementById("users").innerHTML=table;
+	}
+	document.getElementById("permission").innerHTML=JSON.parse(localStorage.getItem("permission"));
+	function showOrders(data){
+		var table='<table class="table table-bordered table-hover">';
+		table+='<tr><th>form</th><th>location</th><th>price</th><th>reciever</th><th>reg_date</th><th>sender</th><th>status</th>';
+  table+='<th>to</th><th>thackID</th><th>type</th><th>volume</th><th>weight</th></tr>'
+		for(i=0;i<data.length;++i){
+		table+="<tr>"
+			table+="<td>"+data[i].from+"</td>";
+			table+="<td>"+data[i].location+"</td>";
+			table+="<td>"+data[i].price+"</td>";
+			table+="<td>"+data[i].reciever+"</td>";
+			table+="<td>"+data[i].reg_date+"</td>";
+			table+="<td>"+data[i].sender+"</td>";
+			table+="<td>"+data[i].status+"</td>";
+			table+="<td>"+data[i].to+"</td>";
+			table+="<td>"+data[i].trackID+"</td>";
+			table+="<td>"+data[i].type+"</td>";
+			table+="<td>"+data[i].volume+"</td>";
+			table+="<td>"+data[i].weight+"</td>";
+			
+			
+		table+="</tr>"
+		}
+		table+='</table>';
+		document.getElementById("orders").innerHTML=table;
+	}
+</script>
+</body>
+</html>
