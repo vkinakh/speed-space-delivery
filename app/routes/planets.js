@@ -47,7 +47,7 @@ router.route('/')
                         }else res.status(400).send('Can not find any planers');
                     });
                 }else{
-                    planetModel.find({}, 'name moonOf galactic -_id -__v', {sort: {id: 1}}, function(err, result){
+                    planetModel.find({}, 'name moonOf galactic -_id', {sort: {id: 1}}, function(err, result){
                         if (err) res.status(400).send('Error while querying planet database');
                         else res.json(result);
                     });
