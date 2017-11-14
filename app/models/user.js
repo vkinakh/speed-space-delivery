@@ -11,7 +11,8 @@ let userSchema = new Schema({
     permission: {type: String, default: 'default', enum:permissionList, lowercase: true},
     SID: {type: String, default: ''},
     ip: {type: String, default: ''},
-    secret: String
+    secret: String,
+    secret_unconfirmed: String
 });
 
 module.exports = mongoose.model('user', userSchema);
