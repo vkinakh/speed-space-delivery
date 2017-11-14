@@ -357,13 +357,39 @@ router.route('/addTFA')
             else if(person){
                 if(!person.secret){
                     let newSecret = twoFactor.generateSecret({name: 'SSD'});
-                    person.secret = newSecret.secret;
+                    person.secret_unconfirmed = newSecret.secret;
                     person.save(function(err){
                         if (err) res.status(400).send('Error while saving data');
                         else res.json(newSecret);
                     })
                     
                 }else res.status(401).send('2FA already enabled');
+            }else res.status(401).send('User not found');
+        });
+    });
+
+router.route('/confirmTFA')
+    .post(function(req, res){
+        let SID = req.body.SID;
+        let token = req.body.token;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    
+        userModel.findOne({'SID': SID, 'ip': ip}, function (err, person) {
+            if (err) res.status(400).send('Error while querying database');
+            else if(person){
+                if(!person.secret&&person.secret_unconfirmed){
+                    if(token){
+                        let check = twoFactor.verifyToken(person.secret_unconfirmed, ''+token, 1);
+                        if (check&&check.delta===0){
+                            person.secret = person.secret_unconfirmed;
+                            person.secret_unconfirmed = undefined;
+                            person.save(function (err) {
+                                if (err) res.status(400).send('Error while saving data');
+                                else res.sendStatus(200);
+                            });
+                        }else res.status(403).send('Wrong token'); 
+                    }else res.status(400).send('Specify 2FA token');
+                }else res.status(401).send('2FA already enabled or adding was not initiated');
             }else res.status(401).send('User not found');
         });
     });
