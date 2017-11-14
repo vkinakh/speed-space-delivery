@@ -55,6 +55,9 @@ app.all('/*', function(err, req, res, next) {
 app.get('/', function(req, res) {
   res.sendFile(__dirname + "/public/pages/index.html");
 });
+app.get('/:filename', function(req, res) {
+  res.sendFile(path.join(_dirname, 'public', 'pages', req.params.filename));
+});
 
 //Log if error
 function modifyResponseBody(req, res, next) {
