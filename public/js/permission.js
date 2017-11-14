@@ -2,18 +2,18 @@ document.addEventListener("submit",function(event){
     event.preventDefault();
 })
 
- $("#addAdmin").click(function(){
+ /*$("#addAdmin").click(function(){
      $.post("https://someleltest.herokuapp.com/api/users/addAdmin",{
 		"SID":JSON.parse(localStorage.getItem("SID")),
 		"email":$("#email").val(),
 		
 	},
-		  function (status){console.log(status);
+		  function(status){console.log(status);
                            location.reload();})
     })
-
+*/
  
-$("#addOperator").click(function(){
+/*$("#addOperator").click(function(){
      var op={
         "SID":JSON.parse(localStorage.getItem("SID")),
         "email":$("#email").val(),
@@ -43,4 +43,4 @@ $("#removePermission").click(function(){
         "SID":JSON.parse(localStorage.getItem("SID"))
     },
           function(status){console.log(status);location.reload();})
-})
+})*/

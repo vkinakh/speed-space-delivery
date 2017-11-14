@@ -1,8 +1,10 @@
 let express = require('express');
+let cron = require('node-cron');
 let router = express.Router();
 let validator = require("email-validator");
 let orderModel = require('../models/order.js');
 let userModel = require('../models/user.js');
+let unconfirmedModel = require('../models/unconfirmed.js');
 let shipModel = require('../models/ship.js');
 let pathModel = require('../models/path.js');
 let containerModel = require('../models/container.js');
@@ -570,5 +572,29 @@ router.route('/track/:trackID(\\d+)')
             }else res.status(404).send('Order with specified trackID not found');
         });
     });
+
+
+cron.schedule('0 0 0 * * *', function(){
+    unconfirmedModel.find({}, function(err, result){
+        if (err) console.log(err);
+        else if(result){
+            result.map(function(user){
+                let difference = Date.now() - user._id.getTimestamp();
+                let daysDifference = Math.floor(difference/1000/60/60/24);
+                if (daysDifference!==0) user.remove();
+            });
+        }
+    });
+    containerModel.find({}, function(err, containers){
+        if (err) console.log(err);
+        else if(result){
+            containers.map(function(container){
+                let difference = Date.now() - container._id.getTimestamp();
+                let daysDifference = Math.floor(difference/1000/60/60/24);
+                if (daysDifference!==0 && container.properties[0] && container.properties[0].properties) container.remove();
+            });
+        }
+    });
+});
 
 module.exports = router;

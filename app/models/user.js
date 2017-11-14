@@ -10,7 +10,8 @@ let userSchema = new Schema({
     salt: {type: String, default: '' },
     permission: {type: String, default: 'default', enum:permissionList, lowercase: true},
     SID: {type: String, default: ''},
-    ip: {type: String, default: ''}
+    ip: {type: String, default: ''},
+    secret: String
 });
 
 module.exports = mongoose.model('user', userSchema);

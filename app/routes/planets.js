@@ -47,7 +47,7 @@ router.route('/')
                         }else res.status(400).send('Can not find any planers');
                     });
                 }else{
-                    planetModel.find({}, 'name moonOf galactic -_id -__v', {sort: {id: 1}}, function(err, result){
+                    planetModel.find({}, 'name moonOf galactic -_id', {sort: {id: 1}}, function(err, result){
                         if (err) res.status(400).send('Error while querying planet database');
                         else res.json(result);
                     });
@@ -154,14 +154,21 @@ router.route('/')
                                 else if(result&&result.length>0){
                                     let err0r = false;
                                     result.forEach(function(planet, i){
-                                        planetModel.remove({'_id': planet._id}, function (err) {
-                                            if (err){
-                                                res.status(400).send('Error while removing planet');
+                                        pathModel.find({$or: [{'source': planet}, {'target': planet}]}, function(err, data){
+                                            if (err) res.status(400).send('Error while querying path database');
+                                            else if(data.length===0){
+                                                planetModel.remove({'_id': planet._id}, function (err) {
+                                                    if (err){
+                                                        if(!err0r) res.status(400).send('Error while removing planet');
+                                                        err0r = true;
+                                                    }else if(i===result.length-1&&!err0r) res.sendStatus(200);
+                                                });
+                                            }else{
+                                                res.status(400).send('Can not remove planet used in path');
                                                 err0r = true;
-                                            }else if(i===result.length-1&&!err0r) res.sendStatus(200);
+                                            } 
                                         });
                                     });
-                                    res.sendStatus(200);
                                 }else res.status(400).send('Can not find specified planet');
                             });
                         }else res.status(400).send('Can not remove visited planet');

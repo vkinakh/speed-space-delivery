@@ -1,20 +1,25 @@
     
-document.addEventListener("submit",pre);
-function pre(event){
+document.addEventListener("submit",login);
+
+function login (event){
 	event.preventDefault();
-        $.post("https://someleltest.herokuapp.com/api/users",
-        {
-            "email":$("#email").val(),
-            "password":$("#password").val()
-        },
-			   function (data){
-            localStorage.setItem("SID",JSON.stringify(data.SID));
-			localStorage.setItem("permission",JSON.stringify(data.permission));
-	location.replace("office.html");
-			//if(status==='success')  {location.replace("office.html")} else {
-              //  alert("invalid password or email");
-            //    document.getElementById("#password").value="";
-            console.log(status);
-            }
-        )
+	var email=$("#email").val();
+	var password=$("#password").val();
+	var loginObj={
+		"email":email,
+		"password":password
 	}
+	if(email!=""&&password!=""){
+		$.ajax({
+			type:'POST',
+			url:"https://someleltest.herokuapp.com/api/users",
+			data:loginObj,
+			success:function(data){
+				localStorage.setItem("SID",JSON.stringify(data.SID));
+				localStorage.setItem("permission",JSON.stringify(data.permission));
+				location.replace("office.html");
+			},
+			error:function(status){alert(status.responseText);}
+		})
+	}else alert("Fileds is empty!");
+}

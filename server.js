@@ -52,6 +52,10 @@ app.all('/*', function(err, req, res, next) {
     next();
 });
 
+app.get('/', function(req, res) {
+  res.sendFile(__dirname + "/public/pages/index.html");
+});
+
 //Log if error
 function modifyResponseBody(req, res, next) {
     let oldSend = res.send;

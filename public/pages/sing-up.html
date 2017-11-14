@@ -1,7 +1,7 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>log-in</title>
+  <title>Sign up</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">  
@@ -26,25 +26,35 @@
             <span class="nav-text"><a href="log-in.html">Log in</a></span>
         </div> 
     </div>
-    <div class="row justify-content-center" style="padding-top: 10%;">
+    <div class="row justify-content-center" style="padding-top:10%;">
         <div class="col-6">
-            <form action="">
-               <div class=form-group>
-                 <input type="text" class="form-control" placeholder="email" id="email">
-               </div>
-               <div class=form-group>
-                 <input type="password" class="form-control" placeholder="password" id="password">
-               </div>
-               <p class="text-center"><button class="btn btn-info">Log in</button></p>
+            <form id="form" class="form-horizontal" style="">
+                <div class="form-group">
+                 <!-- <label class="control-label col-2" for="email">email:</label> -->
+                    <input type="text" class="form-control" id="email" placeholder="Email">
+                </div>
+               <div class="form-group">
+                 <!-- <label class="control-label col-sm-2" for="password">password:</label> -->
+                    <input type="password" class="form-control" id="password" placeholder="password">
+                </div>
+                    <p class="text-center"><button class="btn btn-secondary" id="reg">Sign up!</button></p>
             </form>
+            <form id="aftreg" class="form-horizontal" style="display: none;">
+                <div class="form-group">
+                 <!-- <label class="control-label col-2" for="email">email:</label> -->
+                    <input type="text" class="form-control" id="confirmPassword" placeholder="confirm password">
+                </div>
+                    <p class="text-center"><button class="btn btn-secondary" id="confirmButton">confirm</button></p>
+            </form>
+        </div>
+            
         </div>
     </div>
    <nav class="fixed-bottom" style="background-image: url(../images/stars.jpg); ">
    <span class="white-text">&#39;</span>
 </nav>
-
-</div>    
- <script src="../js/login.js">
+    
+ <script src="../js/sign-up.js">
     </script>
 </body>
 </html>

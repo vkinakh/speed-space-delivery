@@ -1,113 +1,87 @@
-.vertical-center {
-  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
-  min-height: 100vh; /* These two lines are counted as one :-)       */
+.space-nav-text{
+    padding-top: 4%;
+}
+.space-nav-logo{
+    padding-top: 1%;
+}
 
- padding-top: 10%;
+a:link {
+    font-size: 25px;
+  font-family: "Verdana";
+  color: rgb(255, 255, 255);
+  line-height: 1.2;
+  width: 76px;
+  height: 19px;
+  text-decoration: none;
+}
+
+a:visited {
+  font-size: 25px;
+  font-family: "Verdana";
+  color: rgb(255, 255, 255);
+  line-height: 1.2;
+  width: 76px;
+  height: 19px;
+}
+
+a:hover {
+    border-radius: 10%;
+    font-size: 25px;
+    font-family: "Verdana";
+    color: black;
+    line-height: 1.2;
+    width: 76px;
+    height: 19px;
+    background-color: white;
+    text-decoration: none;
+}
+
+/* selected link */
+a:active {
+    color: blue;
+    text-decoration: none;
+}
+
+.my-container{
+    width: 100%; height: 1000px;
+}
+.container-background{
+    background-image: url(../images/stars.jpg); background-repeat: no-repeat; background-size: 100%;
+}
+.speed-space-delivery{
+  background-image: url("../images/SPEEDSPACEDELIVERY.png");
+  width: 442px;
+  height: 194px;
+  z-index: 11;
+}
+
+ .speed-space-delivery-text{
+        padding-top: 7%;
+        padding-left: 10%;
+}
+.speed-space-delivery-button{
+    padding-top: 5%;
+    padding-left: 19%;
     
 }
-.img{
-    display: block;
-    margin: 0 auto;
-}
-
-.navText{
-width: 137px;
-height: 24px;
-font-size: 24px;
-color: rgb(255,255,255);
-font-family: "Verdana";
-}
-.index-box{
-    width: 100%; height: 700px;
-}
-.background-img{
-        width: 100%;
-    height: 700px;
-    background-image: url("../images/stars.jpg");
-    background-size: 100% 100%;
-}
-.img{
-   width: 100%; 
-     background-image:url("../images/stars.jpg");
-    /*background-size: 100% 100%;*/
-}
-/*p{
-    font-size:100px;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 90px;
-    font-family: inherit;
-    
-}*/
-
-A:link { 
-    text-decoration: none; /* Убирает подчеркивание для ссылок */
-    -webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  border: none;
-  height: 24px;
-  font-size: 24px;
-  color: rgb(255,255,255);
+.how-does-it-work {
+  font-size: 58.776px;
   font-family: "Verdana";
-  color: rgba(255,255,255,1);
-  -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  word-spacing: 2px;
- /* background: rgb(255,255,255);*/
-  text-shadow: 1px 1px 1px rgba(0,0,0,1) ;
-  -webkit-transform: rotateX(0.5729577951308232deg) rotateY(1.7188733853924696deg)   ;
-  transform: rotateX(0.5729577951308232deg) rotateY(1.7188733853924696deg)   ;
-   } 
-   A:visited { text-decoration: none;
--webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  border: none;
-  height: 24px;
-  font-size: 24px;
-  color: rgb(255,255,255);
+  color: rgb(0, 0, 0);
+  line-height: 1.2;
+  text-align: center;
+}
+.space-between-container{
+    padding-bottom: 3%;
+}
+.nav-other{
+    background-image: url(../images/stars.jpg); background-repeat: no-repeat; background-size: 100%;
+}
+.white-text{
+     font-size: 25px;
   font-family: "Verdana";
-  -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  word-spacing: 2px;
- /* background: rgb(255,255,255);*/
-  text-shadow: 1px 1px 1px rgba(0,0,0,1) ;
-  -webkit-transform: rotateX(0.5729577951308232deg) rotateY(1.7188733853924696deg)   ;
-  transform: rotateX(0.5729577951308232deg) rotateY(1.7188733853924696deg)   ;} 
-   A:active { text-decoration: none; 
--webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  border: none;
-  height: 24px;
-  font-size: 24px;
-  color: rgb(255,255,255);
-  font-family: "Verdana";
-  -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  word-spacing: 2px;
- /* background: rgb(255,255,255);*/
-  text-shadow: 1px 1px 1px rgba(0,0,0,1) ;
-  -webkit-transform: rotateX(0.5729577951308232deg) rotateY(1.7188733853924696deg)   ;
-  transform: rotateX(0.5729577951308232deg) rotateY(1.7188733853924696deg)   ;}
-
-   A:hover {
-    text-decoration: none; /* Делает ссылку подчеркнутой при наведении на нее курсора */
-       
--webkit-box-sizing: content-box;
-  -moz-box-sizing: content-box;
-  box-sizing: content-box;
-  border: none;
-  height: 24px;
-  font-size: 24px;
-  font-family: "Verdana";
-  color: cornflowerblue;
-  -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  word-spacing: 2px;
- /* background: rgb(255,255,255);*/
-  text-shadow: 1px 1px 1px rgba(0,0,0,1) ;
-  -webkit-transform: rotateX(0.5729577951308232deg) rotateY(1.7188733853924696deg)   ;
-  transform: rotateX(0.5729577951308232deg) rotateY(1.7188733853924696deg)   ;
-   } 
+  color: rgb(255, 255, 255);
+  line-height: 1.2;
+  width: 76px;
+  height: 19px;
+}

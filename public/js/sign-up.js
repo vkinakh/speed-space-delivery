@@ -1,39 +1,56 @@
-var form1=document.getElementById("form");
-var form2=document.getElementById("aftreg");
-var name;
-form1.addEventListener("submit",pre);
-function pre (event){
+var signForm=document.getElementById("form");
+var confirmForm=document.getElementById("aftreg");
+var email;
+
+signForm.addEventListener("submit",sign);
+
+function sign (event){
+	'use strict'
+	
     event.preventDefault();
-   name=document.getElementById("email").value;
-        email=$("#email").val();
-        $.post("https://someleltest.herokuapp.com/api/users/register",
-        {
-            "email":email,
-            "password":$("#password").val()
-        },
-        function(data,status){
-        form1.style.display="none";
-        form2.style.display="block";
+    email=$("#email").val();
+	var password=$("#password").val();
+	
+	var signObj={
+		"email":email,
+		"password":password
+	};
+	
+	if(password!=""&&email!=""){
+    var postSign =$.post("https://someleltest.herokuapp.com/api/users/register",
+       signObj,function(data,status){
+        signForm.style.display="none";
+        confirmForm.style.display="block";
         }
-        )
+          )
+	
+	postSign.done(function(){console.log("O`k")});
+	postSign.fail(function(){alert("Wrong!")});
+		
+	} else {alert("Field is empty!");}
+	
+	
+	
 }
-form2.addEventListener("submit",conf);
+
+confirmForm.addEventListener("submit",conf);
 function conf(event){
+	'use strict'
     event.preventDefault();
-  
-   /*    $.post("https://someleltest.herokuapp.com/api/users/200",
-             function(status){
-        console.log(status);
-            setTimeout(location.replace("office.html"), 5000);
-       })*/
-       $.post("https://someleltest.herokuapp.com/api/users/confirm",
-        {
-            "email":email,
-            "code":$("#confirmField").val()
-			
-        },function(status){
-           location.replace("office.html");
-               
-       })
-       
+    
+	var code=$("#confirmPassword").val();
+	
+    var confirmObj={
+        "email":email,
+        "code":code
     }
+	if(code!=""){
+      var postConfirm=$.post("https://someleltest.herokuapp.com/api/users/confirm",confirmObj,function(status){	  
+           location.replace("log-in.html");
+       })
+	  postConfirm.done(function (){console.log("Done to confirm!")});
+	  postConfirm.fail(function(){console.log("Fail to confirm!")
+								 console.log(status)});
+       
+    } else alert("Confirm Filed is empty!");
+}

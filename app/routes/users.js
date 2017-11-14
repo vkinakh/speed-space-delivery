@@ -4,7 +4,7 @@ let crypto = require('crypto');
 let nodemailer = require('nodemailer');
 let randomstring = require("randomstring");
 let validator = require("email-validator");
-
+let twoFactor = require('node-2fa');
 let userModel = require('../models/user.js');
 let unconfirmedModel = require('../models/unconfirmed.js');
 let planetModel = require('../models/planet.js');
@@ -26,7 +26,7 @@ router.route('/')
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){        
-                    userModel.find({}, "-_id -__v -SID -ip -password -salt", function(err, data){
+                    userModel.find({}, "-_id -__v -SID -ip -password -salt -secret", function(err, data){
                         if (err) res.status(400).send('Error while querying database');
                         else if(data.length>0){
                             res.json(data);
@@ -39,6 +39,7 @@ router.route('/')
     .post(function(req, res) {
         let email = req.body.email;
         let password = req.body.password;
+        let token = req.body.token;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!validator.validate(email) || !password){
             res.status(400).send('Bad email or password');
@@ -60,15 +61,34 @@ router.route('/')
                         if(person.SID!=="changingPass"){
                             if(person.SID&&person.ip&&person.ip===ip){
                                 let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
+                                person.save(function (err) {
+                                    if (err) res.status(400).send('Error while saving data');
+                                    else res.json(response);
+                                });
                             }else{
-                                person.SID = crypto.createHash('sha256').update('SSD'+salt+person._id+person.ip+Date.now()).digest('hex');
-                                person.ip = ip;
-                            } 
-                            let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
-                            person.save(function (err) {
-                                if (err) res.status(400).send('Error while saving data');
-                                else res.json(response);
-                            });
+                                if(!person.secret){
+                                    person.SID = crypto.createHash('sha256').update('SSD'+salt+person._id+person.ip+Date.now()).digest('hex');
+                                    person.ip = ip;
+                                    let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
+                                    person.save(function (err) {
+                                        if (err) res.status(400).send('Error while saving data');
+                                        else res.json(response);
+                                    });
+                                }else if(person.secret&&!token){
+                                    res.status(411).send('Specify 2FA token');
+                                }else if(person.secret&&token){
+                                    let check = twoFactor.verifyToken(person.secret, ''+token, 1);
+                                    if (check&&check.delta===0){
+                                        person.SID = crypto.createHash('sha256').update('SSD'+salt+person._id+person.ip+Date.now()).digest('hex');
+                                        person.ip = ip;
+                                        let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
+                                        person.save(function (err) {
+                                            if (err) res.status(400).send('Error while saving data');
+                                            else res.json(response);
+                                        });
+                                    }else res.status(403).send('Wrong token');
+                                }
+                            }
                         }else res.status(409).send('Please create new password');
                     }
                 }else res.status(401).send('User not found');
@@ -325,6 +345,62 @@ router.route('/logout')
                 });
             }else res.status(401).send('User not found');
         });
+    });
+
+router.route('/addTFA')
+    .post(function(req, res){
+        let SID = req.body.SID;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+    
+        userModel.findOne({'SID': SID, 'ip': ip}, function (err, person) {
+            if (err) res.status(400).send('Error while querying database');
+            else if(person){
+                if(!person.secret){
+                    let newSecret = twoFactor.generateSecret({name: 'SSD'});
+                    person.secret = newSecret.secret;
+                    person.save(function(err){
+                        if (err) res.status(400).send('Error while saving data');
+                        else res.json(newSecret);
+                    })
+                    
+                }else res.status(401).send('2FA already enabled');
+            }else res.status(401).send('User not found');
+        });
+    });
+
+router.route('/removeTFA')
+    .post(function(req, res){
+        let SID = req.body.SID;
+        let email = req.body.email;
+        let password = req.body.password;
+        let secret = req.body.secret;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+        if(!secret){
+            res.status(400).send('Can not remove without a secret');
+        }else{
+            let query = {};
+            if(SID){
+                query = {'SID': SID, 'ip': ip};
+            }else if(email){
+                let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
+                password = crypto.createHash('sha256').update(password+salt).digest('hex');
+                query = {'email':email, 'password': password, 'salt':salt};
+            }
+            if(query){
+                userModel.findOne(query, function (err, person) {
+                    if (err) res.status(400).send('Error while querying database');
+                    else if(person){
+                        if(person.secret&&person.secret==secret){
+                            person.secret = undefined;
+                            person.save(function(err){
+                                if (err) res.status(400).send('Error while saving data');
+                                else res.sendStatus(200);
+                            })
+                        }else res.status(401).send('Wrong secret');
+                    }else res.status(401).send('User not found');
+                });
+            }else res.status(400).send('Please specify SID or email/password');
+        }
     });
 
 module.exports = router;
