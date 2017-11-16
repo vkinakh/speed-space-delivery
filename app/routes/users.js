@@ -62,7 +62,8 @@ router.route('/')
                         if(person.modification!=="changingPass"){
                             let findIndex = person.sessions.findIndex(x => x.ip===ip&&x.fingerprint===req.fingerprint.hash);
                             if(person.sessions.length>0 && findIndex!==-1 ){
-                                let response = {'SID': person.sessions[findIndex].SID, 'permission': person.permission, 'location': person.location};
+                                let response = {'SID': person.sessions[findIndex].SID, 'permission': person.permission};
+                                if(person.location&&person.length) response.location = location;
                                 person.save(function (err) {
                                     if (err) res.status(400).send('Error while saving data');
                                     else res.json(response);
@@ -72,7 +73,8 @@ router.route('/')
                                     let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
                                     person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
                                     
-                                    let response = {'SID': SID, 'permission': person.permission, 'location': person.location};
+                                    let response = {'SID': SID, 'permission': person.permission};
+                                    if(person.location&&person.length) response.location = location;
                                     person.save(function (err) {
                                         if (err) res.status(400).send('Error while saving data');
                                         else res.json(response);
@@ -85,7 +87,8 @@ router.route('/')
                                         let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
                                         person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
                                         
-                                        let response = {'SID': SID, 'permission': person.permission, 'location': person.location};
+                                        let response = {'SID': SID, 'permission': person.permission};
+                                        if(person.location&&person.length) response.location = location;
                                         person.save(function (err) {
                                             if (err) res.status(400).send('Error while saving data');
                                             else res.json(response);
@@ -121,6 +124,7 @@ router.route('/')
                         person.modification = undefined;
                         
                         let response = {'SID': SID, 'permission': person.permission};
+                        if(person.location&&person.length) response.location = location;
                         person.save(function(err){
                             if (err) res.status(400).send('Error while saving data');
                             else res.json(response);
