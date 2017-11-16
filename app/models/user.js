@@ -6,11 +6,9 @@ let permissionList = ['default', 'operator', 'admin']
 let userSchema = new Schema({
     email: {type: String, lowercase: true, unique: true },
     password: String,
-    location: {type: String, default: ''},
-    salt: {type: String, default: '' },
+    location: String,
+    salt: String,
     permission: {type: String, default: 'default', enum:permissionList, lowercase: true},
-    SID: {type: String, default: ''},
-    ip: {type: String, default: ''},
     sessions: [{SID: String, ip: String, fingerprint: String}],
     modification: String,
     secret: String,

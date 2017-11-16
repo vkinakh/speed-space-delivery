@@ -4,8 +4,8 @@ let Schema = mongoose.Schema;
 
 let pathSchema = new Schema({
     id: {type: Number, index:true, unique: true },
-    source: {type: String, default: ''},
-    target: {type: String, default: ''},
+    source: String,
+    target: String,
     length: {type: Number, min: 0.0},
     capacity: {type:Number, default: 9999},
     difficulty: {type:Number, default: 0.0},
