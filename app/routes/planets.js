@@ -17,7 +17,7 @@ router.route('/')
         let moonOf = req.query.moonOf
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email SID' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission email SID' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'||person.permission==='operator'){
@@ -60,7 +60,7 @@ router.route('/')
         let newPlanet = req.body.planet;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email SID' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission email SID' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
@@ -99,7 +99,7 @@ router.route('/')
         let newPlanet = req.body.planet;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email SID' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission email SID' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
@@ -142,7 +142,7 @@ router.route('/')
         let planet = req.body.planetName;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email SID' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission email SID' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
@@ -180,7 +180,7 @@ router.route('/')
 
 router.route('/getAll')
     .get(function(req,res){
-        console.log(req.fingerprint.hash);
+        console.log(1234554321);
         planetModel.find({$or: [{'type':'planet'}, {'type': 'moon'}] }, 'name moonOf galactic -_id', {sort: {id: 1}}, function(err, result){
             if (err) res.status(400).send('Error while querying planet database');
             else res.json(result);
@@ -191,7 +191,7 @@ router.post('/planetImg', upload.single('file'), function(req, res) {
     let SID = req.body.SID;
     let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-    userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email SID' , function (err, person) {
+    userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission email SID' , function (err, person) {
         if (err) res.status(400).send('Error while querying database');
         else if(person){
             if(person.permission==='admin'){

@@ -4,7 +4,7 @@ let bodyParser = require('body-parser');
 let morgan = require('morgan');
 let helmet = require('helmet');
 let mongoose = require('mongoose');
-let Fingerprint = require('express-fingerprint')
+//let Fingerprint = require('express-fingerprint')
 let cors = require('cors');
 let autoParse = require('auto-parse');
 
