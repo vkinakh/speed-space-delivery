@@ -4,6 +4,7 @@ let bodyParser = require('body-parser');
 let morgan = require('morgan');
 let helmet = require('helmet');
 let mongoose = require('mongoose');
+let Fingerprint = require('express-fingerprint')
 let cors = require('cors');
 let autoParse = require('auto-parse');
 
@@ -17,6 +18,7 @@ app.use(morgan('tiny'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(Fingerprint());
 
 //CONNECTING TO DATABASE
 mongoose.Promise = global.Promise;
@@ -42,7 +44,7 @@ app.use(function (err, req, res, next) {
     if(err) res.status(400).send('Bad request body');
     else next();
 });
-app.all('/*', function(err, req, res, next) {
+app.all('/*', function(req, res, next) {
     if(Object.keys(req.body).length !== 0){
         req.body = autoParse(req.body);
     }

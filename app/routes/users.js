@@ -21,12 +21,12 @@ router.route('/')
     .get(function(req, res){
         let SID = req.query.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-        
-        userModel.findOne({'SID': SID, 'ip': ip}, '-_id -__v' , function (err, person) {
+
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, '-_id -__v' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
-                if(person.permission==='admin'){        
-                    userModel.find({}, "-_id -__v -SID -ip -password -salt -secret", function(err, data){
+                if(person.permission==='admin'){
+                    userModel.find({}, "-_id -__v -sessions -modification -password -salt -secret", function(err, data){
                         if (err) res.status(400).send('Error while querying database');
                         else if(data.length>0){
                             res.json(data);
@@ -40,6 +40,7 @@ router.route('/')
         let email = req.body.email;
         let password = req.body.password;
         let token = req.body.token;
+
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!validator.validate(email) || !password){
             res.status(400).send('Bad email or password');
@@ -49,27 +50,29 @@ router.route('/')
             userModel.findOne({'email':email, 'password': password, 'salt':salt}, function (err, person) {
                 if (err) res.status(400).send('Error while querying database');
                 else if(person){
-                    if (person.SID==='unconfirmed'){
-                        person.SID='changingPass';
-                        person.ip = 'LUL' + ip;
+                    if (person.modification==='unconfirmed'){
+                        person.modification='changingPass';
+                        
                         person.save(function (err) {
                             if (err) res.status(400).send('Error while saving data');
                             else res.status(409).send('Please create new password');
                         });
                     }
                     else{
-                        if(person.SID!=="changingPass"){
-                            if(person.SID&&person.ip&&person.ip===ip){
-                                let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
+                        if(person.modification!=="changingPass"){
+                            let findIndex = person.sessions.findIndex(x => x.ip===ip&&x.fingerprint===req.fingerprint.hash);
+                            if(person.sessions.length>0 && findIndex!==-1 ){
+                                let response = {'SID': person.sessions[findIndex].SID, 'permission': person.permission, 'location': person.location};
                                 person.save(function (err) {
                                     if (err) res.status(400).send('Error while saving data');
                                     else res.json(response);
                                 });
                             }else{
                                 if(!person.secret){
-                                    person.SID = crypto.createHash('sha256').update('SSD'+salt+person._id+person.ip+Date.now()).digest('hex');
-                                    person.ip = ip;
-                                    let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
+                                    let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
+                                    person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': fingerprint});
+                                    
+                                    let response = {'SID': SID, 'permission': person.permission, 'location': person.location};
                                     person.save(function (err) {
                                         if (err) res.status(400).send('Error while saving data');
                                         else res.json(response);
@@ -79,9 +82,10 @@ router.route('/')
                                 }else if(person.secret&&token){
                                     let check = twoFactor.verifyToken(person.secret, ''+token, 1);
                                     if (check&&check.delta===0){
-                                        person.SID = crypto.createHash('sha256').update('SSD'+salt+person._id+person.ip+Date.now()).digest('hex');
-                                        person.ip = ip;
-                                        let response = {'SID': person.SID, 'permission': person.permission, 'location': person.location};
+                                        let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
+                                        person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': fingerprint});
+                                        
+                                        let response = {'SID': SID, 'permission': person.permission, 'location': person.location};
                                         person.save(function (err) {
                                             if (err) res.status(400).send('Error while saving data');
                                             else res.json(response);
@@ -96,22 +100,27 @@ router.route('/')
         }
     })
     .put(function(req,res){
-        let userEmail = req.body.email;
+        let email = req.body.email;
         let password = req.body.password;
+
         let ip = 'LUL' + req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-        if(!validator.validate(userEmail)||!password){
+        if(!validator.validate(email)||!password){
             res.status(400).send('Bad email or password');
         }else{
-            let salt = crypto.createHash('sha256').update('SSD'+userEmail+'LUL').digest('hex');
+            let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
             password = crypto.createHash('sha256').update(password+salt).digest('hex');
-            userModel.findOne({'email':userEmail, 'SID': 'changingPass', 'ip': ip}, function (err, person) {
+            userModel.findOne({'email':email, 'modification': 'changingPass', 'session.ip': ip}, function (err, person) {
                 if (err) res.status(400).send('Error while querying database');
                 else if(person){
                         person.salt = salt;
                         person.password = password;
-                        person.ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-                        person.SID = crypto.createHash('sha256').update('SSD'+salt+person.ip+Date.now()).digest('hex');
-                        let response = {'SID': person.SID, 'permission': person.permission};
+                        ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+                        let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
+                        
+                        person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
+                        person.modification = undefined;
+                        
+                        let response = {'SID': SID, 'permission': person.permission};
                         person.save(function(err){
                             if (err) res.status(400).send('Error while saving data');
                             else res.json(response);
@@ -123,11 +132,12 @@ router.route('/')
     .delete(function(req, res) {
         let email = req.body.email;
         let SID = req.body.SID;
+
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!validator.validate(email)){
             res.status(400).send('Bad email');
         }else{
-            userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
+            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission' , function (err, person) {
                 if (err) res.status(400).send('Error while querying database');
                 else if(person){
                     if(person.permission==='admin'&&email!=='ssd@ssd.com'){
@@ -146,7 +156,7 @@ router.route('/addOperator')
         let email = req.body.email;
         let SID = req.body.SID;
         let location = req.body.location;
-    
+
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!validator.validate(email)||typeof SID!=='string'){
             res.status(400).send('Bad email or password');
@@ -155,9 +165,9 @@ router.route('/addOperator')
                 if (err) res.status(400).send('Error while querying planet database');
                 else if(planet){
                     if (planet.type==='moon') location = planet.moonOf + '.' + location;
-                    userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
+                    userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission' , function (err, person) {
                         if (err) res.status(400).send('Error while querying database');
-                        else if(person&&person.permission==='admin'&&person.SID.length!==0){
+                        else if(person&&person.permission==='admin'){
                             userModel.findOne({'email': email}, function(err, result){
                                 if (err) res.status(400).send('Error while querying database');
                                 else if(result){
@@ -171,7 +181,7 @@ router.route('/addOperator')
                                     let tempPass = randomstring.generate(20);
                                     let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
                                     let pass = crypto.createHash('sha256').update(tempPass+salt).digest('hex');
-                                    let operator = new userModel({'email':email, 'password': pass, 'location':location, 'salt':salt, 'SID':'unconfirmed', 'permission':'operator'});
+                                    let operator = new userModel({'email':email, 'password': pass, 'location':location, 'salt':salt, 'modification':'unconfirmed', 'permission':'operator'});
                                     operator.save(function (err) {
                                         if (err) res.status(400).send('Error while saving data');
                                         else{
@@ -201,14 +211,14 @@ router.route('/addAdmin')
     .post(function(req, res) {
         let email = req.body.email;
         let SID = req.body.SID;
-    
+
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!validator.validate(email)||typeof SID!=='string'){
             res.status(400).send('Bad email or password');
         }else{
-            userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
+            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission' , function (err, person) {
                 if (err) res.status(400).send('Error while querying planet database');
-                else if(person&&person.permission==='admin'&&person.SID.length!==0){
+                else if(person&&person.permission==='admin'){
                     userModel.findOne({'email': email}, function(err, result){
                         if (err) res.status(400).send('Error while querying database');
                         else if(result){
@@ -222,7 +232,7 @@ router.route('/addAdmin')
                             let tempPass = randomstring.generate(20);
                             let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
                             let pass = crypto.createHash('sha256').update(tempPass+salt).digest('hex');
-                            let operator = new userModel({'email':email, 'password': pass, 'salt':salt, 'SID':'unconfirmed', 'permission':'admin'});
+                            let operator = new userModel({'email':email, 'password': pass, 'salt':salt, 'modification':'unconfirmed', 'permission':'admin'});
                             operator.save(function (err) {
                                 if (err) res.status(400).send('Error while saving data');
                                 else{
@@ -250,6 +260,7 @@ router.route('/register')
     .post(function(req,res){
         let email = req.body.email;
         let password = req.body.password;
+
         if(!validator.validate(email)||!password){
             res.status(400).send('Bad email or password');
         }else{
@@ -285,11 +296,12 @@ router.route('/removePermission')
     .post(function (req, res){
         let email = req.body.email;
         let SID = req.body.SID;
+
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!validator.validate(email)){
             res.status(400).send('Bad email');
         }else{
-            userModel.findOne({'SID': SID, 'ip': ip}, 'permission SID' , function (err, person) {
+            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission SID' , function (err, person) {
                 if (err) res.status(400).send('Error while querying database');
                 else if(person){
                     if(person.permission==='admin'&&email!=='ssd@ssd.com'){
@@ -314,6 +326,7 @@ router.route('/confirm')
     .post(function(req,res){
         let email = req.body.email;
         let cCode = req.body.code;
+
         if(!validator.validate(email)||cCode===undefined){
             res.status(400).send('Bad email or password');
         }else{
@@ -334,11 +347,12 @@ router.route('/logout')
     .post(function(req, res){
         let SID = req.body.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-        userModel.findOne({'SID':SID, 'ip':ip}, 'SID ip', function (err, person){
+
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, function (err, person){
             if (err) res.status(400).send('Error while querying database');
             else if(person){
-                person.SID = "";
-                person.ip = "";
+                let index = person.sessions.findIndex(x => x.SID===SID&&x.ip===ip&&x.fingerprint===fingerprint);
+                if(index!==-1) person.sessions.splice(index, 1);
                 person.save(function(err){
                     if (err) res.status(400).send('Error while saving data');
                     else res.sendStatus(200);
@@ -351,8 +365,8 @@ router.route('/addTFA')
     .post(function(req, res){
         let SID = req.body.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-    
-        userModel.findOne({'SID': SID, 'ip': ip}, function (err, person) {
+
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(!person.secret){
@@ -372,9 +386,10 @@ router.route('/confirmTFA')
     .post(function(req, res){
         let SID = req.body.SID;
         let token = req.body.token;
+
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'SID': SID, 'ip': ip}, function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(!person.secret&&person.secret_unconfirmed){
@@ -400,13 +415,14 @@ router.route('/removeTFA')
         let email = req.body.email;
         let password = req.body.password;
         let secret = req.body.secret;
+
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!secret){
             res.status(400).send('Can not remove without a secret');
         }else{
             let query = {};
             if(SID){
-                query = {'SID': SID, 'ip': ip};
+                query = {'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash};
             }else if(email){
                 let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
                 password = crypto.createHash('sha256').update(password+salt).digest('hex');
@@ -416,7 +432,7 @@ router.route('/removeTFA')
                 userModel.findOne(query, function (err, person) {
                     if (err) res.status(400).send('Error while querying database');
                     else if(person){
-                        if(person.secret&&person.secret==secret){
+                        if(person.secret&&person.secret===secret){
                             person.secret = undefined;
                             person.save(function(err){
                                 if (err) res.status(400).send('Error while saving data');

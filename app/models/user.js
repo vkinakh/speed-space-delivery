@@ -11,6 +11,8 @@ let userSchema = new Schema({
     permission: {type: String, default: 'default', enum:permissionList, lowercase: true},
     SID: {type: String, default: ''},
     ip: {type: String, default: ''},
+    sessions: [{SID: String, ip: String, fingerprint: String}],
+    modification: String,
     secret: String,
     secret_unconfirmed: String
 });
