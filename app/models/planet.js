@@ -1,5 +1,5 @@
 let mongoose = require('mongoose');
-let autoIncrement = require('./mongoose-auto-increment.js');
+let autoIncrement = require('../../remastered_modules/mongoose-auto-increment.js');
 let Schema = mongoose.Schema;
 
 let planetType = ['star', 'planet', 'moon', 'comet', 'asteroid'];

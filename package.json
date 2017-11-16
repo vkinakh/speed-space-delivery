@@ -25,7 +25,11 @@
     "node-2fa": "1.1.2",
     "node-cron": "1.2.1",
     "nodemailer": "4.3.1",
-    "randomstring": "1.1.5"
+    "randomstring": "1.1.5",
+    "async": "2.1.5",
+    "murmurhash3js": "3.0.1",
+    "traverse": "0.6.6",
+    "useragent": "2.1.12"
   },
   "devDependencies": {},
   "description": ""

@@ -4,7 +4,7 @@ let bodyParser = require('body-parser');
 let morgan = require('morgan');
 let helmet = require('helmet');
 let mongoose = require('mongoose');
-let Fingerprint = require('express-fingerprint')
+let Fingerprint = require('./remastered_modules/fingerprint.js');
 let cors = require('cors');
 let autoParse = require('auto-parse');
 
@@ -20,7 +20,6 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(Fingerprint({
     parameters:[
-        // Defaults 
         Fingerprint.useragent,
         Fingerprint.acceptHeaders,
         Fingerprint.geoip
