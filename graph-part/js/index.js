@@ -2,10 +2,13 @@
 *  This file contains functions, which are used for all pages with cytoscape map/graph
 */
 // System ID for each user (taken from local storage after authentification)
-let SID = "7772b344cb79d82b3a773f91c9cb94d65e3057f85025c022a34bb2207d330918";
+let SID = "3e5737b1fc0775ee22007fc4726f91b1465fdacc653faf8a089c2b555fca0f72";
 
 // Global variable for saving planets and paths
 let planets, paths;
+
+/*Variable for saving delivery data*/
+let deliveryData;
 
 // Function for creating array from elements with specific selector 
 let $$ = selector => Array.from( document.querySelectorAll( selector ) );

@@ -1,66 +1,64 @@
-(function(){
-  document.addEventListener('DOMContentLoaded', function(){
-	// Help variables 
-	// Begin and end are reqiured for aStar algorithm
-	let begin, end;
+// Help variables 
+// Begin and end are reqiured for aStar algorithm
+let begin, end;
 
-	// Initialize cytoscape map for future adding graph
-    let cy;
+// Initialize cytoscape map for future adding graph
+let cy;
 	
-	// Variable for storing type of delivery
-	let type;
+// Variable for storing type of delivery
+let type;
 	
-	/* Function for running aStar algorithm
-	*  As custom algorithm is aStar - based 
-	*  Takes: algrorithm as promise
-	*  Sets option from global variables
-	*  Return: resolve promise algorithm with options
-	*/
-	let runAlgorithm = (algorithm) => {
-		if (algorithm === undefined) {
-			return Promise.resolve(undefined);
-		} else{
-			let options = {
-				root: '#' + begin,
-				// astar requires target; goal property is ignored for other algorithms
-				goal: '#' + end,
-				weight : function(edge){
-					return Number(edge.data().length) * Number(edge.data().difficulty);
-				}
-			};
-			return Promise.resolve(algorithm(options));
-		}
+/* Function for running aStar algorithm
+*  As custom algorithm is aStar - based 
+*  Takes: algrorithm as promise
+*  Sets option from global variables
+*  Return: resolve promise algorithm with options
+*/
+let runAlgorithm = (algorithm) => {
+	if (algorithm === undefined) {
+		return Promise.resolve(undefined);
+	} else{
+		let options = {
+			root: '#' + begin,
+			// astar requires target; goal property is ignored for other algorithms
+			goal: '#' + end,
+			weight : function(edge){
+				return Number(edge.data().length) * Number(edge.data().difficulty);
+			}
+		};
+		return Promise.resolve(algorithm(options));
 	}
+};
 				
-	/*Varible for saving curret algorithm*/
-    let currentAlgorithm;
-	
-	/* Function for animating algorithm
-	*  In this case it will show the position of delivery 
-	*  Takes: algResults returned by runAlgorithm
-	*  Applies algorithm with animation
-	*/
-    let animateAlgorithm = (algResults) => {
-      // clear old algorithm results
-      cy.$().removeClass('highlighted start end');
-	  cy.$().removeClass('cheap regular quick');
-      currentAlgorithm = algResults;
+/*Varible for saving curret algorithm*/
+let currentAlgorithm;
+
+/* Function for animating algorithm
+*  In this case it will show the position of delivery 
+*  Takes: algResults returned by runAlgorithm
+*  Applies algorithm with animation
+*/
+let animateAlgorithm = (algResults) => {
+    // clear old algorithm results
+    cy.$().removeClass('highlighted start end');
+	cy.$().removeClass('cheap regular quick');
+    currentAlgorithm = algResults;
 	  
-      if (algResults === undefined || algResults.path === undefined) {
-        return Promise.resolve();
+    if (algResults === undefined || algResults.path === undefined) {
+      return Promise.resolve();
+    }
+    else {
+      let i = 0;
+      // for astar, highlight first and final before showing path
+      if (algResults.distance) {
+		// Among DFS, BFS, A*, only A* will have the distance property defined
+		algResults.path[0].addClass('highlighted start');
+        algResults.path[algResults.path.length - 1].addClass('highlighted end');
+        // i is not advanced to 1, so start node is effectively highlighted twice.
+        // this is intentional; creates a short pause between highlighting ends and highlighting the path
       }
-      else {
-        let i = 0;
-        // for astar, highlight first and final before showing path
-        if (algResults.distance) {
-          // Among DFS, BFS, A*, only A* will have the distance property defined
-          algResults.path[0].addClass('highlighted start');
-          algResults.path[algResults.path.length - 1].addClass('highlighted end');
-          // i is not advanced to 1, so start node is effectively highlighted twice.
-          // this is intentional; creates a short pause between highlighting ends and highlighting the path
-        }
-        return new Promise(resolve => {
-          let highlightNext = () => {
+      return new Promise(resolve => {
+        let highlightNext = () => {
             if (currentAlgorithm === algResults && i < algResults.path.length) {
 			  if(algResults.path[i].group() == 'edges')
 			  {
@@ -97,8 +95,9 @@
         });
       }
     };
-	
-	
+
+(function(){
+  document.addEventListener('DOMContentLoaded', function(){
 	let applyDatasetDeliveries = data => {
 		var table='<table class="table table-bordered table-hover">';
         table+='<tr><th>trackID</th><th>esttime</th><th>sender</th><th>reciever</th><th>type</th><th>status</th><th>reg_date</th><th>price</th>';
@@ -123,6 +122,25 @@
         table+='</table>';
         document.getElementById("orders").innerHTML=table;
 	}
+	
+	/* Dialog window */
+	let dialog;
+	dialog = $( "#dialog-form" ).dialog({
+		autoOpen: false,
+		height: 550,
+		width: 1050,
+		modal: true,
+		buttons: {
+			Cancel: function() {
+				dialog.dialog( "close" );
+			}
+		}
+	});
+	
+	/* Listener for button*/
+	$( "#show-table" ).button().on( "click", function() {
+		dialog.dialog( "open" );
+	});
 		
 	/*Promise for getting deliveries dataset*/
 	let applyDatasetD = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveries );
@@ -135,6 +153,8 @@
 			for(var i = 1; i < rows.length; ++i)
 			{
 				rows[i].addEventListener('click', function(){
+					// Close dialog window
+					dialog.dialog( "close" );
 					// Get begin and end values					
 					begin = findPlanetIdByName(this.cells[12].innerHTML);
 					end = findPlanetIdByName(this.cells[11].innerHTML);
@@ -179,6 +199,3 @@
 
   });
 })();
-
-// tooltips with jQuery
-$(document).ready(() => $('.tooltip').tooltipster());

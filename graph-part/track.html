@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Track delivery</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!--<link rel="stylesheet" href="css/style.css">-->
 	<link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/skeleton.css" />
     <link rel="stylesheet" href="css/font-awesome.css" />
     <link rel="stylesheet" href="css/open-sans.css" />
     <link rel="stylesheet" href="css/index.css" />
-	<script src="js/jquery-3.1.1.min.js"></script>
-    <link rel="stylesheet" href="css/tooltipster.bundle.min.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<script src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.js"></script>
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<link href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">  
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script src="js/cytoscape.min.js"></script>
 	<script src="js/cola.js"></script>
     <script src="js/cytoscape-cola.js"></script>
@@ -23,96 +24,196 @@
 	<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
 	<script src="js/index.js"></script>
     <script src="js/track.js"></script>
-<style>
+	<style>
+	    label, input { display:block; }
+		input.text { margin-bottom:12px; width:95%; padding: .4em; }
+		fieldset { padding:0; border:0; margin-top:25px; }
+		h1 { font-size: 1.2em; margin: .6em 0; }
+		.ui-dialog .ui-state-error { padding: .3em; }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-default" ><!-- navbar-inverse для темних кольорів . bg-inverse темний колір -->
-        <div class="container-fluid">
-            <div class="navber-header">
-                <a class="navbar-brand" href="#"><img src="images/SSD.jpg" alt="logo" class="img-circle" width="50" height="50"></a>
-            </div>
-            <ul class="nav navbar-nav">
-      <li class=""><a href="index.html">Home</a></li>
-    </ul>
-        <ul class="nav navbar-nav navbar-right">
-      <li><a href="index.html"><span class="glyphicon glyphicon-log-out"></span>Log-out</a></li>
-    </ul>
-        </div>
-    </nav> 
-    <div class="container tools">
-		<label for="delivery-id">Track number</label>
-		<input id="truck-number" type="text" value=""></input>
-		<button id="submit">Submit</button>
-		<span id="delivery-info" class="err"></span><br/>
-		<span id="error" class="err alert-danger"></span>
-	</div>
+<nav class="navbar navbar-expand-md navbar-fixed-top navbar-dark bg-dark main-nav" style="background-image: url(images/nav.png)">
+    <div class="container">
+        <ul class="nav navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Office</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Home</a>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav mx-auto">
+            <li class="nav-item"><a class="nav-link" href="#"><img src="images/logo.png" alt="logo" height="100px" weight="100px"></a></li>
+        </ul>
+        <ul class="nav navbar-nav">
+           <li class="nav-item">
+                <a class="nav-link" href="#" id="logout">Log out</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarList"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Menu</a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item default" href="#">Order</a>
+				  <a class="dropdown-item operator admin" href="#">Ships</a>
+				  <a class="dropdown-item  default" href="#">History</a>
+				  <a class="dropdown-item default active" href="#">Track</a>
+				  <a class="dropdown-item  operator admin" href="#">Users</a>
+				  <a class="dropdown-item default " href="#">Planets</a>
+				</div>
+            </li>
+        </ul>
+		<ul class="nav navbar-nav"> 
+			<li class="nav-item"><input type="button" id="track-delivery">Track</input></li>
+		</ul>
     </div>
-	<div id="cy" class="main"></div>
-	<footer>
-    <div class="navbar navbar-default" >
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-2  col-md-2 col-sm-4 col-xs-6">
-                    <h3> Some 1 </h3>
-                    <ul>
-                        <li> some</li>
-                        <li> some</li>
-                        <li> some</li>
-
-                    </ul>
-                </div>
-                <div class="col-lg-2  col-md-2 col-sm-4 col-xs-6">
-                    <h3> Some 2 </h3>
-                    <ul>
-                        <li> some</li>
-                        <li> some</li>
-                        <li> some</li>
-                    </ul>
-                </div>
-                <div class="col-lg-2  col-md-2 col-sm-4 col-xs-6">
-                    <h3> Some 3</h3>
-                    <ul>
-                        <li> some</li>
-                        <li> some</li>
-                        <li> some</li>
-                    </ul>
-                </div>
-                <div class="col-lg-2  col-md-2 col-sm-4 col-xs-6">
-                    <h3>Some 4</h3>
-                    <ul>
-                      <li> some</li>
-                        <li> some</li>
-                        <li> some</li>
-                    </ul>
-                </div>
-            </div>
-            <!--/.row--> 
-        </div>
-        <!--/.container--> 
-   
-        
-            <p class="text-center">  ©Footer </p>
-        
-    </div>
-    <!--/.footer-bottom--> 
-</footer>
+</nav>
+<div id="dialog-form" title="Enter track number">
+  <form>
+    <fieldset>
+      <label for="name">Track number</label>
+      <input type="text" name="track-number" id="track-number" class="ui-widget-content ui-corner-all"></input>
+ 
+	  <div id="delivery-info"></div>
+	  <span class="err alert alert-danger" name="error" id="error" role="alert"></span>
+      <!-- Allow form submission with keyboard without duplicating the dialog button -->
+      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px"></input>
+    </fieldset>
+  </form>
+</div>
+<div id="cy" class="main"></div>
+<nav class="fixed-bottom" style="background-image: url(images/stars.jpg); ">&nbsp;</nav> 
 
     <script>
-        var acc = document.getElementsByClassName("accordion");
-var i;
-
-for (i = 0; i < acc.length; i++) {
-    acc[i].onclick = function(){
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.display === "block") {
-            panel.style.display = "none";
-        } else {
-            panel.style.display = "block";
+ $( function() {
+    let dialog, form;
+    
+	let findDelivery = () =>
+	{
+		//alert(deliveryData[1]['trackID']);
+		cy.$().removeClass('delivery-place');
+		cy.$().removeClass('start-delivery-place');
+		cy.$().removeClass('end-delivery-place');
+		cy.$().removeClass('highlighted');
+		cy.$().removeClass('end');
+		cy.$().removeClass('start');
+			
+		$("#delivery-info").css("visibility", "hidden");
+			
+		cy.stop();
+		// Here must be some validation
+		if($("#track-number").val() != "" && $("#track-number").val() != undefined)
+		{
+			// Simple search
+			let currentDelivery = -1;
+			for(let i = 0; i < deliveryData.length; ++i)
+			{
+				if(deliveryData[i]["trackID"] == Number($("#track-number").val()))
+				{
+					currentDelivery = deliveryData[i];
+					break;
+				}
+			}
+				
+			if(currentDelivery != -1){
+				if(currentDelivery["status"] == "registered" || currentDelivery["status"] == "accepted")
+				{
+					let begin = findPlanetIdByName(currentDelivery["from"]);
+					if(begin != -1)
+					{
+						cy.getElementById(begin).addClass("start-delivery-place");
+						cy.animate({
+							fit: {
+								eles: cy.getElementById(begin),
+								padding: 200
+							},
+							duration: 700,
+							easing: 'ease',		
+							queue: true
+						});
+					}
+				}else if(currentDelivery["status"] == "inprogress")
+				{
+					let beginPlanet = currentDelivery["from"];
+					let endPlanet = currentDelivery["to"];
+				
+					begin = findPlanetIdByName(beginPlanet);
+					end = findPlanetIdByName(endPlanet);
+					if(begin != -1 && end != -1)
+					{
+						if(today == undefined)
+						{
+							today = new Date();
+						}	
+						
+						if(currentDelivery["send_date"] != undefined)
+						{
+							beginTime = new Date(currentDelivery["send_date"]);
+							expectedDeliveryTime = currentDelivery["esttime"] * 24 * 60 * 60 * 1000; // in milliseconds
+							tryPromise(applyAlgorithmFromSelect);
+						}
+					}
+				}else if(currentDelivery["status"] == "waitingpickup" || currentDelivery["status"] == "delivered")
+				{
+					let end = findPlanetIdByName(currentDelivery["to"]);
+					if(begin != -1)
+					{
+						cy.getElementById(end).addClass("end-delivery-place");
+						cy.animate({
+							fit: {
+								eles: cy.getElementById(end),
+								padding: 200
+							},
+							duration: 700,
+							easing: 'ease',		
+							queue: true
+						});
+					}
+				}else if(currentDelivery["status"] == "canceled")
+				{
+					$("#error").html("<b>Error!</b>This delivery was canceled!");
+					$("#error").css("visibility","visible");
+				}else if(currentDelivery["status"] == "returned")
+				{
+					$("#error").html("<b>Error!</b>This delivery was returned!");
+					$("#error").css("visibility","visible");
+				}
+			}else{
+				$("#error").html("<b>Error!</b>Invalid track ID!");
+				$("#error").css("visibility","visible");
+			}
+		}else{
+			$("#error").html("<b>Error!</b>Please, enter track ID!");
+			$("#error").css("visibility","visible");
+		}
+	};
+	
+    dialog = $( "#dialog-form" ).dialog({
+      autoOpen: false,
+      height: 250,
+      width: 350,
+      modal: true,
+      buttons: {
+        "Find": findDelivery,
+        Cancel: function() {
+          dialog.dialog( "close" );
         }
-    }
-}
+      },
+      close: function() {
+        form[ 0 ].reset();
+      }
+    });
+ 
+    form = dialog.find( "form" ).on( "submit", function( event ) {
+      event.preventDefault();
+	  dialog.dialog( "close" );
+      findDelivery();
+    });
+ 
+    $( "#track-delivery" ).button().on( "click", function() {
+      dialog.dialog( "open" );
+    });
+  } );
+ 
     </script>
 </body>
 </html>
