@@ -351,7 +351,7 @@ router.route('/logout')
         userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, function (err, person){
             if (err) res.status(400).send('Error while querying database');
             else if(person){
-                let index = person.sessions.findIndex(x => x.SID===SID&&x.ip===ip&&x.fingerprint===fingerprint);
+                let index = person.sessions.findIndex(x => x.SID===SID&&x.ip===ip&&x.fingerprint===req.fingerprint.hash);
                 if(index!==-1) person.sessions.splice(index, 1);
                 person.save(function(err){
                     if (err) res.status(400).send('Error while saving data');
