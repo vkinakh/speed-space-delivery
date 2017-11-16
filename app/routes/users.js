@@ -22,7 +22,7 @@ router.route('/')
         let SID = req.query.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
 
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, '-_id -__v' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, '-_id -__v' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
@@ -60,7 +60,7 @@ router.route('/')
                     }
                     else{
                         if(person.modification!=="changingPass"){
-                            let findIndex = person.sessions.findIndex(x => x.ip===ip&&x.fingerprint===1234554321);
+                            let findIndex = person.sessions.findIndex(x => x.ip===ip&&x.fingerprint===req.fingerprint.hash);
                             if(person.sessions.length>0 && findIndex!==-1 ){
                                 let response = {'SID': person.sessions[findIndex].SID, 'permission': person.permission, 'location': person.location};
                                 person.save(function (err) {
@@ -69,8 +69,8 @@ router.route('/')
                                 });
                             }else{
                                 if(!person.secret){
-                                    let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+1234554321+Date.now()).digest('hex');
-                                    person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': 1234554321});
+                                    let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
+                                    person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
                                     
                                     let response = {'SID': SID, 'permission': person.permission, 'location': person.location};
                                     person.save(function (err) {
@@ -82,8 +82,8 @@ router.route('/')
                                 }else if(person.secret&&token){
                                     let check = twoFactor.verifyToken(person.secret, ''+token, 1);
                                     if (check&&check.delta===0){
-                                        let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+1234554321+Date.now()).digest('hex');
-                                        person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': 1234554321});
+                                        let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
+                                        person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
                                         
                                         let response = {'SID': SID, 'permission': person.permission, 'location': person.location};
                                         person.save(function (err) {
@@ -115,9 +115,9 @@ router.route('/')
                         person.salt = salt;
                         person.password = password;
                         ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-                        let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+1234554321+Date.now()).digest('hex');
+                        let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
                         
-                        person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': 1234554321});
+                        person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
                         person.modification = undefined;
                         
                         let response = {'SID': SID, 'permission': person.permission};
@@ -137,7 +137,7 @@ router.route('/')
         if(!validator.validate(email)){
             res.status(400).send('Bad email');
         }else{
-            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission' , function (err, person) {
+            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission' , function (err, person) {
                 if (err) res.status(400).send('Error while querying database');
                 else if(person){
                     if(person.permission==='admin'&&email!=='ssd@ssd.com'){
@@ -165,7 +165,7 @@ router.route('/addOperator')
                 if (err) res.status(400).send('Error while querying planet database');
                 else if(planet){
                     if (planet.type==='moon') location = planet.moonOf + '.' + location;
-                    userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission' , function (err, person) {
+                    userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission' , function (err, person) {
                         if (err) res.status(400).send('Error while querying database');
                         else if(person&&person.permission==='admin'){
                             userModel.findOne({'email': email}, function(err, result){
@@ -216,7 +216,7 @@ router.route('/addAdmin')
         if(!validator.validate(email)||typeof SID!=='string'){
             res.status(400).send('Bad email or password');
         }else{
-            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission' , function (err, person) {
+            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission' , function (err, person) {
                 if (err) res.status(400).send('Error while querying planet database');
                 else if(person&&person.permission==='admin'){
                     userModel.findOne({'email': email}, function(err, result){
@@ -301,7 +301,7 @@ router.route('/removePermission')
         if(!validator.validate(email)){
             res.status(400).send('Bad email');
         }else{
-            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, 'permission SID' , function (err, person) {
+            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission SID' , function (err, person) {
                 if (err) res.status(400).send('Error while querying database');
                 else if(person){
                     if(person.permission==='admin'&&email!=='ssd@ssd.com'){
@@ -348,7 +348,7 @@ router.route('/logout')
         let SID = req.body.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
 
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, function (err, person){
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, function (err, person){
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 let index = person.sessions.findIndex(x => x.SID===SID&&x.ip===ip&&x.fingerprint===fingerprint);
@@ -366,7 +366,7 @@ router.route('/addTFA')
         let SID = req.body.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
 
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(!person.secret){
@@ -389,7 +389,7 @@ router.route('/confirmTFA')
 
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321}, function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(!person.secret&&person.secret_unconfirmed){
@@ -422,7 +422,7 @@ router.route('/removeTFA')
         }else{
             let query = {};
             if(SID){
-                query = {'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': 1234554321};
+                query = {'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash};
             }else if(email){
                 let salt = crypto.createHash('sha256').update('SSD'+email+'LUL').digest('hex');
                 password = crypto.createHash('sha256').update(password+salt).digest('hex');

@@ -4,7 +4,7 @@ let bodyParser = require('body-parser');
 let morgan = require('morgan');
 let helmet = require('helmet');
 let mongoose = require('mongoose');
-//let Fingerprint = require('express-fingerprint')
+let Fingerprint = require('express-fingerprint')
 let cors = require('cors');
 let autoParse = require('auto-parse');
 
@@ -18,7 +18,14 @@ app.use(morgan('tiny'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
-//app.use(Fingerprint());
+app.use(Fingerprint({
+    parameters:[
+        // Defaults 
+        Fingerprint.useragent,
+        Fingerprint.acceptHeaders,
+        Fingerprint.geoip
+    ]
+}));
 
 //CONNECTING TO DATABASE
 mongoose.Promise = global.Promise;
