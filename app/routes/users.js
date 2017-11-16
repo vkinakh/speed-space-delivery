@@ -70,7 +70,7 @@ router.route('/')
                             }else{
                                 if(!person.secret){
                                     let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
-                                    person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': fingerprint});
+                                    person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
                                     
                                     let response = {'SID': SID, 'permission': person.permission, 'location': person.location};
                                     person.save(function (err) {
@@ -83,7 +83,7 @@ router.route('/')
                                     let check = twoFactor.verifyToken(person.secret, ''+token, 1);
                                     if (check&&check.delta===0){
                                         let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
-                                        person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': fingerprint});
+                                        person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
                                         
                                         let response = {'SID': SID, 'permission': person.permission, 'location': person.location};
                                         person.save(function (err) {
