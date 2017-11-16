@@ -449,4 +449,21 @@ router.route('/removeTFA')
         }
     });
 
+router.route('/logoutAll')
+    .post(function(req, res){
+        let SID = req.body.SID;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, function (err, person){
+            if (err) res.status(400).send('Error while querying database');
+            else if(person){
+                person.sessions = [];
+                person.save(function(err){
+                    if (err) res.status(400).send('Error while saving data');
+                    else res.sendStatus(200);
+                });
+            }else res.status(401).send('User not found');
+        });
+    });
+
 module.exports = router;
