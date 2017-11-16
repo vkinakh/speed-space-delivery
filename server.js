@@ -18,7 +18,7 @@ app.use(morgan('tiny'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(Fingerprint());
+//app.use(Fingerprint());
 
 //CONNECTING TO DATABASE
 mongoose.Promise = global.Promise;
