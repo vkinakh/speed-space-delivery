@@ -86,7 +86,7 @@ router.route('/')
                                     if (check&&check.delta===0){
                                         let SID = crypto.createHash('sha256').update('SSD'+salt+person._id+req.fingerprint.hash+Date.now()).digest('hex');
                                         person.sessions.push({'SID': SID, 'ip': ip, 'fingerprint': req.fingerprint.hash});
-                                        
+                                        console.log(JSON.stringify(req.fingerprint));
                                         let response = {'SID': SID, 'permission': person.permission};
                                         if(person.location&&person.length) response.location = location;
                                         person.save(function (err) {
@@ -305,7 +305,7 @@ router.route('/removePermission')
         if(!validator.validate(email)){
             res.status(400).send('Bad email');
         }else{
-            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission SID' , function (err, person) {
+            userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission' , function (err, person) {
                 if (err) res.status(400).send('Error while querying database');
                 else if(person){
                     if(person.permission==='admin'&&email!=='ssd@ssd.com'){
