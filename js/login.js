@@ -9,7 +9,7 @@ function login (event){
 		"email":email,
 		"password":password
 	}
-	if(email!=""&&password!=""){
+	if(!emai.lengthl&&!password.length){
 		$.ajax({
 			type:'POST',
 			url:"https://someleltest.herokuapp.com/api/users",
