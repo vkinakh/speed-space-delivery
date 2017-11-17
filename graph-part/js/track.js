@@ -10,6 +10,9 @@ let today;
 	
 // Values for start of jpurney time and for end of journey time
 let beginTime, expectedDeliveryTime;
+
+/* Variables for working with dialog window*/ 
+let dialog, form;
 /*<global variables>*/
 
 /*Promise for appplying algorithm*/
@@ -133,6 +136,111 @@ let currentAlgorithm;
 	}
 };
 
+let findDelivery = () =>
+{
+	cy.$().removeClass('delivery-place');
+	cy.$().removeClass('start-delivery-place');
+	cy.$().removeClass('end-delivery-place');
+	cy.$().removeClass('highlighted');
+	cy.$().removeClass('end');
+	cy.$().removeClass('start');
+			
+	$("#delivery-info").css("visibility", "hidden");
+			
+	cy.stop();
+	// Here must be some validation
+	if($("#track-number").val() != "" && $("#track-number").val() != undefined)
+	{
+		// Simple search
+		let currentDelivery = -1;
+		for(let i = 0; i < deliveryData.length; ++i)
+		{
+			if(deliveryData[i]["trackID"] == Number($("#track-number").val()))
+			{
+				currentDelivery = deliveryData[i];
+				break;
+			}
+		}
+				
+		if(currentDelivery != -1){
+			if(currentDelivery["status"] == "registered" || currentDelivery["status"] == "accepted")
+			{
+				
+				let begin = findPlanetIdByName(currentDelivery["from"]);
+				if(begin != -1)
+				{
+					dialog.dialog( "close" );
+					cy.getElementById(begin).addClass("start-delivery-place");
+					cy.animate({
+						fit: {
+							eles: cy.getElementById(begin),
+							padding: 200
+						},
+						duration: 700,
+						easing: 'ease',		
+						queue: true
+					});
+				}
+			}else if(currentDelivery["status"] == "inprogress")
+			{
+				let beginPlanet = currentDelivery["from"];
+				let endPlanet = currentDelivery["to"];
+				
+				begin = findPlanetIdByName(beginPlanet);
+				end = findPlanetIdByName(endPlanet);
+				if(begin != -1 && end != -1)
+				{
+					if(today == undefined)
+					{
+						today = new Date();
+					}	
+						
+					if(currentDelivery["send_date"] != undefined)
+					{
+						dialog.dialog( "close" );
+						beginTime = new Date(currentDelivery["send_date"]);
+						expectedDeliveryTime = currentDelivery["esttime"] * 24 * 60 * 60 * 1000; // in milliseconds
+						tryPromise(applyAlgorithmFromSelect);
+					}
+				}
+			}else if(currentDelivery["status"] == "waitingpickup" || currentDelivery["status"] == "delivered")
+			{
+				dialog.dialog( "close" );
+				let end = findPlanetIdByName(currentDelivery["to"]);
+				if(begin != -1)
+				{
+					cy.getElementById(end).addClass("end-delivery-place");
+					cy.animate({
+						fit: {
+							eles: cy.getElementById(end),
+							padding: 200
+						},
+						duration: 700,
+						easing: 'ease',		
+						queue: true
+					});
+				}
+			}else if(currentDelivery["status"] == "canceled")
+			{
+				$("#error").html("<b>Error!</b>This delivery was canceled!");
+				$("#error").css("visibility","visible");
+			}else if(currentDelivery["status"] == "returned")
+			{
+				$("#error").html("<b>Error!</b>This delivery was returned!");
+				$("#error").css("visibility","visible");
+			}
+		}else{
+			$("#error").html("<b>Error!</b>Invalid track ID!");
+			$("#error").css("visibility","visible");
+		}
+	}else{
+		$("#error").html("<b>Error!</b>Please, enter track ID!");
+		$("#error").css("visibility","visible");
+	}
+};
+
+
+
 (function(){
   document.addEventListener('DOMContentLoaded', function(){	
 	// Initialize cytoscape map for future adding graph
@@ -177,6 +285,32 @@ let currentAlgorithm;
 				event: 'mouseout unfocus'
 			}
 		}, event);
+	});
+	
+	dialog = $( "#dialog-form" ).dialog({
+		autoOpen: false,
+		height: 250,
+		width: 300,
+		modal: true,
+		buttons: {
+			"Find": findDelivery,
+			Cancel: function() {
+				dialog.dialog( "close" );
+			}
+		},
+		close: function() {
+			form[ 0 ].reset();
+		}
+	});
+ 
+	form = dialog.find( "form" ).on( "submit", function( event ) {
+		event.preventDefault();
+		dialog.dialog( "close" );
+		findDelivery();
+	});	
+ 
+	$( "#track-delivery" ).button().on( "click", function() {
+		dialog.dialog( "open" );
 	});
 	
 	// All promises and events

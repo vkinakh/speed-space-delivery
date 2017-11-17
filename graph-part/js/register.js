@@ -1,5 +1,9 @@
 (function(){
   document.addEventListener('DOMContentLoaded', function(){
+	// Unable inputs
+	$( "#from" ).prop( "disabled", true );
+	$( "#to" ).prop( "disabled", true );
+	
 	// Initialize cytoscape map for future adding graph
     let cy;
 	
@@ -44,30 +48,12 @@
 	// Function for validating email
 	function validateEmail(email) {
 		let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-		
-		let user = false;
-		
-		for(let i = 0; i < users.length; ++i)
-		{
-			if(users[i]["email"] == email)
-			{
-				user = true;
-				break;
-			}
-		}
-		
-		return re && user;
+		return re.test(email);
 	};
 	
 	/* Function for clearing errors */
 	let clearErrors = () =>{
-		$("#error-receiver").css("visibility", "hidden");
-		$("#error-sender").css("visibility", "hidden");
-		$("#error-from").css("visibility", "hidden");
-		$("#error-to").css("visibility", "hidden");
-		$("#error-weight").css("visibility", "hidden");
-		$("#error-volume").css("visibility", "hidden");
-		$("#error-type").css("visibility", "hidden");
+		$("#error").css("visibility", "hidden");
 	};
 	
 	/* Clear all errors when input*/
@@ -141,7 +127,7 @@
 		let startId = findPlanetIdByName(startPlanetName);
 		cy.getElementById(startId).removeClass("highlighted start");
 		startPlanetName = "";
-		$("#from").html(startPlanetName);
+		$("#from").text(startPlanetName);
 	});
 	
 	/* Function for clering end planet */
@@ -149,7 +135,7 @@
 		let endId = findPlanetIdByName(endPlanetName);
 		cy.getElementById(endId).removeClass("highlighted end");
 		endPlanetName = "";
-		$("#to").html(endPlanetName);
+		$("#to").text(endPlanetName);
 	});
 	
 	/* Function for validating start planet 
@@ -243,7 +229,7 @@
 	*  Process data 
 	*  Make a reguest to server
 	*/
-	$("#s").on("click", function(){
+	$("#submit-order").on("click", function(){
 		// Clear errors
 		clearErrors();
 		// Get all data
@@ -269,25 +255,32 @@
 								{
 									submitOrder(sender, receiver, startPlanetName, endPlanetName, weight, volume, type);
 								}else{
-									$("#error-type").css("visibility", "visible");
+									$("#error").text('<strong>Error!</strong> Choose type!');
+									$("#error").css("visibility", "visible");
 								}
 							}else{
-								$("#error-volume").css("visibility", "visible");
+								$("#error").text('<strong>Error!</strong> Enter volume!');
+								$("#error").css("visibility", "visible");
 							}
 						}else{
-							$("#error-weight").css("visibility", "visible");
+							$("#error").text('<strong>Error!</strong> Enter weight!');
+							$("#error").css("visibility", "visible");
 						}
 					}else{
-						$("#error-to").css("visibility", "visible");
+						$("#error").text('<strong>Error!</strong> Select end planet!');
+						$("#error").css("visibility", "visible");
 					}
 				}else{
-					$("#error-from").css("visibility", "visible");
+					$("#error").text('<strong>Error!</strong> Select start planet!');
+					$("#error").css("visibility", "visible");
 				}
 			}else{
-				$("#receiver").css("visibility", "visible");
+				$("#error").text('<strong>Error!</strong> Enter receiver!');
+				$("#error").css("visibility", "visible");
 			}
 		}else{
-			$("#sender").css("visibility", "visible");
+			$("#error").text('<strong>Error!</strong> Enter sender!');
+			$("#error").css("visibility", "visible");
 		}
 	});
 	// All promises and events

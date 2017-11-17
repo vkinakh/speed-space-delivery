@@ -21,11 +21,10 @@ body {
   padding: 0.25em 0.5em;
   position: absolute;
   right: 0;
-  top: 0;
-  bottom: 0;
- /*width: 30%;*/
+  top: 20%;
+  width: 50%;
+  /*height: 50%*/
   background: #fff;
-  border-left: 1px solid #ddd;
   z-index: 1;
   overflow: auto;
 }
@@ -105,4 +104,53 @@ h1 {
     width: 80%;
 }
 
+#register
+{
+	background-color: transparent;
+}
 
+.embed-submit-field {
+  position: relative;
+  
+  input {
+    width: 100%;
+    padding: 15px;
+  }
+  button {
+    position: absolute;
+    right: -10px;
+    top: 7px;
+    
+
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    border: none;
+    background: #ededed;
+    border-radius: 3px;
+    padding: 10px;
+    
+    transition: all .2s;
+    
+    &:hover {
+      background-color: #37C88D;
+      color: #fff;
+      cursor: pointer;
+    }
+  }
+}
+
+#to{
+	border: 0; 
+}
+#from{
+	border: 0;
+}
+
+#to:focus{
+	outline: none;
+}
+
+#from:focus{
+	outline: none;
+}

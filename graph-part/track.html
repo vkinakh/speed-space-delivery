@@ -4,10 +4,6 @@
     <meta charset="UTF-8">
     <title>Track delivery</title>
     <!--<link rel="stylesheet" href="css/style.css">-->
-	<link rel="stylesheet" href="css/normalize.css" />
-    <link rel="stylesheet" href="css/skeleton.css" />
-    <link rel="stylesheet" href="css/font-awesome.css" />
-    <link rel="stylesheet" href="css/open-sans.css" />
     <link rel="stylesheet" href="css/index.css" />
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<link href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
@@ -75,145 +71,12 @@
  
 	  <div id="delivery-info"></div>
 	  <span class="err alert alert-danger" name="error" id="error" role="alert"></span>
-      <!-- Allow form submission with keyboard without duplicating the dialog button -->
-      <input type="submit" tabindex="-1" style="position:absolute; top:-1000px"></input>
     </fieldset>
   </form>
 </div>
 <div id="cy" class="main"></div>
 <nav class="fixed-bottom" style="background-image: url(images/stars.jpg); ">&nbsp;</nav> 
 
-    <script>
- $( function() {
-    let dialog, form;
-    
-	let findDelivery = () =>
-	{
-		//alert(deliveryData[1]['trackID']);
-		cy.$().removeClass('delivery-place');
-		cy.$().removeClass('start-delivery-place');
-		cy.$().removeClass('end-delivery-place');
-		cy.$().removeClass('highlighted');
-		cy.$().removeClass('end');
-		cy.$().removeClass('start');
-			
-		$("#delivery-info").css("visibility", "hidden");
-			
-		cy.stop();
-		// Here must be some validation
-		if($("#track-number").val() != "" && $("#track-number").val() != undefined)
-		{
-			// Simple search
-			let currentDelivery = -1;
-			for(let i = 0; i < deliveryData.length; ++i)
-			{
-				if(deliveryData[i]["trackID"] == Number($("#track-number").val()))
-				{
-					currentDelivery = deliveryData[i];
-					break;
-				}
-			}
-				
-			if(currentDelivery != -1){
-				if(currentDelivery["status"] == "registered" || currentDelivery["status"] == "accepted")
-				{
-					let begin = findPlanetIdByName(currentDelivery["from"]);
-					if(begin != -1)
-					{
-						cy.getElementById(begin).addClass("start-delivery-place");
-						cy.animate({
-							fit: {
-								eles: cy.getElementById(begin),
-								padding: 200
-							},
-							duration: 700,
-							easing: 'ease',		
-							queue: true
-						});
-					}
-				}else if(currentDelivery["status"] == "inprogress")
-				{
-					let beginPlanet = currentDelivery["from"];
-					let endPlanet = currentDelivery["to"];
-				
-					begin = findPlanetIdByName(beginPlanet);
-					end = findPlanetIdByName(endPlanet);
-					if(begin != -1 && end != -1)
-					{
-						if(today == undefined)
-						{
-							today = new Date();
-						}	
-						
-						if(currentDelivery["send_date"] != undefined)
-						{
-							beginTime = new Date(currentDelivery["send_date"]);
-							expectedDeliveryTime = currentDelivery["esttime"] * 24 * 60 * 60 * 1000; // in milliseconds
-							tryPromise(applyAlgorithmFromSelect);
-						}
-					}
-				}else if(currentDelivery["status"] == "waitingpickup" || currentDelivery["status"] == "delivered")
-				{
-					let end = findPlanetIdByName(currentDelivery["to"]);
-					if(begin != -1)
-					{
-						cy.getElementById(end).addClass("end-delivery-place");
-						cy.animate({
-							fit: {
-								eles: cy.getElementById(end),
-								padding: 200
-							},
-							duration: 700,
-							easing: 'ease',		
-							queue: true
-						});
-					}
-				}else if(currentDelivery["status"] == "canceled")
-				{
-					$("#error").html("<b>Error!</b>This delivery was canceled!");
-					$("#error").css("visibility","visible");
-				}else if(currentDelivery["status"] == "returned")
-				{
-					$("#error").html("<b>Error!</b>This delivery was returned!");
-					$("#error").css("visibility","visible");
-				}
-			}else{
-				$("#error").html("<b>Error!</b>Invalid track ID!");
-				$("#error").css("visibility","visible");
-			}
-		}else{
-			$("#error").html("<b>Error!</b>Please, enter track ID!");
-			$("#error").css("visibility","visible");
-		}
-	};
-	
-    dialog = $( "#dialog-form" ).dialog({
-      autoOpen: false,
-      height: 250,
-      width: 350,
-      modal: true,
-      buttons: {
-        "Find": findDelivery,
-        Cancel: function() {
-          dialog.dialog( "close" );
-        }
-      },
-      close: function() {
-        form[ 0 ].reset();
-      }
-    });
- 
-    form = dialog.find( "form" ).on( "submit", function( event ) {
-      event.preventDefault();
-	  dialog.dialog( "close" );
-      findDelivery();
-    });
- 
-    $( "#track-delivery" ).button().on( "click", function() {
-      dialog.dialog( "open" );
-    });
-  } );
- 
-    </script>
+
 </body>
 </html>
