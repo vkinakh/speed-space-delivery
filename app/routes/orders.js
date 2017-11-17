@@ -91,7 +91,7 @@ router.route('/')
         let SID = req.body.SID;
         let newOrder = req.body.order;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-        console.log(JSON.stringify(req.fingerprint));
+    
         userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email location' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){

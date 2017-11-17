@@ -40,7 +40,7 @@ router.route('/')
         let email = req.body.email;
         let password = req.body.password;
         let token = req.body.token;
-        console.log(JSON.stringify(req.fingerprint));
+
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
         if(!validator.validate(email) || !password){
             res.status(400).send('Bad email or password');
