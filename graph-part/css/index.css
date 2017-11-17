@@ -115,6 +115,7 @@ h1 {
   input {
     width: 100%;
     padding: 15px;
+	background-color: #ffffff;
   }
   button {
     position: absolute;
@@ -154,3 +155,5 @@ h1 {
 #from:focus{
 	outline: none;
 }
+
+input[type="text"]:disabled{background-color:white;}

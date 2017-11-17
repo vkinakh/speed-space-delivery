@@ -283,7 +283,8 @@ let findDelivery = () =>
 			},
 			hide: {
 				event: 'mouseout unfocus'
-			}
+			},
+			style: {classes: 'qtip-bootstrap'}
 		}, event);
 	});
 	

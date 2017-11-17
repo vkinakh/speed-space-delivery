@@ -4,6 +4,51 @@
 	$( "#from" ).prop( "disabled", true );
 	$( "#to" ).prop( "disabled", true );
 	
+	let dialog;
+	
+	/*Function for submitting order*/
+	let registerOrder = () =>
+	{
+		$.ajax({
+			url: 'https://someleltest.herokuapp.com/api/orders',
+			type: 'POST',
+			dataType: 'json',
+			data: JSON.parse('{"SID":"'+  SID + '","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + true + '}}'),
+			success: function (data, textStatus, xhr) {
+				$("#submit-order").html('<p>Your delivery was succesfully submitted!</p>' + 
+				'<input type="button" value="Ok" id="ok" name="ok"></input>');
+				 /*Event listeners for dialog window */
+				$("#ok").on("click", function(){
+					dialog.dialog("close");
+				});
+			},
+			error: function (xhr, textStatus, errorThrown) {
+				$("#submit-order").html('<p>During submitting some error occured!</p>' + 
+				'<input type="button" value="Ok" id="ok" name="ok"></input>');
+				 /*Event listeners for dialog window */
+				$("#ok").on("click", function(){
+					dialog.dialog("close");
+				});
+			}
+		});
+	};
+	
+	/* Dialog window */
+	dialog = $( "#dialog-order" ).dialog({
+		autoOpen: false,
+		height: 300,
+		width: 350,
+		modal: true,
+		buttons: {
+			Cancel: function() {
+				dialog.dialog( "close" );
+			},
+			Submit: function(){
+				registerOrder();
+			}
+		}
+	});
+	
 	// Initialize cytoscape map for future adding graph
     let cy;
 	
@@ -41,7 +86,8 @@
 			},
 			hide: {
 				event: 'mouseout unfocus'
-			}
+			},
+			style: {classes: 'qtip-bootstrap'}
 		}, event);
 	});
 		
@@ -53,7 +99,13 @@
 	
 	/* Function for clearing errors */
 	let clearErrors = () =>{
-		$("#error").css("visibility", "hidden");
+		$('#sender').qtip("hide");
+		$('#reciever').qtip("hide");
+		$('#from').qtip("hide");
+		$('#to').qtip("hide");
+		$('#weight').qtip("hide");
+		$('#volume').qtip("hide");
+		$('#type').qtip("hide");
 	};
 	
 	/* Clear all errors when input*/
@@ -61,7 +113,7 @@
 		clearErrors();
 	});
 	
-	$("#receiver").on("input", function(){
+	$("#reciever").on("input", function(){
 		clearErrors();
 	});
 	
@@ -95,7 +147,7 @@
 
 		// Get all data
 		let sender = $("#sender").val();
-		let receiver = $("#receiver").val();
+		let receiver = $("#reciever").val();
 		
 		if(sender != "" && sender != undefined && validateEmail(sender))
 		{
@@ -105,20 +157,41 @@
 				{
 					startPlanetName = this.data("name");
 					this.addClass('highlighted start');
-					$("#from").html(startPlanetName);
+					$("#from").val(startPlanetName);
 				}else{
 					if(endPlanetName == "" || endPlanetName == undefined)
 					{
 						endPlanetName = this.data("name");
 						this.addClass('highlighted end');
-						$("#to").html(endPlanetName);
+						$("#to").val(endPlanetName);
 					}
 				}
 			}else{
-				$("#error-receiver").css("visibility", "visible");
+				$('#reciever').qtip({
+					position: {
+						target: $("#reciever"),
+						at: 'top left'
+					},
+					content: {
+						text: 'Error! Enter valid receiver email!'
+					},
+					show: {ready: true},
+					hide: {event: false},
+					style: {classes: 'qtip-red qtip-bootstrap'}
+				});
 			}
 		}else{
-			$("#error-sender").css("visibility", "visible");
+			$('#sender').qtip({
+				position: {
+					target: $("#sender")
+				},
+				content: {
+					text: 'Error! Enter valid sender email!'
+				},
+				show: {ready: true},
+				hide: {event: false},
+				style: {classes: 'qtip-red qtip-bootstrap'}
+			});
 		}
 	});
 	
@@ -127,7 +200,7 @@
 		let startId = findPlanetIdByName(startPlanetName);
 		cy.getElementById(startId).removeClass("highlighted start");
 		startPlanetName = "";
-		$("#from").text(startPlanetName);
+		$("#from").val(startPlanetName);
 	});
 	
 	/* Function for clering end planet */
@@ -135,7 +208,7 @@
 		let endId = findPlanetIdByName(endPlanetName);
 		cy.getElementById(endId).removeClass("highlighted end");
 		endPlanetName = "";
-		$("#to").text(endPlanetName);
+		$("#to").val(endPlanetName);
 	});
 	
 	/* Function for validating start planet 
@@ -170,48 +243,9 @@
 			dataType: 'json',
 			data: JSON.parse('{"SID": "' + SID +'","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + false + '}}'),
 			success: function (data, textStatus, xhr) {
-				$("#dialog-window").css("display", "block");
-				$("#dialog-content").html('<span id="close-dialog" class="close">&times;</span>' + 
-				'<p>Total time:'+ data['time'] + '</p>' + 
-				 '<p>Total price:'+ data['price'] + '</p>' +
-				 '<input type="button" value="Submit" id="submit-order" name="submit-order"></input>' +
-				 '<input type="button" value="Cancel" id="cancel-order" name="cancel-order"></input>');
-				 
-				 /*Event listeners for dialog window */
-				$("#close-dialog").on("click", function(){
-					$("#dialog-window").css("display", "none");
-				});
-				
-				$("#cancel-order").on("click", function(){
-					$("#dialog-window").css("display", "none");
-				});
-				
-				$("#submit-order").on("click", function(){
-					$.ajax({
-						url: 'https://someleltest.herokuapp.com/api/orders',
-						type: 'POST',
-						dataType: 'json',
-						data: JSON.parse('{"SID":"'+  SID + '","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + true + '}}'),
-						success: function (data, textStatus, xhr) {
-							$("#dialog-content").html('<span id="close-dialog" class="close">&times;</span>' + 
-							'<p>Your order was successfully submitted</p>' + 
-							'<input type="button" value="Ok" id="ok" name="ok"></input>');
-				 			/*Event listeners for dialog window */
-							$("#ok").on("click", function(){
-								$("#dialog-window").css("display", "none");
-							});
-						},
-						error: function (xhr, textStatus, errorThrown) {
-							$("#dialog-content").html('<span id="close-dialog" class="close">&times;</span>' + 
-							'<p>During submitting some error occured!</p>' + 
-							'<input type="button" value="Ok" id="ok" name="ok"></input>');
-				 			/*Event listeners for dialog window */
-							$("#ok").on("click", function(){
-								$("#dialog-window").css("display", "none");
-							});
-						}
-					});
-				});
+				dialog.dialog("open");
+				$("#submit-order").html("<p>Total price: " + data['price'] + "</p>"+
+				"<p>Total delivery time: " + data['time'] + "</p>");
 			},
 			error: function (xhr, textStatus, errorThrown) {
 				$("#dialog-content").html('<span id="close-dialog" class="close">&times;</span>' + 
@@ -234,7 +268,7 @@
 		clearErrors();
 		// Get all data
 		let sender = $("#sender").val();
-		let receiver = $("#receiver").val();
+		let receiver = $("#reciever").val();
 		let weight = Number($("#weight").val());
 		let volume = Number($("#volume").val());
 		let type = $("#type").val();
@@ -255,32 +289,95 @@
 								{
 									submitOrder(sender, receiver, startPlanetName, endPlanetName, weight, volume, type);
 								}else{
-									$("#error").text('<strong>Error!</strong> Choose type!');
-									$("#error").css("visibility", "visible");
+									$('#type').qtip({
+										content: {
+											text: 'Error! Select type of delivery!'
+										},
+										show: {ready: true},
+										hide: {event: false},
+										style: {classes: 'qtip-red qtip-bootstrap'}
+									});
 								}
 							}else{
-								$("#error").text('<strong>Error!</strong> Enter volume!');
-								$("#error").css("visibility", "visible");
+								$('#volume').qtip({
+									content: {
+										text: 'Error! Enter valid volume!'
+									},
+									position: {
+										target: $("#volume"),
+										at: "top left"
+									},
+									show: {ready: true},
+									hide: {event: false},
+									style: {classes: 'qtip-red qtip-bootstrap'}
+								});
 							}
 						}else{
-							$("#error").text('<strong>Error!</strong> Enter weight!');
-							$("#error").css("visibility", "visible");
+							$('#weight').qtip({
+							content: {
+								text: 'Error! Enter valid weight!'
+							},
+							position: {
+								target: $("#weight")
+							},
+							show: {ready: true},
+							hide: {event: false},
+							style: {classes: 'qtip-red qtip-bootstrap'}
+							});
 						}
 					}else{
-						$("#error").text('<strong>Error!</strong> Select end planet!');
-						$("#error").css("visibility", "visible");
+						$('#to').qtip({
+						content: {
+							text: 'Error! Select end planet!'
+						},
+						position: {
+							target: $("#to"),
+							at: "top left"
+						},
+						show: {ready: true},
+						hide: {event: false},
+						style: {classes: 'qtip-red qtip-bootstrap'}
+					});
 					}
 				}else{
-					$("#error").text('<strong>Error!</strong> Select start planet!');
-					$("#error").css("visibility", "visible");
+					$('#from').qtip({
+						position: {
+							target: $("#from")
+						},
+						content: {
+							text: 'Error! Select start planet!'
+						},
+						show: {ready: true},
+						hide: {event: false},
+						style: {classes: 'qtip-red qtip-bootstrap'}
+					});
 				}
 			}else{
-				$("#error").text('<strong>Error!</strong> Enter receiver!');
-				$("#error").css("visibility", "visible");
+				$('#reciever').qtip({
+					position: {
+						target: $("#reciever"),
+						at: 'top left'
+					},
+					content: {
+						text: 'Error! Enter valid receiver email!'
+					},
+					show: {ready: true},
+					hide: {event: false},
+					style: {classes: 'qtip-red qtip-bootstrap'}
+				});
 			}
 		}else{
-			$("#error").text('<strong>Error!</strong> Enter sender!');
-			$("#error").css("visibility", "visible");
+			$('#sender').qtip({
+				position: {
+					target: $("#sender")
+				},
+				content: {
+					text: 'Error! Enter valid sender email!'
+				},
+				show: {ready: true},
+				hide: {event: false},
+				style: {classes: 'qtip-red qtip-bootstrap'}
+			});
 		}
 	});
 	// All promises and events
@@ -288,6 +385,3 @@
 
   });
 })();
-
-// tooltips with jQuery
-$(document).ready(() => $('.tooltip').tooltipster());

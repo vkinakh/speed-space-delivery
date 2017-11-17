@@ -187,7 +187,8 @@ let animateAlgorithm = (algResults) => {
 			},
 			hide: {
 				event: 'mouseout unfocus'
-			}
+			},
+			style: {classes: 'qtip-bootstrap'}
 		}, event);
 	});
 	
