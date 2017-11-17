@@ -10,7 +10,7 @@ router.route('/')
         let params = req.query;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email SID' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'||person.permission==='operator'){
@@ -51,7 +51,7 @@ router.route('/')
         let newPath = req.body.path;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email SID' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
@@ -109,7 +109,7 @@ router.route('/')
         let path = req.body.path;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email SID' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
@@ -144,7 +144,7 @@ router.route('/')
         let query = req.body.pathParams;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
-        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission SID' , function (err, person) {
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission' , function (err, person) {
             if (err) res.status(400).send('Error while querying database');
             else if(person){
                 if(person.permission==='admin'){
