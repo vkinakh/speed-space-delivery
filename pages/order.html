@@ -1,20 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>planets</title>
+  <title>Orders</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">  
   <script src="../js/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
-    <style>
-
-	</style>
+<link rel="stylesheet" href="../css/style2.css">
 </head>
 <body>   
 
-<nav class="navbar navbar-expand-md navbar-fixed-top navbar-dark bg-dark main-nav" style="background-image: url(../images/nav.png)">
+<nav class="navbar navbar-expand-md navbar-fixed-top navbar-dark bg-dark main-nav nav-background">
     <div class="container">
         <ul class="nav navbar-nav">
             <li class="nav-item">
@@ -28,9 +26,7 @@
             <li class="nav-item"><a class="nav-link" href="#"><img src="../images/logo.png" alt="logo" height="100px" weight="100px"></a></li>
         </ul>
         <ul class="nav navbar-nav">
-           <li class="nav-item">
-                <a class="nav-link" href="#" id="logout">Log out</a>
-            </li>
+          
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarList"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Menu</a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -43,6 +39,9 @@
 				</div>
             </li>
             
+             <li class="nav-item">
+                <a class="nav-link" href="#" id="logout">Log out</a>
+            </li>
         </ul>
     </div>
 </nav>
@@ -73,15 +72,15 @@
 		</div>
    <div class="row justify-content-center">
    		<div class="col-12">
-    		<form id='makeOrderForm' class="collapse">
+    		<form id='makeOrderForm'>
 		<div class="row">
-			<div class="col-6">
+			<div class="col-6 hint" data-title="Input your email sender@example.com">
 				<div class="form-group">
 					<label for="sender">Sender</label>
-					<input type="text" id="sender" placeholder="sender@exapmle.com" class="form-control">
+					<input type="text" id="sender" placeholder="sender@exapmle.com" class="form-control" >
 				</div>
 			</div>
-			<div class="col-6">
+			<div class="col-6 hint" data-title="Input reciever`s email  reciever@example.com">
 				<div class="form-group">
 					<label for="reciever">Reciever</label>
 					<input type="text" id="reciever" placeholder="reciever@exapmle.com" class="form-control">
@@ -89,7 +88,7 @@
 			</div>
 		</div>
 		 <div class="row">
-			<div class="col-6">
+			<div class="col-6 hint" data-title="Select planet from where you want send container">
 				<div class="form-group">
 					<label for="from">Planet-sender</label>
 					<select name="planets" id="from" class="form-control">
@@ -97,7 +96,7 @@
 			   </select>
 				</div>
 			</div>
-			<div class="col-6">
+			<div class="col-6 hint" data-title="Select the planet where you want to send the parcel">
 				<div class="form-group">
 					<label for="to">Planet-reciever</label>
 					<select name="planets" id="to" class="form-control">
@@ -106,13 +105,13 @@
 			</div>
 		 </div>
        <div class="row">
-		   <div class="col-6">
+		   <div class="col-6 hint" data-title="Input weight of your parcel form 0 to 3000">
 			<div class="form-group">
 				<label for="weight">Weight</label>
 				<input type="text" id="weight" class="form-control">
 			</div>
 		   </div>
-           <div class="col-6">
+           <div class="col-6 hint" data-title="input volume of your parcel from 0 to 100">
 			<div class="form-group">
 			<label for="volume">Volume</label>
 			<input type="text" id="volume" class="form-control">
@@ -120,7 +119,7 @@
        </div>
        </div>
        <div class="row">
-       	<div class="col-6">
+       	<div class="col-6 hint" data-title="Choose between cheap, regular, quick.Cheap- is cheap delivery method, your order will stay in queue. Regular - the cheapest method delivery , your order will be send as soon as regular ship wiil be avalible. Quick - the most expensive method dilvery , your order will be send during day">
        	<div class="form-group">
        	<select id="type" class='form-control'>
        		<option value="0">cheap</option>
@@ -164,11 +163,11 @@
 				</div>
 			</form>	
 		 </div>
-	</div>
+	</div> 
         		<!--<div class="col-md-4">2</div>-->
         		<!--<div class="col-md-4">3</div>-->
         	
-        	<!--<div class="col-md-6">
+        	<div class="col-md-6">
         		<form action="" id="createContainer" style="display: none">
         		<div class="col-md-4">
         			<div class="form-group">
@@ -189,26 +188,28 @@
         			</div>
         			
         		</form>
-        	</div> -->
-        <div class="row justify-content-center">
+        	</div>
+       <div class="row justify-content-center">
 			<div class="col-12" class="collapse">
 				<p id="table" class="collapse"></p>
 			</div>
-		</div>
+		</div> 
 </div>
        
-        <!--<div class="container-fluid">
+        <div class="container-fluid">
         		
         		
-        
+        <div class="row">&nbsp;</div>
+     <nav class="fixed-bottom" style="background-image: url(../images/stars.jpg); ">
+  &nbsp;
+		</nav>
      </div>
-     </div>-->
+</div>
+     
+   
+   
     <script src="../js/order.js"></script>
     <script src="../js/logout.js"></script>
-    <script src="../js/showByPermission.js"></script>
-    <div class="row">&nbsp;</div>
-  <nav class="fixed-bottom" style="background-image: url(../images/stars.jpg); ">
-  &nbsp;
-		</nav>   
+    <script src="../js/showByPermission.js"></script> 
 </body>
 </html>
