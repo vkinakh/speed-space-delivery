@@ -276,7 +276,10 @@ router.route('/register')
                     let cCode = randomstring.generate({length: 8, charset: 'numeric'});
                     let unconfirmedUser = new unconfirmedModel({'email':email, 'password': password, 'salt':salt, 'cCode': cCode});
                     unconfirmedUser.save(function (err) {
-                        if (err) res.status(400).send('Error while saving data');
+                        if (err){
+                            console.log(err);
+                            res.status(400).send('Error while saving data');
+                        }
                         else{
                             let mailOptions = {
                                 from: 'speedspacedeliveries@gmail.com',
