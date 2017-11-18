@@ -1,7 +1,7 @@
  // Variable
 /*---------------------------------------------------------------------------------------------*/
 
-var url="https://someleltest.herokuapp.com/api/orders";
+var url="https://someleltest.herokuapp.com/api/orders/";
 var urlGet="https://someleltest.herokuapp.com/api/orders?SID=";
 urlGet+=JSON.parse(localStorage.getItem("SID"));
 var table=document.getElementById("table");
@@ -11,12 +11,11 @@ var table=document.getElementById("table");
 
 function loadPlanetsToSelect() {
 	'use strict';
+	console.log("laodPlanetsToSelect()");
 	$.ajax({
 		type:'GET',
 		url:"https://someleltest.herokuapp.com/api/planets/getAll",
 		success:function (data){
-			console.log(data);
-			console.log("laodToSelect");
 			$.each(data, function (i, planet) {
 				$('#from').append($('<option>', { 
 					value: i,
@@ -44,7 +43,6 @@ function orderSend(data){
 	alert("Success sent");
 	location.reload();
 }
-
 function myPost(obj_JSON,action){
 	'use strict';
 	
@@ -56,9 +54,7 @@ function myPost(obj_JSON,action){
 		error:function (status) {alert(status.responseText);}
 	})
 }
-
-function buildHtmlTable(selector,responseArr)
-	{
+function buildHtmlTable(selector,responseArr){
 			var keys = [];
 responseArr.map(function(el){
     for(var k in el){
@@ -72,7 +68,6 @@ keys.sort();
 	var table="<table class='table-bordered table-hover table-responsive'>";
 	
 	table+="<tr>"
-	console.log(keys);
 	for (i=0;i<keys.length;++i){
 		table+="<th>"+keys[i]+"</th>";
 	}
@@ -91,28 +86,30 @@ keys.sort();
 	table+="</table>";
 	selector.innerHTML=table;
 		}
-
-function myGetBuildTableOrders(){
+function loadTableOrders(){
+	console.log("loadTableOrders()");
+	
 	$.ajax({
 	type:"GET",
 	url:urlGet,
-	success:function (data){console.log("success myGet!");buildHtmlTable(table,data)},
+	success:function (data){buildHtmlTable(table,data)},
 	errorr:function (){alert(status.responseText)},
 	statusCode:{
 		404 :function (){
-			console.log("This page isn`t avalible");
+			console.log("This page isn`t avalible code 401");
+	
 		},
 		200:function (){
-			console.log("code 200");
+			console.log("success myGet! code200");
 		},
 		401:function (){
 			alert("You are unauthorized");
+			console.log("code 401");
 		}
 	}
 		
 	})
 }
-
 function listenterClickMakeOrder(){
 	'use strict';
 	
@@ -131,47 +128,66 @@ function listenterClickMakeOrder(){
 	 myPost(order_JSON,orderSend);
 	 })
 }
+function listenterClickAccept(){
+$("#accept").click(function(){
+	
+	 var accept_JSON={
+		 "SID":JSON.parse(localStorage.getItem("SID")),
+		"trackID":$("#trackID").val(),
+		"action":"accept"
+	 }
+	 
+	$.ajax({
+	url:url,
+	type:'PUT',
+	data:accept_JSON,
+	success:function(status){console.log(status);loadTableOrders();},
+	error:function(status){alert(status.responseText);} 
+}) 
+})	
+}
+function  listenerClickOpenTableOrders(){
+	
+	$( "#openTableOrders" ).click(function(){
+		loadTableOrders(); 
+})
+	}
 
-function loadTableOrders(){
-	myGetBuildTableOrders();
-	console.log("loadTableOrders()");
+
+
+
+function listenerClickCreateContainer(){
+	console.log("listenerClickCreateContainer()");
+	$( "#btnCreateContainer" ).click(function(){
+		
+	var temp=[],location;
+	temp=$("#orderID").val();
+	var num="[";
+	num+=temp;
+	num+="]";
+	var num=JSON.parse(num);
+	location=$("#location").val();
+		
+	var container= {
+	"SID":JSON.parse(localStorage.getItem("SID")),
+	"orders":num,
+	"location":location
+	   }
+
+
+	$.ajax({
+		type:"POST",
+		url:url+"createContainer",
+		data:container,
+		success:function(data){alert("Success create container");myGetBuildTableOrders();console.log(data)},
+		error:function(status,responseText){console.log(status.responseText);}
+	})
+	
+	})
+
 }
 
-
-
-
-
-
-
-
-$("#btnCreateContainer").click(function(){
-var temp=[],location;
-temp=$("#orderID").val();
-var num="[";
-num+=temp;
-num+="]";
-console.log(temp);
-var num=JSON.parse(num);
-location=$("#location").val();
-var cont= {
-"SID":JSON.parse(localStorage.getItem("SID")),
-"orders":num,
-"location":location
-   }
-
-
-$.ajax({
-	type:"POST",
-	url:"https://someleltest.herokuapp.com/api/orders/createContainer",
-	data:cont,
-	success:function(){alert("Success create container");myGetBuildTableOrders();},
-	error:function(status,responseText){console.log(status.responseText);}
-})
-console.log(num);
-})
-
-
-
+/*
 
 $("#btnConfirmContainer").click(function(){
 	var data={
@@ -215,32 +231,20 @@ $("#cancel").click(function(){
 									// List of called functions
 /*-----------------------------------------------------------------------------------------------------------*/
 $( document ).ready(function(){
+	'use strict'
+	loadPlanetsToSelect (); // works without "SID"
 	
-	loadPlanetsToSelect ();
-	loadTableOrders();
+	
 	document.addEventListener("submit",function(event){	 
 	event.preventDefault();
 	})
 	
- listenterClickMakeOrder();
+	listenerClickOpenTableOrders();
+	listenterClickMakeOrder();
+    listenterClickAccept();
+	}) 
 
-  $("#accept").click(function(){
-	 var accept={
-		 "SID":JSON.parse(localStorage.getItem("SID")),
-		"trackID":$("#trackID").val(),
-		"action":"accept"
-	 }
-	$.ajax({
-	url:"https://someleltest.herokuapp.com/api/orders",
-	type:'put',
-	data:accept,
-	success:function(status){console.log(status);show();}
-}) 
 	
-})
-})
-
-
 
 
 

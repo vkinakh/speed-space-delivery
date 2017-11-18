@@ -5,7 +5,7 @@
     padding-top: 1%;
 }
 
-a:link {
+span>a:link {
     font-size:2vw;
   font-family: "Verdana";
   color: rgb(255, 255, 255);
@@ -15,7 +15,7 @@ a:link {
   text-decoration: none;
 }
 
-a:visited {
+span>a:visited {
   font-size: 2vw;
   font-family: "Verdana";
   color: rgb(255, 255, 255);
@@ -24,7 +24,7 @@ a:visited {
   height: 19px;
 }
 
-a:hover {
+span>a:hover {
     border-radius: 10%;
     font-size: 2vw;
     font-family: "Verdana";
@@ -36,8 +36,7 @@ a:hover {
     text-decoration: none;
 }
 
-/* selected link */
-a:active {
+span>a:active {
     color: blue;
     text-decoration: none;
 }
