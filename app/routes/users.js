@@ -12,8 +12,8 @@ let planetModel = require('../models/planet.js');
 let smtpTransport = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-        user: "speedspasedeliveries@gmail.com",
-        pass: "leyla123"
+        user: process.env.service_email,
+        pass: process.env.service_password
     }
 });
 
@@ -465,5 +465,19 @@ router.route('/logoutAll')
             }else res.status(401).send('User not found');
         });
     });
+
+router.route('/checkPermisiion')
+    .get(function(req, res){
+        let SID = req.query.SID;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, '-_id -__v' , function (err, person) {
+            if (err) res.status(400).send('Error while querying database');
+            else if(person){
+                res.json({permission: person.permission});
+            }else res.status(401).send('User not found');
+        });
+    })
+
 
 module.exports = router;
