@@ -12,8 +12,8 @@ let planetModel = require('../models/planet.js');
 let smtpTransport = nodemailer.createTransport({
     service: "Gmail",
     auth: {
-        user: "speedspasedeliveries@gmail.com",
-        pass: "leyla123"
+        user: process.env.service_email,
+        pass: process.env.service_password
     }
 });
 
@@ -190,7 +190,7 @@ router.route('/addOperator')
                                         if (err) res.status(400).send('Error while saving data');
                                         else{
                                             let mailOptions = {
-                                                from: 'speedspacedeliveries@gmail.com',
+                                                from: process.env.service_email,
                                                 to: email,
                                                 subject: 'One time password',
                                                 text: 'You were promoted to operator. Login with your email and this temporaty password: '+tempPass
@@ -241,7 +241,7 @@ router.route('/addAdmin')
                                 if (err) res.status(400).send('Error while saving data');
                                 else{
                                     let mailOptions = {
-                                        from: 'speedspacedeliveries@gmail.com',
+                                        from: process.env.service_email,
                                         to: email,
                                         subject: 'One time password',
                                         text: 'You were promoted to admin. Login with your email and this temporaty password: '+tempPass
@@ -265,7 +265,7 @@ router.route('/register')
         let email = req.body.email;
         let password = req.body.password;
 
-        if(!validator.validate(email)||!password){
+        if(!validator.validate(email)||!password||password.length<8){
             res.status(400).send('Bad email or password');
         }else{
             userModel.findOne({'email': email}, function(err, person){
@@ -276,10 +276,13 @@ router.route('/register')
                     let cCode = randomstring.generate({length: 8, charset: 'numeric'});
                     let unconfirmedUser = new unconfirmedModel({'email':email, 'password': password, 'salt':salt, 'cCode': cCode});
                     unconfirmedUser.save(function (err) {
-                        if (err) res.status(400).send('Error while saving data');
+                        if (err){
+                            console.log(err);
+                            res.status(400).send('Error while saving data');
+                        }
                         else{
                             let mailOptions = {
-                                from: 'speedspacedeliveries@gmail.com',
+                                from: process.env.service_email,
                                 to: email,
                                 subject: 'Confirm your registration',
                                 text: 'Your confirmation code is: ' + cCode
@@ -419,10 +422,11 @@ router.route('/removeTFA')
         let email = req.body.email;
         let password = req.body.password;
         let secret = req.body.secret;
+        let token = req.body.token;
 
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
-        if(!secret){
-            res.status(400).send('Can not remove without a secret');
+        if(!secret&&!token){
+            res.status(400).send('Can not remove without a secret/token');
         }else{
             let query = {};
             if(SID){
@@ -436,13 +440,25 @@ router.route('/removeTFA')
                 userModel.findOne(query, function (err, person) {
                     if (err) res.status(400).send('Error while querying database');
                     else if(person){
-                        if(person.secret&&person.secret===secret){
-                            person.secret = undefined;
-                            person.save(function(err){
-                                if (err) res.status(400).send('Error while saving data');
-                                else res.sendStatus(200);
-                            })
-                        }else res.status(401).send('Wrong secret');
+                        if(person.secret){
+                            if(person.secret===secret){
+                                person.secret = undefined;
+                                person.save(function(err){
+                                    if (err) res.status(400).send('Error while saving data');
+                                    else res.sendStatus(200);
+                                });
+                            }else if(token){
+                                let check = twoFactor.verifyToken(person.secret_unconfirmed, ''+token, 1);
+                                if (check&&check.delta===0){
+                                    person.secret = person.secret_unconfirmed;
+                                    person.secret_unconfirmed = undefined;
+                                    person.save(function (err) {
+                                        if (err) res.status(400).send('Error while saving data');
+                                        else res.sendStatus(200);
+                                    });
+                                }else res.status(403).send('Wrong token'); 
+                            }else res.status(403).send('Wrong secret or token'); 
+                        }else res.status(401).send('2FA not enabled on this account');
                     }else res.status(401).send('User not found');
                 });
             }else res.status(400).send('Please specify SID or email/password');
@@ -465,5 +481,19 @@ router.route('/logoutAll')
             }else res.status(401).send('User not found');
         });
     });
+
+router.route('/checkPermisiion')
+    .get(function(req, res){
+        let SID = req.query.SID;
+        let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
+
+        userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, '-_id -__v' , function (err, person) {
+            if (err) res.status(400).send('Error while querying database');
+            else if(person){
+                res.json({permission: person.permission});
+            }else res.status(401).send('User not found');
+        });
+    })
+
 
 module.exports = router;
