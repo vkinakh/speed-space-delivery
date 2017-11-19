@@ -98,7 +98,7 @@ router.route('/')
                             }
                         }else res.status(409).send('Please create new password');
                     }
-                }else res.status(401).send('User not found');
+                }else res.status(401).send('Email or password is incorrect');
             });
         }
     })
