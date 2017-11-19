@@ -1,43 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Bootstrap Example</title>
+  <title>Speed Space Deliveryf</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="../css/bootstrap.min.css">  
-  <link rel="stylesheet" href="../css/style.css">
-  <script src="../js/jquery-3.2.1.min.js"></script>
-    <script src="../js//bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+   <link rel="stylesheet" href="../css/style.css">
     
+ <script src="../js/showByPermission.js"></script>
 </head>
 <body>
     <div class="container-fluid container-background">
           <div class="container-fluid ";>
            <div class="row justify-content-center">
-               <div class="col-1 space-nav-text">
-                    <span class="nav-text"><a href="index.html">Home</a></span>
+               <div class="col-2 space-nav-text">
+                   <p class="text-center"><span class="nav-text"><a href="index.html">Home</a></span></p> 
                </div>
                <div class="col-2 space-nav-text">
-                    <span><a class="nav-text" data-toggle="collapse" href="#collapseA" aria-expanded="false" aria-controls="collapseA">Menu</a></span>
-                    <div class="collapse" id="collapseA">
+                    <span class="nav-text"><a  data-toggle="collapse" href="#menu" aria-expanded="false" aria-controls="menu">Menu</a></span>
+                    <div class="collapse" id="menu">
                       <div class="card card-block" style="background-color:rgb(0,0,26);">
                        <div class="row">
                            <div class="col-12"><a href="order.html">Order</a></div>
-                           <div class="col-12"><a href="ships.html">Ships</a></div>
-                           <div class="col-12"><a href="history.html">History</a></div>
-                           <div class="col-12"><a href="track.html">Track</a></div>
-                           <div class="col-12"><a href="users.html">Users</a></div>
-                           <div class="col-12"><a href="planets.html">Planets</a></div>
+                           <div class="col-12 operator admin"><a href="ships.html">Ships</a></div>
+                           <div class="col-12  default"><a href="history.html">History</a></div>
+                           <div class="col-12 default"><a href="track.html">Track</a></div>
+                           <div class="col-12 operator admin"><a href="users.html">Users</a></div>
+                           <div class="col-12 default"><a href="planets.html">Planets</a></div>
 						  </div>
                       </div>
                     </div>
                </div>
                <div class="col-4 space-nav-logo">
-                    <p class="text-center"><img src="../images/logo.png" alt="" height="100px" weight="100px"></p>
+                    <p class="text-center"><a href="track.html"><img src="../images/logo.png" alt="" height="100px" weight="100px"></a></p>
+               </div>
+               
+               <div class="col-2 space-nav-text">
+               <p class="text-center"><span class="nav-text"><a href="track.html">Track id</a></span></p>
                </div>
                <div class="col-2 space-nav-text">
-               </div>
-               <div class="col-1 space-nav-text">
                    <span class="nav-text"><a href="log-in.html">Log in</a></span>
                </div> 
             </div>
@@ -107,6 +111,6 @@
 <nav class="sticky-bottom" style="background-image: url(../images/stars.jpg); ">
    <span class="white-text">Some text</span>
 </nav>
-
 </body>
+	
 </html>

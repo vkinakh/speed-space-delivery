@@ -9,10 +9,10 @@ function login (event){
 		"email":email,
 		"password":password
 	}
-	if(email!=""&&password!=""){
+	if(email.length&&password.length){
 		$.ajax({
 			type:'POST',
-			url: "https://someleltest.herokuapp.com/api/users",
+			url:"https://someleltest.herokuapp.com/api/users",
 			data:loginObj,
 			success:function(data){
 				localStorage.setItem("SID",JSON.stringify(data.SID));

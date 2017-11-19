@@ -5,8 +5,8 @@
     padding-top: 1%;
 }
 
-a:link {
-    font-size: 25px;
+span>a:link {
+    font-size:2vw;
   font-family: "Verdana";
   color: rgb(255, 255, 255);
   line-height: 1.2;
@@ -15,8 +15,8 @@ a:link {
   text-decoration: none;
 }
 
-a:visited {
-  font-size: 25px;
+span>a:visited {
+  font-size: 2vw;
   font-family: "Verdana";
   color: rgb(255, 255, 255);
   line-height: 1.2;
@@ -24,9 +24,9 @@ a:visited {
   height: 19px;
 }
 
-a:hover {
+span>a:hover {
     border-radius: 10%;
-    font-size: 25px;
+    font-size: 2vw;
     font-family: "Verdana";
     color: black;
     line-height: 1.2;
@@ -36,8 +36,7 @@ a:hover {
     text-decoration: none;
 }
 
-/* selected link */
-a:active {
+span>a:active {
     color: blue;
     text-decoration: none;
 }

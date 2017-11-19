@@ -17,6 +17,7 @@ function loadTable(){$.get(urlGet,function (data){
 		console.log(data);
 		buildHtmlTable(document.getElementById("table"),data);
 	});}
+
 function buildHtmlTable(selector,responseArr)
 	{
 			var keys = [];
@@ -54,9 +55,9 @@ keys.sort();
 
 
  $("#addAdmin").click(function(){
-	 url+="addAdmin";
      $.ajax({
-		 url:url,
+     	 type:"POST",
+		 url:"https://someleltest.herokuapp.com/api/users/addAdmin",
 		 data:user_JSON,
 		 success:function(status){console.log(status);loadTable()},
 		 error:function(status){alert(status.responseText)}
