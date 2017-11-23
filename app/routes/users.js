@@ -449,10 +449,9 @@ router.route('/removeTFA')
                                     else res.sendStatus(200);
                                 });
                             }else if(token){
-                                let check = twoFactor.verifyToken(person.secret_unconfirmed, ''+token, 1);
+                                let check = twoFactor.verifyToken(person.secret, ''+token, 1);
                                 if (check&&check.delta===0){
-                                    person.secret = person.secret_unconfirmed;
-                                    person.secret_unconfirmed = undefined;
+                                    person.secret = undefined;
                                     person.save(function (err) {
                                         if (err) res.status(400).send('Error while saving data');
                                         else res.sendStatus(200);
