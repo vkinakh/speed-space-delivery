@@ -482,7 +482,7 @@ router.route('/logoutAll')
         });
     });
 
-router.route('/checkPermisiion')
+router.route('/checkPermission')
     .get(function(req, res){
         let SID = req.query.SID;
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
