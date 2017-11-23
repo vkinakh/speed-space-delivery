@@ -2,8 +2,8 @@
 *  This file contains functions, which are used for all pages with cytoscape map/graph
 */
 // System ID for each user (taken from local storage after authentification)
-let SID = "427382d3718b14dde519576b2359c8f81804daba2b3cf9766cc639245cdc522a";
-
+let SID = JSON.parse(localStorage.getItem("SID"));
+console.log(SID);
 // Global variable for saving planets and paths
 let planets, paths;
 
@@ -29,7 +29,7 @@ let toText = obj => obj.text();
 */
 let getStylesheet = name => {
     let convert = res => name.match(/[.]json$/) ? toJson(res) : toText(res);
-    return fetch(`stylesheets/${name}`).then( convert );
+    return fetch(`../stylesheets/${name}`).then( convert );
 };
 	
 /*
@@ -60,7 +60,7 @@ let getDataset = name => fetch(name).then( toJson );
 */
 let applyDataset = dataset => {
     cy.zoom(0.001);
-    cy.pan({ x: -9999999, y: -9999999 });
+    cy.pan({ x:32200, y: 0 });
 	
 	// Save planets 
 	planets = dataset;

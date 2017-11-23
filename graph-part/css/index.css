@@ -11,9 +11,9 @@ body {
     height: 100%;
     width: 100%;
     overflow: auto !important;
-	left: 0;
-    right: 0;
 	background-image : url(../images/stars.jpg);
+	background-size: 100%;
+	background-repeat:no-repeat;
 }
 
 .tools {
@@ -21,7 +21,7 @@ body {
   padding: 0.25em 0.5em;
   position: absolute;
   right: 0;
-  top: 20%;
+  top: 35%;
   width: 50%;
   /*height: 50%*/
   background: #fff;

@@ -5,7 +5,6 @@
 	$( "#to" ).prop( "disabled", true );
 	
 	let dialog;
-	
 	/*Function for submitting order*/
 	let registerOrder = () =>
 	{
@@ -85,11 +84,14 @@
 				ready: true
 			},
 			hide: {
-				event: 'mouseout unfocus'
+				event: 'mouseout '//unfocus'
 			},
 			style: {classes: 'qtip-bootstrap'}
 		}, event);
 	});
+	  cy.on('mouseout','node',function (event){
+		  
+	  })
 		
 	// Function for validating email
 	function validateEmail(email) {
