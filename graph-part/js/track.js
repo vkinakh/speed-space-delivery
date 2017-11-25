@@ -223,7 +223,21 @@
 							dialog.dialog( "close" );
 							beginTime = new Date(currentDelivery["send_date"]);
 							expectedDeliveryTime = currentDelivery["esttime"] * 24 * 60 * 60 * 1000; // in milliseconds
-							tryPromise(applyAlgorithmFromSelect);
+							if(today.getTime() - beginTime.getTime() < expectedDeliveryTime)
+							{
+								tryPromise(applyAlgorithmFromSelect);
+							}else{
+								cy.getElementById(end).addClass('delivery-place');	
+								cy.animate({
+								fit: {
+									eles: cy.getElementById(end),
+									padding: 200
+								},
+								duration: 700,
+								easing: 'ease',		
+								queue: true
+								});
+							}
 						}
 					}
 				}else if(currentDelivery["status"] == "waitingpickup" || currentDelivery["status"] == "delivered")

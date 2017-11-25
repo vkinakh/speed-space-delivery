@@ -153,8 +153,10 @@
 		
 		if(sender != "" && sender != undefined && validateEmail(sender))
 		{
+			alert("Sender good");
 			if(receiver != "" &&  receiver != undefined && validateEmail(receiver))
 			{
+				alert("Receiver good");
 				if(startPlanetName == undefined || startPlanetName == "")
 				{
 					startPlanetName = this.data("name");
