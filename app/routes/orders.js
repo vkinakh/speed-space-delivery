@@ -90,6 +90,7 @@ router.route('/')
     .post(function (req, res) {
         let SID = req.body.SID;
         let newOrder = req.body.order;
+        console.log(JSON.stringify(req.fingerprint));
         let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || req.connection.socket.remoteAddress;
     
         userModel.findOne({'sessions.SID': SID, 'sessions.ip': ip, 'sessions.fingerprint': req.fingerprint.hash}, 'permission email location' , function (err, person) {
