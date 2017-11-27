@@ -1,5 +1,5 @@
 (function(){
-  document.addEventListener('DOMContentLoaded', function(){
+  document.addEventListener('DOMContentLoaded', function(){  
 	/* Function for clearing errors */
 	let clearErrors = () =>{
 		$('#sender').qtip("hide");
@@ -18,7 +18,7 @@
 	dialog = $( "#dialog-order" ).dialog({
 		autoOpen: false,
 		height: 350,
-		width: 450,
+		width: 650,
 		modal: true,
 		buttons: {
 			Cancel: function() {
@@ -129,7 +129,7 @@
 		let startId = findPlanetIdByName(startPlanetName);
 		cy.getElementById(startId).removeClass("highlighted start");
 		startPlanetName = "";
-		$("#from").val(startPlanetName);
+		$("#from").html("Click to select start planet");
 	});
 	
 	/* Function for clering end planet */
@@ -137,7 +137,7 @@
 		let endId = findPlanetIdByName(endPlanetName);
 		cy.getElementById(endId).removeClass("highlighted end");
 		endPlanetName = "";
-		$("#to").val(endPlanetName);
+		$("#to").html("Click to select end planet");
 	});
 	
 	/* Function for validating start planet 
@@ -178,13 +178,15 @@
 				{
 					startPlanetName = this.data("name");
 					this.addClass('highlighted start');
-					$("#from").val(startPlanetName);
+					$("#from").html(startPlanetName);
+					dialog.dialog("open");
 				}else{
 					if(endPlanetName == "" || endPlanetName == undefined)
 					{
 						endPlanetName = this.data("name");
 						this.addClass('highlighted end');
-						$("#to").val(endPlanetName);
+						$("#to").html(endPlanetName);
+						dialog.dialog("open");
 					}
 				}
 			}else{
@@ -232,9 +234,9 @@
 			dataType: 'json',
 			data: JSON.parse('{"SID": "' + SID +'","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + false + '}}'),
 			success: function (data, textStatus, xhr) {
-				dialog.dialog("open");
-				$("#submit-order").html("<p>Total price: " + data['price'] + "</p>"+
-				"<p>Total delivery time: " + data['time'] + "</p>");
+				$("#makeOrderForm").css("display", "none");
+				/*$("#submit-order").html("<p>Total price: " + data['price'] + "</p>"+
+				"<p>Total delivery time: " + data['time'] + "</p>");*/
 			},
 			error: function (xhr, textStatus, errorThrown) {
 				$("#dialog-content").html('<span id="close-dialog" class="close">&times;</span>' + 
@@ -377,15 +379,17 @@
 	});
 	
 	/*Function for showing graph for selecting start planet*/
-	$("#select-from").on("click", function()
+	$("#from").on("click", function()
 	{
 		dialog.dialog("close");
+		clearErrors();
 	});
 	
 	/* Function for showing graph for selecting end planet */
-	$("#select-to").on("click", function()
+	$("#to").on("click", function()
 	{
 		dialog.dialog("close");
+		clearErrors();
 	});
 	
 	// All promises and events

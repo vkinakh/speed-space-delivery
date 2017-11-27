@@ -96,3 +96,19 @@ h1 {
 	background-color: transparent;
 }
 
+#to{
+	border: 0; 
+}
+#from{
+	border: 0;
+}
+
+#to:focus{
+	outline: none;
+}
+
+#from:focus{
+	outline: none;
+}
+
+input[type="text"]:disabled{background-color:white;}
