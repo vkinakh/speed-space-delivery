@@ -32,24 +32,26 @@
 <body>
 	
 
-<div id="cy" class="main container-fluid">
+<div id="cy" class="main">
 	<div class="row"> <!-- navbar whith collapse menu -->
   		 <div class="col-12">
 		   <div class="row justify-content-center">
-						   <div class="col-2"></div>
 							   <div class="col-2 space-nav-text">
 									<span class="nav-text"><a href="#" id="menuBtn">Cabinet</a></span>
 							   </div>
+							<div class="col-2 space-nav-text">
+						   		<p class="text-center"><span class="nav-text"><a href="track.html">Track id</a></span></p>
+						   </div>
 						   <div class="col-4 space-nav-logo">
 								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>
 						   </div>
 
 						   <div class="col-2 space-nav-text">
-						   		<p class="text-center"><span class="nav-text"><a href="track.html">Track id</a></span></p>
-						   </div>
-						   <div class="col-2 space-nav-text">
 							<span><a href="#" id="logout">Log out</a></span>
 						   </div> 
+						   <div class="col-2 space-nav-text">
+								<p class="text-center" id="register-order"><span><a href="#">Register order</a></span></p>
+						   </div>
 					 </div>
              </div>
              <div class="col-12" id="menu" style="display: none;">
@@ -64,66 +66,59 @@
               </div>
 </div>
 
-    <div class="tools" id="register">
-	<form id='makeOrderForm'>
-		<div class="row" style=" margin: 0; padding: 0 ">
-			<div class="col-6">
-				<div class="form-group">
-					<input type="text" id="sender" placeholder="Sender" class="form-control">
-				</div>
-			</div>
-			<div class="col-6">
-				<div class="form-group">
-					<input type="text" id="reciever" placeholder="Reciever" class="form-control">
-				</div>
-			</div>
-		</div>
-		 <div class="row" style=" margin: 0; padding: 0 ">
-			<div class="col-6">
-				<div class="embed-submit-field form-control" >
-					<input type="text" placeholder="Start planet" id="from" name="from"/>
-					<button type="button" class="alert-danger" id="clear-from">x</button>
-				</div>
-			</div>
-		<div class="col-6">
-	    <div class="embed-submit-field form-control" >
-			<input type="text" placeholder="End planet" id="to" name="to"/>
-			<button type="button" class="alert-danger" id="clear-to">x</button>
-		</div>
-			</div>
-		 </div>
-       <div class="row" style=" margin: 20px 0 20px 0; padding: 0 ">
-		   <div class="col-6">
-				<div class="form-group">
-					<input type="number" id="weight" name="weight" class="form-control" placeholder="Weight"></input>
-				</div>
-		   </div>
-           <div class="col-6">
-			<div class="form-group">
-				<input type="number" id="volume" class="form-control" placeholder="Volume"></input>
-       		</div>
-       	   </div>
-       </div>
-       <div class="row" style=" margin: 0; padding: 0 ">
-       	<div class="col-6">
-       	<div class="form-group">
-       	<select id="type" class='form-control'>
-			<option value="">None</option>
-       		<option value="regular">Regular</option>
-       		<option value="quick">Quick</option>
-			<option value="cheap">Cheap</option>
-       	</select></div>
-       	</div>
-       	<div class="col-6">
-       	<div class="form-group">
-       	<button type="button" id="submit-order" class="btn btn-info">Make Order</button>
-       	</div>
-       	</div>
-       </div>
-        </form>
-	</div>
 	<div id="dialog-order" title="Submit order">
-		<div id="submit-order"></div>
+		<form id='makeOrderForm'>
+			<div class="row" style=" margin: 0; padding: 0 ">
+				<div class="col-6">
+					<div class="form-group">
+						<input type="text" id="sender" placeholder="Sender" class="form-control">
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<input type="text" id="reciever" placeholder="Reciever" class="form-control">
+					</div>
+				</div>
+			</div>
+			<div class="row" style=" margin: 0; padding: 0 ">
+				<div class="col-5">
+					<button type="button" id="select-from" class="btn">Start planet</button>
+				</div>
+				<div class="col-1">
+					<button type="button" id="clear-from" class="btn alert-danger">x</button>
+				</div>
+				<div class="col-5">
+					<button type="button" id="select-to" class="btn">End planet</button>
+				</div>
+				<div class="col-1">
+					<button type="button" id="clear-to" class="btn alert-danger">x</button>
+				</div>
+			</div>
+			<div class="row" style=" margin: 0; padding: 0 ">
+				<div class="col-6">
+						<div class="form-group">
+							<input type="number" id="weight" name="weight" class="form-control" placeholder="Weight"></input>
+						</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<input type="number" id="volume" class="form-control" placeholder="Volume"></input>
+					</div>
+				</div>
+			</div>
+			<div class="row" style=" margin: 0; padding: 0 ">
+				<div class="col-6">
+					<div class="form-group">
+						<select id="type" class='form-control'>
+							<option value="">None</option>
+							<option value="regular">Regular</option>
+							<option value="quick">Quick</option>
+							<option value="cheap">Cheap</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</form>
 	</div>
 	<nav class="fixed-bottom" style="background-image: url(../images/stars.jpg); ">&nbsp;</nav>
 

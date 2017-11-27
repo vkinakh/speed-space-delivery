@@ -12,21 +12,8 @@ body {
     width: 100%;
     overflow: auto !important;
 	background-image : url(../images/stars.jpg);
-	background-size: 100%;
-	background-repeat:no-repeat;
-}
-
-.tools {
-  box-sizing: border-box;
-  padding: 0.25em 0.5em;
-  position: absolute;
-  right: 0;
-  top: 35%;
-  width: 50%;
-  /*height: 50%*/
-  background: #fff;
-  z-index: 1;
-  overflow: auto;
+	background-size: cover;
+	background-repeat: repeat;
 }
 
 .footer-link {
@@ -109,51 +96,3 @@ h1 {
 	background-color: transparent;
 }
 
-.embed-submit-field {
-  position: relative;
-  
-  input {
-    width: 100%;
-    padding: 15px;
-	background-color: #ffffff;
-  }
-  button {
-    position: absolute;
-    right: -10px;
-    top: 7px;
-    
-
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    
-    border: none;
-    background: #ededed;
-    border-radius: 3px;
-    padding: 10px;
-    
-    transition: all .2s;
-    
-    &:hover {
-      background-color: #37C88D;
-      color: #fff;
-      cursor: pointer;
-    }
-  }
-}
-
-#to{
-	border: 0; 
-}
-#from{
-	border: 0;
-}
-
-#to:focus{
-	outline: none;
-}
-
-#from:focus{
-	outline: none;
-}
-
-input[type="text"]:disabled{background-color:white;}

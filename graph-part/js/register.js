@@ -1,11 +1,40 @@
 (function(){
   document.addEventListener('DOMContentLoaded', function(){
-	// Unable inputs
-	$( "#from" ).prop( "disabled", true );
-	$( "#to" ).prop( "disabled", true );
-	
+	/* Function for clearing errors */
+	let clearErrors = () =>{
+		$('#sender').qtip("hide");
+		$('#reciever').qtip("hide");
+		$('#from').qtip("hide");
+		$('#to').qtip("hide");
+		$('#weight').qtip("hide");
+		$('#volume').qtip("hide");
+		$('#type').qtip("hide");
+	};  
+	  
+	/* Dialog window to register order */
 	let dialog;
-	/*Function for submitting order*/
+	
+	/* Dialog window properties */
+	dialog = $( "#dialog-order" ).dialog({
+		autoOpen: false,
+		height: 350,
+		width: 450,
+		modal: true,
+		buttons: {
+			Cancel: function() {
+				clearErrors();
+				dialog.dialog( "close" );
+			},
+			Submit: function(){
+				tryOrder();
+			}
+		}
+	});
+	
+	/*Function for registering order
+	* It is a final method 
+	* It sends register response to server and order will be saved in DB
+	*/
 	let registerOrder = () =>
 	{
 		$.ajax({
@@ -32,47 +61,17 @@
 		});
 	};
 	
-	/* Dialog window */
-	dialog = $( "#dialog-order" ).dialog({
-		autoOpen: false,
-		height: 300,
-		width: 350,
-		modal: true,
-		buttons: {
-			Cancel: function() {
-				dialog.dialog( "close" );
-			},
-			Submit: function(){
-				registerOrder();
-			}
-		}
-	});
-	
 	// Initialize cytoscape map for future adding graph
     let cy;
-	
-	// Variable for saving users
-	let users;
-	
-	// Names of start and end planets
-	let startPlanetName, endPlanetName;
-	
-	/* Function for applying dataset to cytoscape map
-	*  Takes: dataset
-	*  Applies dataset to map
-	*/
-	let saveUsers = dataset => {	
-		// Save planets 
-		users = dataset;
-	};
-	
-	let applyDatasetUsers = () => Promise.resolve( "https://someleltest.herokuapp.com/api/users?SID=" + SID).then( getDataset ).then( saveUsers );
 	
 	// Create cytoscape map for graph
     cy = window.cy = cytoscape({
       container: $('#cy')
     });
-	
+		
+	// Names of start and end planets
+	let startPlanetName, endPlanetName;
+		
 	/* Display planet info on mouseover */
 	cy.on('mouseover', 'node', function(event) {
 		let node = event.cyTarget;
@@ -89,27 +88,13 @@
 			style: {classes: 'qtip-bootstrap'}
 		}, event);
 	});
-	  cy.on('mouseout','node',function (event){
-		  
-	  })
 		
 	// Function for validating email
-	function validateEmail(email) {
+	let validateEmail = (email) => {
 		let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		return re.test(email);
 	};
-	
-	/* Function for clearing errors */
-	let clearErrors = () =>{
-		$('#sender').qtip("hide");
-		$('#reciever').qtip("hide");
-		$('#from').qtip("hide");
-		$('#to').qtip("hide");
-		$('#weight').qtip("hide");
-		$('#volume').qtip("hide");
-		$('#type').qtip("hide");
-	};
-	
+		
 	/* Clear all errors when input*/
 	$("#sender").on("input", function(){
 		clearErrors();
@@ -138,6 +123,40 @@
 	$("#type").on("input", function(){
 		clearErrors();
 	});
+	
+		/* Function for clearing start planet */
+	$("#clear-from").on("click", function(){
+		let startId = findPlanetIdByName(startPlanetName);
+		cy.getElementById(startId).removeClass("highlighted start");
+		startPlanetName = "";
+		$("#from").val(startPlanetName);
+	});
+	
+	/* Function for clering end planet */
+	$("#clear-to").on("click", function(){
+		let endId = findPlanetIdByName(endPlanetName);
+		cy.getElementById(endId).removeClass("highlighted end");
+		endPlanetName = "";
+		$("#to").val(endPlanetName);
+	});
+	
+	/* Function for validating start planet 
+	*  Takes: planet name
+	*  Checks if planet is in DB
+	*  Return: bool
+	*/
+	let validatePlanetName =(name) =>{
+		let valid = false;
+		for(let i = 0; i < planets.length; ++i)
+		{
+			if(planets[i]["data"]["name"] == name && planets[i]["data"]["type"] != "star")
+			{
+				valid = true;
+				break;
+			}
+		}
+		return valid;
+	};
 	
 	/* Fucntion for registering order
 	*  Works after tapping on some node 
@@ -196,44 +215,12 @@
 			});
 		}
 	});
-	
-	/* Function for clearing start planet */
-	$("#clear-from").on("click", function(){
-		let startId = findPlanetIdByName(startPlanetName);
-		cy.getElementById(startId).removeClass("highlighted start");
-		startPlanetName = "";
-		$("#from").val(startPlanetName);
-	});
-	
-	/* Function for clering end planet */
-	$("#clear-to").on("click", function(){
-		let endId = findPlanetIdByName(endPlanetName);
-		cy.getElementById(endId).removeClass("highlighted end");
-		endPlanetName = "";
-		$("#to").val(endPlanetName);
-	});
-	
-	/* Function for validating start planet 
-	*  Takes: planet name
-	*  Checks if planet is in DB
-	*  Return: bool
-	*/
-	let validatePlanetName =(name) =>{
-		let valid = false;
-		for(let i = 0; i < planets.length; ++i)
-		{
-			if(planets[i]["data"]["name"] == name && planets[i]["data"]["type"] != "star")
-			{
-				valid = true;
-				break;
-			}
-		}
-		return valid;
-	};
-	
+		
 	/* Function for submiting order
+	*  It is second method 
 	*  Takes: data for request
-	*  Pops dialog window with price and time
+	*  Shows info about delivery 
+	*  Wait user to register order
 	*/
 	let submitOrder = function(sender, receiver, start, to, weight, volume, type)
 	{
@@ -260,13 +247,12 @@
 			}
 		});
 	};
-		
-	/* Function for registering order
-	*  Process data 
-	*  Make a reguest to server
+	
+	/* Function for trying order when user have all fields
+	*  First method
+	*  Validating data
 	*/
-	$("#submit-order").on("click", function(){
-		// Clear errors
+	let tryOrder = () => {
 		clearErrors();
 		// Get all data
 		let sender = $("#sender").val();
@@ -381,9 +367,29 @@
 				style: {classes: 'qtip-red qtip-bootstrap'}
 			});
 		}
+	}
+		
+	/* Open dialog window for registering order */
+	$("#register-order").on("click", function(){
+		dialog.dialog("open");
+		// Clear errors
+		clearErrors();
 	});
+	
+	/*Function for showing graph for selecting start planet*/
+	$("#select-from").on("click", function()
+	{
+		dialog.dialog("close");
+	});
+	
+	/* Function for showing graph for selecting end planet */
+	$("#select-to").on("click", function()
+	{
+		dialog.dialog("close");
+	});
+	
 	// All promises and events
-    tryPromise( applyDatasetFromSelect ).then( applyPathsFromSelect ).then( applyStylesheetFromSelect ).then( applyLayoutFromSelect ).then(applyDatasetUsers);
+    tryPromise( applyDatasetFromSelect ).then( applyPathsFromSelect ).then( applyStylesheetFromSelect ).then( applyLayoutFromSelect );
 
   });
 })();
