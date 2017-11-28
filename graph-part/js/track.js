@@ -7,16 +7,13 @@
 	*  Takes: dataset
 	*  Applies dataset to cytoscape map
 	*/
-	let applyDatasetDeliveries = dataset => {
+	let applyDatasetDeliveriesTrack = dataset => {
 		deliveryData = dataset;	
 	};
 	
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveries );
-	
-	// Function for adding event listeners to submit		
-	// </Helper functions>
-	
+	let applyDatasetTrack = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveriesTrack );
+		
 	$("#track-number").on("input", function(){
 		$("#error").css("visibility","hidden");
 	});
@@ -277,7 +274,7 @@
 	};
 	
 	// Write data to page
-	tryPromise(applyDatasetD);
+	tryPromise(applyDatasetTrack);
 	// Create cytoscape map for graph
     cy = window.cy = cytoscape({
       container: $('#cy')
