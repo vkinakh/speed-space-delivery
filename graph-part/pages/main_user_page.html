@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register order</title>
+    <title>Speed Space Delivery</title>
     <link rel="stylesheet" href="../css/index.css" />
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="../css/style.css">
@@ -25,7 +25,9 @@
 	<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
 	<!-- own -->
 	<script src="../js/index.js"></script>
-    <script src="../js/register.js"></script>
+    <!--<script src="../js/register.js"></script>-->
+	<script src="../js/table.js"></script>
+	<!--<script src="../js/track.js"></script>-->
   	<script src="../js/nav.js"></script>
 
 </head>
@@ -35,11 +37,11 @@
 	<div class="row" style="background-color: #010012"> <!-- navbar whith collapse menu -->
   		 <div class="col-12">
 		   <div class="row justify-content-center">
-							   <div class="col-2 space-nav-text">
-									
-							   </div>
 							<div class="col-2 space-nav-text">
-						   		<span class="nav-text"><a href="#" id="menuBtn">Cabinet</a></span>
+								<span class="nav-text text-center"><a href="#" id="menuBtn">Cabinet</a></span>	
+							</div>
+							<div class="col-2 space-nav-text">
+								<p class="text-center" id="show-table"><span><a href="#">Table of orders</a></span></p>
 						   </div>
 						   <div class="col-4 space-nav-logo">
 								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>
@@ -50,7 +52,7 @@
 						   </div>
 						   
 						   <div class="col-2 space-nav-text">
-							<span ><a href="#" ></a></span>
+								<p class="text-center" id="track-delivery"><span><a href="#">Track</a></span></p>
 						   </div> 
 						   
 					 </div>
@@ -126,7 +128,27 @@
 			</div>
 		</form>
 	</div>
-	<!-- Dialog window for registering orders -->
+	<!-- End of dialog window for registering order -->
+	
+	<!-- Dialog window for showing table with deliveries -->
+	<div id="dialog-table" title="Deliveries">
+		<div id="orders"></div>
+	</div>
+	<!-- Dialog window for showing table with deliveries -->
+	
+	<!-- Dialog window for track id-->
+	<div id="dialog-form" title="Enter track number">
+		<form>
+			<fieldset>
+				<label for="name">Track number</label>
+				<input type="text" name="track-number" id="track-number" class="ui-widget-content ui-corner-all">
+				<div id="delivery-info"></div>
+				<span class="err alert alert-danger" name="error" id="error" role="alert"></span>
+			</fieldset>
+		</form>
+	</div>
+	<!-- Dialog window for track id-->
+	
 	<script src="../js/showByPermission.js"></script>
 	<script src="../js/logout.js"></script>
 </body>

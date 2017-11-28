@@ -1,12 +1,12 @@
 // Help variables 
 // Begin and end are reqiured for aStar algorithm
-let begin, end;
+let beginTable, endTable;
 
 // Initialize cytoscape map for future adding graph
 let cy;
 	
 // Variable for storing type of delivery
-let type;
+let typeTable;
 	
 /* Function for running aStar algorithm
 *  As custom algorithm is aStar - based 
@@ -14,14 +14,14 @@ let type;
 *  Sets option from global variables
 *  Return: resolve promise algorithm with options
 */
-let runAlgorithm = (algorithm) => {
+let runAlgorithmTable = (algorithm) => {
 	if (algorithm === undefined) {
 		return Promise.resolve(undefined);
 	} else{
 		let options = {
-			root: '#' + begin,
+			root: '#' + beginTable,
 			// astar requires target; goal property is ignored for other algorithms
-			goal: '#' + end,
+			goal: '#' + endTable,
 			weight : function(edge){
 				return Number(edge.data().length) * Number(edge.data().difficulty);
 			}
@@ -31,18 +31,18 @@ let runAlgorithm = (algorithm) => {
 };
 				
 /*Varible for saving curret algorithm*/
-let currentAlgorithm;
+let currentAlgorithmTable;
 
 /* Function for animating algorithm
 *  In this case it will show the position of delivery 
 *  Takes: algResults returned by runAlgorithm
 *  Applies algorithm with animation
 */
-let animateAlgorithm = (algResults) => {
+let animateAlgorithmTable = (algResults) => {
     // clear old algorithm results
     cy.$().removeClass('highlighted start end');
 	cy.$().removeClass('cheap regular quick');
-    currentAlgorithm = algResults;
+    currentAlgorithmTable = algResults;
 	  
     if (algResults === undefined || algResults.path === undefined) {
       return Promise.resolve();
@@ -59,14 +59,14 @@ let animateAlgorithm = (algResults) => {
       }
       return new Promise(resolve => {
         let highlightNext = () => {
-            if (currentAlgorithm === algResults && i < algResults.path.length) {
+            if (currentAlgorithmTable === algResults && i < algResults.path.length) {
 			  if(algResults.path[i].group() == 'edges')
 			  {
-				if(type == 'cheap')
+				if(typeTable == 'cheap')
 				{
 					algResults.path[i].addClass('cheap');
 				}else
-				if(type == 'regular')
+				if(typeTable == 'regular')
 				{
 					algResults.path[i].addClass('regular');
 				}else{
@@ -99,10 +99,10 @@ let animateAlgorithm = (algResults) => {
 (function(){
   document.addEventListener('DOMContentLoaded', function(){
 	let applyDatasetDeliveries = data => {
-		var table='<table class="table table-bordered table-hover">';
+		let table='<table class="table table-bordered table-hover">';
         table+='<tr><th>trackID</th><th>esttime</th><th>sender</th><th>reciever</th><th>type</th><th>status</th><th>reg_date</th><th>price</th>';
 		table+='<th>volume</th><th>weight</th><th>location</th><th>to</th><th>from</th></tr>'
-        for(i=0;i<data.length;++i){
+        for(let i=0;i<data.length;++i){
         table+="<tr>"
             table+="<td>"+data[i].trackID+"</td>";
             table+="<td>"+formatTime(data[i].esttime)+"</td>";
@@ -120,26 +120,26 @@ let animateAlgorithm = (algResults) => {
         table+="</tr>"
         }
         table+='</table>';
-        document.getElementById("orders").innerHTML=table;
+        $("#orders").html(table);
 	}
 	
 	/* Dialog window */
-	let dialog;
-	dialog = $( "#dialog-form" ).dialog({
+	let dialogTable;
+	dialogTable = $( "#dialog-table" ).dialog({
 		autoOpen: false,
 		height: 550,
 		width: 1050,
 		modal: true,
 		buttons: {
 			Cancel: function() {
-				dialog.dialog( "close" );
+				dialogTable.dialog( "close" );
 			}
 		}
 	});
 	
 	/* Listener for button*/
-	$( "#show-table" ).button().on( "click", function() {
-		dialog.dialog( "open" );
+	$( "#show-table" ).on( "click", function() {
+		dialogTable.dialog( "open" );
 	});
 		
 	/*Promise for getting deliveries dataset*/
@@ -147,23 +147,23 @@ let animateAlgorithm = (algResults) => {
 	
 	let createRowListeners = () => {
 		// Add event listener for each row in created table
-		var tables = document.getElementsByTagName("table");
-		for(var j = 0; j < tables.length; ++j){
-			var rows = tables[j].getElementsByTagName("tr");
-			for(var i = 1; i < rows.length; ++i)
+		let tables = document.getElementsByTagName("table");
+		for(let j = 0; j < tables.length; ++j){
+			let rows = tables[j].getElementsByTagName("tr");
+			for(let i = 1; i < rows.length; ++i)
 			{
 				rows[i].addEventListener('click', function(){
 					// Close dialog window
-					dialog.dialog( "close" );
+					dialogTable.dialog( "close" );
 					// Get begin and end values					
-					begin = findPlanetIdByName(this.cells[12].innerHTML);
-					end = findPlanetIdByName(this.cells[11].innerHTML);
+					beginTable = findPlanetIdByName(this.cells[12].innerHTML);
+					endTable = findPlanetIdByName(this.cells[11].innerHTML);
 					
-					type = this.cells[4].innerHTML;
+					typeTable = this.cells[4].innerHTML;
 				
-					if(begin != -1 && end != -1 && type != "" && type != undefined)
+					if(beginTable != -1 && endTable != -1 && typeTable != "" && typeTable != undefined)
 					{
-						tryPromise( getAlgorithm ).then( runAlgorithm ).then( animateAlgorithm );
+						tryPromise( getAlgorithm ).then( runAlgorithmTable ).then( animateAlgorithmTable );
 					}
 				});
 			}

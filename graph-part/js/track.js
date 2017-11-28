@@ -26,7 +26,7 @@
 	// Begin and end are reqiured for aStar algorithm
 	// Path for custom algorithm
 	// Algo variable for changing algorithm
-	let begin, end;
+	let beginTrack, endTrack;
 		
 	// Todays date
 	let today;
@@ -35,7 +35,7 @@
 	let beginTime, expectedDeliveryTime;
 
 	/* Variables for working with dialog window*/ 
-	let dialog, form;
+	let dialogTrack, form;
 	/*<global variables>*/
 	
 	/* Function for running aStar algorithm
@@ -44,14 +44,14 @@
 	*  Sets option from global variables
 	*  Return: resolve promise algorithm with options
 	*/
-	let runAlgorithm = (algorithm) => {
+	let runAlgorithmTrack = (algorithm) => {
 		if (algorithm === undefined) {
 			return Promise.resolve(undefined);
 		} else{
 			let options = {
-				root: '#' + begin,
+				root: '#' + beginTrack,
 				// astar requires target; goal property is ignored for other algorithms
-				goal: '#' + end,
+				goal: '#' + endTrack,
 				weight : function(edge){
 					return Number(edge.data().length) * Number(edge.data().difficulty);
 				}
@@ -61,7 +61,7 @@
 	};
 
 	/*Promise for appplying algorithm*/
-	let applyAlgorithmFromSelect = () => tryPromise(getAlgorithm).then( runAlgorithm ).then( animateAlgorithm );
+	let applyAlgorithmFromSelect = () => tryPromise(getAlgorithm).then( runAlgorithmTrack ).then( animateAlgorithmTrack );
 					
 	/*Varible for saving curret algorithm*/
 	let currentAlgorithm;
@@ -71,7 +71,7 @@
 	*  Takes: algResults returned by runAlgorithm
 	*  Applies algorithm with animation
 	*/
-	let animateAlgorithm = (algResults) => {
+	let animateAlgorithmTrack = (algResults) => {
 		// clear old algorithm results
 		cy.$().removeClass('highlighted start end');
 		cy.$().removeClass('delivery-place');
@@ -189,14 +189,14 @@
 				if(currentDelivery["status"] == "registered" || currentDelivery["status"] == "accepted")
 				{
 					
-					let begin = findPlanetIdByName(currentDelivery["from"]);
-					if(begin != -1)
+					beginTrack = findPlanetIdByName(currentDelivery["from"]);
+					if(beginTrack != -1)
 					{
-						dialog.dialog( "close" );
-						cy.getElementById(begin).addClass("start-delivery-place");
+						dialogTrack.dialog( "close" );
+						cy.getElementById(beginTrack).addClass("start-delivery-place");
 						cy.animate({
 							fit: {
-								eles: cy.getElementById(begin),
+								eles: cy.getElementById(beginTrack),
 								padding: 200
 							},
 							duration: 700,
@@ -209,9 +209,9 @@
 					let beginPlanet = currentDelivery["from"];
 					let endPlanet = currentDelivery["to"];
 				
-					begin = findPlanetIdByName(beginPlanet);
-					end = findPlanetIdByName(endPlanet);
-					if(begin != -1 && end != -1)
+					beginTrack = findPlanetIdByName(beginPlanet);
+					endTrack = findPlanetIdByName(endPlanet);
+					if(beginTrack != -1 && endTrack != -1)
 					{
 						if(today == undefined)
 						{
@@ -220,17 +220,17 @@
 						
 						if(currentDelivery["send_date"] != undefined)
 						{
-							dialog.dialog( "close" );
+							dialogTrack.dialog( "close" );
 							beginTime = new Date(currentDelivery["send_date"]);
 							expectedDeliveryTime = currentDelivery["esttime"] * 24 * 60 * 60 * 1000; // in milliseconds
 							if(today.getTime() - beginTime.getTime() < expectedDeliveryTime)
 							{
 								tryPromise(applyAlgorithmFromSelect);
 							}else{
-								cy.getElementById(end).addClass('delivery-place');	
+								cy.getElementById(endTrack).addClass('delivery-place');	
 								cy.animate({
 								fit: {
-									eles: cy.getElementById(end),
+									eles: cy.getElementById(endTrack),
 									padding: 200
 								},
 								duration: 700,
@@ -242,14 +242,14 @@
 					}
 				}else if(currentDelivery["status"] == "waitingpickup" || currentDelivery["status"] == "delivered")
 				{
-					dialog.dialog( "close" );
-					let end = findPlanetIdByName(currentDelivery["to"]);
-					if(begin != -1)
+					dialogTrack.dialog( "close" );
+					endTrack = findPlanetIdByName(currentDelivery["to"]);
+					if(beginTrack != -1)
 					{
-						cy.getElementById(end).addClass("end-delivery-place");
+						cy.getElementById(endTrack).addClass("end-delivery-place");
 						cy.animate({
 							fit: {
-								eles: cy.getElementById(end),
+								eles: cy.getElementById(endTrack),
 								padding: 200
 							},
 							duration: 700,
@@ -300,7 +300,7 @@
 		}, event);
 	});
 	
-	dialog = $( "#dialog-form" ).dialog({
+	dialogTrack = $( "#dialog-form" ).dialog({
 		autoOpen: false,
 		height: 250,
 		width: 300,
@@ -308,7 +308,7 @@
 		buttons: {
 			"Find": findDelivery,
 			Cancel: function() {
-				dialog.dialog( "close" );
+				dialogTrack.dialog( "close" );
 			}
 		},
 		close: function() {
@@ -316,14 +316,14 @@
 		}
 	});
  
-	form = dialog.find( "form" ).on( "submit", function( event ) {
+	form = dialogTrack.find( "form" ).on( "submit", function( event ) {
 		event.preventDefault();
-		dialog.dialog( "close" );
+		dialogTrack.dialog( "close" );
 		findDelivery();
 	});	
  
-	$( "#track-delivery" ).button().on( "click", function() {
-		dialog.dialog( "open" );
+	$( "#track-delivery" ).on( "click", function() {
+		dialogTrack.dialog( "open" );
 	});
 	
 	// All promises and events

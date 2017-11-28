@@ -1,5 +1,7 @@
 (function(){
   document.addEventListener('DOMContentLoaded', function(){  
+	/* Variable for saving original content inside dialog window */
+	let originalDialogContentOrder = $("#dialog-order").html();
 	/* Function for clearing errors */
 	let clearErrors = () =>{
 		$('#sender').qtip("hide");
@@ -12,30 +14,21 @@
 	};  
 	  
 	/* Dialog window to register order */
-	let dialog;
+	let dialogOrder;
 	
 	/* Dialog window properties */
-	dialog = $( "#dialog-order" ).dialog({
+	dialogOrder = $( "#dialog-order" ).dialog({
 		autoOpen: false,
-		height: 350,
+		height: 300,
 		width: 650,
-		modal: true,
-		buttons: {
-			Cancel: function() {
-				clearErrors();
-				dialog.dialog( "close" );
-			},
-			Submit: function(){
-				tryOrder();
-			}
-		}
+		modal: true
 	});
 	
 	/*Function for registering order
 	* It is a final method 
 	* It sends register response to server and order will be saved in DB
 	*/
-	let registerOrder = () =>
+	let registerOrder = (sender, receiver, start, to, weight, volume, type) =>
 	{
 		$.ajax({
 			url: 'https://someleltest.herokuapp.com/api/orders',
@@ -43,19 +36,21 @@
 			dataType: 'json',
 			data: JSON.parse('{"SID":"'+  SID + '","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + true + '}}'),
 			success: function (data, textStatus, xhr) {
-				$("#submit-order").html('<p>Your delivery was succesfully submitted!</p>' + 
-				'<input type="button" value="Ok" id="ok" name="ok"></input>');
+				$("#dialog-order").html('<p>Your delivery was succesfully submitted!</p>' + 
+				'<button type="button" value="Ok" id="ok" name="ok" class="btn btn-info"></button>');
 				 /*Event listeners for dialog window */
 				$("#ok").on("click", function(){
-					dialog.dialog("close");
+					dialogOrder.dialog("close");
+					$("#dialog-order").html(originalDialogContentOrder);
 				});
 			},
 			error: function (xhr, textStatus, errorThrown) {
-				$("#submit-order").html('<p>During submitting some error occured!</p>' + 
+				$("#dialog-order").html('<p>During submitting some error occured!</p>' + 
 				'<input type="button" value="Ok" id="ok" name="ok"></input>');
 				 /*Event listeners for dialog window */
 				$("#ok").on("click", function(){
-					dialog.dialog("close");
+					dialogOrder.dialog("close");
+					$("#dialog-order").html(originalDialogContentOrder);
 				});
 			}
 		});
@@ -70,10 +65,10 @@
     });
 		
 	// Names of start and end planets
-	let startPlanetName, endPlanetName;
+	let startPlanetNameOrder, endPlanetNameOrder;
 		
 	/* Display planet info on mouseover */
-	cy.on('mouseover', 'node', function(event) {
+	/*cy.on('mouseover', 'node', function(event) {
 		let node = event.cyTarget;
 		let info = "Planet name: " + node.data("name") + "<br/>" + "Galactic: " + node.data("galactic") + "<br/>"+"URL: " + node.data("image");
 		node.qtip({
@@ -87,14 +82,8 @@
 			},
 			style: {classes: 'qtip-bootstrap'}
 		}, event);
-	});
-		
-	// Function for validating email
-	let validateEmail = (email) => {
-		let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-		return re.test(email);
-	};
-		
+	});*/
+				
 	/* Clear all errors when input*/
 	$("#sender").on("input", function(){
 		clearErrors();
@@ -126,37 +115,19 @@
 	
 		/* Function for clearing start planet */
 	$("#clear-from").on("click", function(){
-		let startId = findPlanetIdByName(startPlanetName);
+		let startId = findPlanetIdByName(startPlanetNameOrder);
 		cy.getElementById(startId).removeClass("highlighted start");
-		startPlanetName = "";
+		startPlanetNameOrder = "";
 		$("#from").html("Click to select start planet");
 	});
 	
 	/* Function for clering end planet */
 	$("#clear-to").on("click", function(){
-		let endId = findPlanetIdByName(endPlanetName);
+		let endId = findPlanetIdByName(endPlanetNameOrder);
 		cy.getElementById(endId).removeClass("highlighted end");
-		endPlanetName = "";
+		endPlanetNameOrder = "";
 		$("#to").html("Click to select end planet");
 	});
-	
-	/* Function for validating start planet 
-	*  Takes: planet name
-	*  Checks if planet is in DB
-	*  Return: bool
-	*/
-	let validatePlanetName =(name) =>{
-		let valid = false;
-		for(let i = 0; i < planets.length; ++i)
-		{
-			if(planets[i]["data"]["name"] == name && planets[i]["data"]["type"] != "star")
-			{
-				valid = true;
-				break;
-			}
-		}
-		return valid;
-	};
 	
 	/* Fucntion for registering order
 	*  Works after tapping on some node 
@@ -174,23 +145,23 @@
 		{
 			if(receiver != "" &&  receiver != undefined && validateEmail(receiver))
 			{
-				if(startPlanetName == undefined || startPlanetName == "")
+				if(startPlanetNameOrder == undefined || startPlanetNameOrder == "")
 				{
-					startPlanetName = this.data("name");
+					startPlanetNameOrder = this.data("name");
 					this.addClass('highlighted start');
-					$("#from").html(startPlanetName);
-					dialog.dialog("open");
+					$("#from").html(startPlanetNameOrder);
+					dialogOrder.dialog("open");
 				}else{
-					if(endPlanetName == "" || endPlanetName == undefined)
+					if(endPlanetNameOrder == "" || endPlanetNameOrder == undefined)
 					{
-						endPlanetName = this.data("name");
+						endPlanetNameOrder = this.data("name");
 						this.addClass('highlighted end');
-						$("#to").html(endPlanetName);
-						dialog.dialog("open");
+						$("#to").html(endPlanetNameOrder);
+						dialogOrder.dialog("open");
 					}
 				}
 			}else{
-				$('#reciever').qtip({
+			/*	$('#reciever').qtip({
 					position: {
 						target: $("#reciever"),
 						at: 'top left'
@@ -201,10 +172,10 @@
 					show: {ready: true},
 					hide: {event: false},
 					style: {classes: 'qtip-red qtip-bootstrap'}
-				});
+				});*/
 			}
 		}else{
-			$('#sender').qtip({
+		/*	$('#sender').qtip({
 				position: {
 					target: $("#sender")
 				},
@@ -214,7 +185,7 @@
 				show: {ready: true},
 				hide: {event: false},
 				style: {classes: 'qtip-red qtip-bootstrap'}
-			});
+			});*/
 		}
 	});
 		
@@ -235,8 +206,17 @@
 			data: JSON.parse('{"SID": "' + SID +'","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + false + '}}'),
 			success: function (data, textStatus, xhr) {
 				$("#makeOrderForm").css("display", "none");
-				/*$("#submit-order").html("<p>Total price: " + data['price'] + "</p>"+
-				"<p>Total delivery time: " + data['time'] + "</p>");*/
+				$("#dialog-order").html("<p>Total price: " + data['price'] + "</p>"+
+				"<p>Total delivery time: " + data['time'] + "</p>" + 
+				'<div class="row"><div class="col-6"><button type="button" class="btn btn-info" id="submit-order">Submit</button></div><div class="col-6"><button type="button" class="btn btn-danger" id="cancel-order">Cancel</button></div></div>');
+				
+				$("#submit-order").on("click", function(){
+					registerOrder(sender, receiver, start, to, weight, volume, type);
+				});
+				$("#cancel-order").on("click", function(){
+					dialogOrder.dialog("close");
+					$("#dialog-order").html(originalDialogContentOrder);
+				});
 			},
 			error: function (xhr, textStatus, errorThrown) {
 				$("#dialog-content").html('<span id="close-dialog" class="close">&times;</span>' + 
@@ -254,6 +234,76 @@
 	*  First method
 	*  Validating data
 	*/
+	  // Check input fields
+	  /*
+	  function validDatas() {
+	
+    var pr = true;
+    var name = document.getElementById("name").value;
+    var surname = document.getElementById("surname").value;
+    var lastname = document.getElementById("lastname").value;
+    var email = document.getElementById("email").value;
+    var password=document.getElementById("psw").value;
+    var password2=document.getElementById("psw2").value;
+
+
+
+    if (!regName.test(name)) {
+        document.getElementById("name").value = ""; $("#name").addClass("text-glow");
+        setTimeout(function () { $("#name").removeClass("text-glow"); }, 2000);
+        pr = false;
+    }
+    if (!regName.test(surname)) {
+        document.getElementById("surname").value = "";
+        $("#surname").addClass("text-glow");
+        setTimeout(function () { $("#surname").removeClass("text-glow"); }, 2000);
+        pr = false;
+
+    }
+    if (!regName.test(lastname)) {
+        document.getElementById("lastname").value = "";
+        $("#lastname").addClass("text-glow");
+        setTimeout(function () { $("#lastname").removeClass("text-glow"); }, 2000);
+        pr = false;
+
+    }
+    if (!regEmail.test(email)) {
+        document.getElementById("email").value = "";
+        $("#email").addClass("text-glow");
+        setTimeout(function () { $("#email").removeClass("text-glow"); }, 2000);
+        pr = false;
+    }
+    if (password.length!=0 && password2.length!=0) {
+        if (password != password2) { pr = false; 
+									
+			document.getElementById("psw").value = "";
+        $("#psw").addClass("text-glow");
+        setTimeout(function () { $("#psw").removeClass("text-glow"); }, 2000);
+			
+			 document.getElementById("psw2").value = "";
+        $("#psw2").addClass("text-glow");
+        setTimeout(function () { $("#psw2").removeClass("text-glow"); }, 2000);
+									
+								   } else {
+        }
+    } else {
+       // alert("One of your passwords is empty");
+		 document.getElementById("psw").value = "";
+        $("#psw").addClass("text-glow");
+        setTimeout(function () { $("#psw").removeClass("text-glow"); }, 2000);
+		
+		 document.getElementById("psw2").value = "";
+        $("#psw2").addClass("text-glow");
+        setTimeout(function () { $("#psw2").removeClass("text-glow"); }, 2000);
+		
+        document.getElementById("psw").value = "";
+        document.getElementById("psw2").value = "";
+        pr = false;
+    }
+  
+    return pr;
+}
+	  */
 	let tryOrder = () => {
 		clearErrors();
 		// Get all data
@@ -267,9 +317,9 @@
 		{
 			if(receiver != "" && receiver != undefined && validateEmail(receiver))
 			{
-				if(startPlanetName != "" && startPlanetName != undefined && validatePlanetName(startPlanetName))
+				if(startPlanetNameOrder != "" && startPlanetNameOrder != undefined && validatePlanetName(startPlanetNameOrder))
 				{
-					if(endPlanetName != "" && endPlanetName != undefined && endPlanetName != startPlanetName && validatePlanetName(endPlanetName))
+					if(endPlanetNameOrder != "" && endPlanetNameOrder != undefined && endPlanetNameOrder != startPlanetNameOrder && validatePlanetName(endPlanetNameOrder))
 					{
 						if(weight != "" && weight != undefined && weight > 0)
 						{
@@ -277,19 +327,20 @@
 							{
 								if(type != "" && type != undefined)
 								{
-									submitOrder(sender, receiver, startPlanetName, endPlanetName, weight, volume, type);
+									submitOrder(sender, receiver, startPlanetNameOrder, endPlanetNameOrder, weight, volume, type);
 								}else{
-									$('#type').qtip({
+									
+									/*$('#type').qtip({
 										content: {
 											text: 'Error! Select type of delivery!'
 										},
 										show: {ready: true},
 										hide: {event: false},
 										style: {classes: 'qtip-red qtip-bootstrap'}
-									});
+									});*/
 								}
 							}else{
-								$('#volume').qtip({
+								/*$('#volume').qtip({
 									content: {
 										text: 'Error! Enter valid volume!'
 									},
@@ -300,10 +351,10 @@
 									show: {ready: true},
 									hide: {event: false},
 									style: {classes: 'qtip-red qtip-bootstrap'}
-								});
+								});*/
 							}
 						}else{
-							$('#weight').qtip({
+							/*$('#weight').qtip({
 							content: {
 								text: 'Error! Enter valid weight!'
 							},
@@ -313,10 +364,10 @@
 							show: {ready: true},
 							hide: {event: false},
 							style: {classes: 'qtip-red qtip-bootstrap'}
-							});
+							});*/
 						}
 					}else{
-						$('#to').qtip({
+					/*	$('#to').qtip({
 						content: {
 							text: 'Error! Select end planet!'
 						},
@@ -327,10 +378,10 @@
 						show: {ready: true},
 						hide: {event: false},
 						style: {classes: 'qtip-red qtip-bootstrap'}
-					});
+					});*/
 					}
 				}else{
-					$('#from').qtip({
+					/*$('#from').qtip({
 						position: {
 							target: $("#from")
 						},
@@ -340,10 +391,10 @@
 						show: {ready: true},
 						hide: {event: false},
 						style: {classes: 'qtip-red qtip-bootstrap'}
-					});
+					});*/
 				}
 			}else{
-				$('#reciever').qtip({
+				/*$('#reciever').qtip({
 					position: {
 						target: $("#reciever"),
 						at: 'top left'
@@ -354,10 +405,10 @@
 					show: {ready: true},
 					hide: {event: false},
 					style: {classes: 'qtip-red qtip-bootstrap'}
-				});
+				});*/
 			}
 		}else{
-			$('#sender').qtip({
+		/*	$('#sender').qtip({
 				position: {
 					target: $("#sender")
 				},
@@ -367,13 +418,15 @@
 				show: {ready: true},
 				hide: {event: false},
 				style: {classes: 'qtip-red qtip-bootstrap'}
-			});
+			});*/
 		}
-	}
+	};
+	
+	$("#make-order").on("click", tryOrder);
 		
 	/* Open dialog window for registering order */
 	$("#register-order").on("click", function(){
-		dialog.dialog("open");
+		dialogOrder.dialog("open");
 		// Clear errors
 		clearErrors();
 	});
@@ -381,14 +434,14 @@
 	/*Function for showing graph for selecting start planet*/
 	$("#from").on("click", function()
 	{
-		dialog.dialog("close");
+		dialogOrder.dialog("close");
 		clearErrors();
 	});
 	
 	/* Function for showing graph for selecting end planet */
 	$("#to").on("click", function()
 	{
-		dialog.dialog("close");
+		dialogOrder.dialog("close");
 		clearErrors();
 	});
 	

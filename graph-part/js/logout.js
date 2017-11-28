@@ -1,10 +1,9 @@
 $("#logout").click(function (){
-	localStorage.clear();
-	location.replace("index.html");
-	var url="https://someleltest.herokuapp.com/api/users/logout";
-	$.post(url,{
+	$.post("https://someleltest.herokuapp.com/api/users/logout",{
 		"SID":JSON.parse(localStorage.getItem("SID"))
 		},function (status){
-			console.log(status);
+		console.log(status);
 		});
+	localStorage.clear();
+	location.replace("index.html");
 })

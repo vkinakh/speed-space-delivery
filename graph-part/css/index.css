@@ -112,3 +112,13 @@ h1 {
 }
 
 input[type="text"]:disabled{background-color:white;}
+
+ @keyframes glowing {
+  0% { box-shadow: 0 0 -10px red; }
+  40% { box-shadow: 0 0 20px red; }
+  60% { box-shadow: 0 0 20px red; }
+  100% { box-shadow: 0 0 -10px red; }
+}
+.text-glow {
+  animation: glowing 1500ms;
+}

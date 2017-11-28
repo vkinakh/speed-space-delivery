@@ -2,7 +2,7 @@
 *  This file contains functions, which are used for all pages with cytoscape map/graph
 */
 // System ID for each user (taken from local storage after authentification)
-let SID ="b91df6f1d251dbc0dcd615a4d4f152566c472813fc7a57ece7373c3638b59a74";
+let SID = "73673be307cd3ef9cdfb69186a3fff3f25eca8e1be7c1de15d648b0c33c7f438";
 
 // Global variable for saving planets and paths
 let planets, paths;
@@ -263,4 +263,26 @@ function formatTime(val){
     return formatString;
 }
 
+/* Function for validating start planet 
+*  Takes: planet name
+*  Checks if planet is in DB
+*  Return: bool
+*/
+let validatePlanetName =(name) =>{
+	let valid = false;
+	for(let i = 0; i < planets.length; ++i)
+	{
+		if(planets[i]["data"]["name"] == name && planets[i]["data"]["type"] != "star")
+		{
+			valid = true;
+			break;
+		}
+	}
+	return valid;
+};
 
+// Function for validating email
+let validateEmail = (email) => {
+	let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return re.test(email);
+};

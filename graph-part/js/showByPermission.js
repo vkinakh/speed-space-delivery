@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	
 if (localStorage.getItem("permission")===null){
-	console.log("Yout are not autorized");
+	console.log("You are not authorized");
 }
 	var permission=JSON.parse(localStorage.getItem("permission"));
 	switch(permission){

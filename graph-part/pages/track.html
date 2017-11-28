@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Track delivery</title>
     <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/style.css">
 	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 	<link href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">  
@@ -19,6 +20,7 @@
 	<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
 	<script src="../js/index.js"></script>
     <script src="../js/track.js"></script>
+    <script src="../js/nav.js"></script>
 	<style>
 	    label, input { display:block; }
 		input.text { margin-bottom:12px; width:95%; padding: .4em; }
@@ -28,54 +30,53 @@
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-md navbar-fixed-top navbar-dark bg-dark main-nav" style="background-image: url(../images/nav.png)">
-    <div class="container">
-        <ul class="nav navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="#">Office</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Home</a>
-            </li>
-        </ul>
-        <ul class="nav navbar-nav mx-auto">
-            <li class="nav-item"><a class="nav-link" href="#"><img src="../images/logo.png" alt="logo" height="100px" weight="100px"></a></li>
-        </ul>
-        <ul class="nav navbar-nav">
-           <li class="nav-item">
-                <a class="nav-link" href="#" id="logout">Log out</a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarList"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Menu</a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item default" href="#">Order</a>
-				  <a class="dropdown-item operator admin" href="#">Ships</a>
-				  <a class="dropdown-item  default" href="#">History</a>
-				  <a class="dropdown-item default active" href="#">Track</a>
-				  <a class="dropdown-item  operator admin" href="#">Users</a>
-				  <a class="dropdown-item default " href="#">Planets</a>
-				</div>
-            </li>
-        </ul>
-		<ul class="nav navbar-nav"> 
-			<li class="nav-item"><input type="button" id="track-delivery">Track</input></li>
-		</ul>
-    </div>
-</nav>
+<div class="container-fluid">
+	<div class="row" style="background-color: #010012"> <!-- navbar whith collapse menu -->
+  		 <div class="col-12">
+		   <div class="row justify-content-center">
+							   <div class="col-2 space-nav-text">
+									
+							   </div>
+							<div class="col-2 space-nav-text">
+						   		<span class="nav-text"><a href="#" id="menuBtn">Cabinet</a></span>
+						   </div>
+						   <div class="col-4 space-nav-logo">
+								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>
+						   </div>
+							<div class="col-2 space-nav-text">
+								<p class="text-center" id="register-order"><span><a href="#">Register order</a></span></p>
+						   </div>
+						   <div class="col-2 space-nav-text">
+							<span><a href="#" id="track-delivery">Track</a></span>
+						   </div> 
+						   
+					 </div>
+             </div>
+             <div class="col-12" id="menu" style="display: none;">
+              <div class="row" >
+				<div class="col"><span><a href="order.html" class="active-item">Order</a></span></div>
+				<div class="col operator admin" ><span><a href="ships.html">Ships</a></span></div>
+				<div class="col default"><span><a href="track.html">Track</a></span></div>
+				<div class="col operator admin"><span><a href="users.html">Users</a></span></div>
+				 <div class="col default"><span><a href="planets.html">Planets</a></span></div>
+           		<div class="col"></div>
+            </div>
+             </div>
+              </div>
+</div>
+
 <div id="dialog-form" title="Enter track number">
   <form>
     <fieldset>
       <label for="name">Track number</label>
-      <input type="text" name="track-number" id="track-number" class="ui-widget-content ui-corner-all"></input>
- 
+      <input type="text" name="track-number" id="track-number" class="ui-widget-content ui-corner-all">
 	  <div id="delivery-info"></div>
 	  <span class="err alert alert-danger" name="error" id="error" role="alert"></span>
     </fieldset>
   </form>
 </div>
+
 <div id="cy" class="main"></div>
-<nav class="fixed-bottom" style="background-image: url(../images/stars.jpg); ">&nbsp;</nav> 
-
-
+<script src="../js/showByPermission.js"></script>
 </body>
 </html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>planets</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">  
+  <script src="../js/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/nav.js"></script>
+</head>
+<body>   
+    <div class="container-fluid">
+		<div class="row nav-background"> <!-- navbar whith collapse menu -->
+  		 <div class="col-12">
+		   <div class="row justify-content-center">
+						   <div class="col-2"></div>
+							   <div class="col-2 space-nav-text">
+									<span class="nav-text"><a href="#" id="menuBtn">Cabinet</a></span>
+							   </div>
+						   <div class="col-4 space-nav-logo">
+								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" style=" width:  6vw;"></a></p>
+						   </div>
+
+						   <div class="col-2 space-nav-text">
+					   			<span><a href="#" id="logout">Log out</a></span>
+						   		<!--<p class="text-center"><span class="nav-text"><a href="track.html">Track id</a></span></p> -->
+						   </div>
+						   <div class="col-2 space-nav-text">
+							
+						   </div> 
+					 </div>
+             </div>
+             <div class="col-12" id="menu" style="display: none; background-color: rgb(0,1,22);">
+              <div class="row" >
+				<div class="col"><span><a href="order.html">Order</a></span></div>
+				<div class="col operator admin" ><span><a href="ships.html">Ships</a></span></div>
+				<div class="col default"><span><a href="track.html">Track</a></span></div>
+				<div class="col operator admin"><span><a href="users.html" class="active-item">Users</a></span></div>
+				  <div class="col default"><span><a href="planets.html">Planets</a></span></div>
+            </div>
+             </div>
+              </div>
+    <div class="row" style="padding-top:5%; padding-left: 35%;">
+        <div class="col-12">
+        <p id="table"></p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-12">
+        <form>
+        	<div class="form-group">
+        		<input type="text" placeholder="email" class="form-control" id="email">
+        	</div>
+        	<div class="form-group">
+        		<input type="text" placeholder="location" class="form-control" id="location">
+        	</div>
+        	<div class="form-group">
+        		<input type="text" placeholder="permision" class="form-control" id="permision">
+        	</div>
+        	<div class="row justify-content-center">
+        		<div class="col-md-3 col-xs-6"><button id="addOperator" class="btn btn-primary">Add Operator</button></div>
+        		<div class="col-md-3 col-xs-6"><button id="addAdmin" class="btn btn-info">Add Admin</button></div>
+        		<div class="col-md-3 col-xs-6"><button id="dellUser" class="btn btn-danger">Dell User</button></div>
+        		<div class="col-md-3 col-xs-6"><button id="removePermission" class="btn btn-warning">Remove Permission</button></div>        
+        	</div>
+        </form>
+        </div>
+    </div>
+       </div>
+       <div class="row">
+       	<div class="col-12">&nbsp;</div>
+       </div>
+		<nav class="fixed-bottom" style="background-image: url(../images/stars.jpg); ">
+			<span>&nbsp;</span>
+		</nav>
+	</body>
+<script src="../js/logout.js"></script>
+<script src="../js/users.js"></script>
+<script src="../js/permission.js"></script>
+</html>
