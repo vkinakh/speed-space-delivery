@@ -11,14 +11,41 @@ $(document).ready(function() {
 });
 
 function myGet(responseFunction){
+	if(localStorage.getItem("SID")){
 	$.ajax({
 		 url:urlGet,
 		 type:'GET',
 		 success:function(data){responseFunction(planets_NODE,data)},
 		 error:function(status){alert(status.responseText);}
 			});
+		}else {$.ajax({
+			url:"https://someleltest.herokuapp.com/api/planets/getAll",
+			type:'GET',
+			success:function (data){console.log(data);buildHtmlTablePlanetsUsers(planets_NODE,data)}
+		})}
+}
+function buildHtmlTablePlanetsUsers(selector,array){
+
+	var table="<table class='table-bordered table-hover table-responsive'>";
+	
+	table+="<tr>"
+	table+="<th>name</th><th>moonOf</th><th>galactic</th>"
+	table+="</tr>"
+	for (i=0;i<array.length;++i){
+		table+="<tr>"
+		table+="<td>"+array[i].name;
+		table+="</td>";
+		if(array[i].moonOf){table+="<td>"+array[i].moonOf;table+="</td>"}
+		table+="<td>"+array[i].galactic;
+		table+="</td>";
+		table+="</tr>";
+	}
+	table+="</table>";
+	selector.innerHTML=table;
+	
 }
 
+//<i class='fa fa-times-circle'></i>
 function myPost(obj_JSON){
 	console.log(obj_JSON);
  $.ajax({
@@ -79,7 +106,7 @@ keys.sort();
 	for (i=0;i<keys.length;++i){
 		table+="<th>"+keys[i]+"</th>";
 	}
-		table+="<th>X</th><th>Y</th>";
+		table+="<th>X</th><th>Y</th><th style='color:red;'>Delete</th><th style='color:#FFED00;'>Change</th>";
 	table+="</tr>"
 	
 	
@@ -105,6 +132,10 @@ keys.sort();
 			table+="<td>"+position[i].x+"</td>";
 			table+="<td>"+position[i].y+"</td>";
 			}
+			table+="<td><i class='fa fa-times-circle fa-2x' style='color:red;' onclick='";
+			table+="removePlanet(\"";
+			table+=temp.name;
+			table+="\")'</i></td>";
 			table+'</tr>';
 		}
 
@@ -112,6 +143,41 @@ keys.sort();
 	table+="</table>";
 	selector.innerHTML=table;
 		}
+ function removePlanet(name){
+	  $.confirm({
+	animation:'rotate',
+	closeAnimation:'scale',	 
+    title: 'Removing Planet',
+    content: 'Do you realy want to remove '+ name,
+    type: 'red',
+    typeAnimated: true,
+	autoClose: 'cancel|4000',
+    buttons: {
+        remove: {
+            text: 'Remove!',
+            btnClass: 'btn-red',
+            action: function(){
+				$.ajax({
+		 type:'DELETE',
+		 url:url,
+		 data:{
+			 "SID":JSON.parse(localStorage.getItem("SID")),
+			 "planetName":name
+		 },
+		 success:function (){
+		myGet(buildHtmlTablePlanets);
+	},
+		erorr:function(status){
+			alert(status.responseText);
+		}
+	 })
+            }
+        },
+        cancel: function () {
+        }
+    }
+})
+ }
 			
 
 

@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	
 if (localStorage.getItem("permission")===null){
-	console.log("Yout are nor autorized");
+	console.log("You are not authorized");
 }
 	var permission=JSON.parse(localStorage.getItem("permission"));
 	switch(permission){
@@ -21,7 +21,7 @@ if (localStorage.getItem("permission")===null){
 	}	
 	default:{
 		console.log("switch default");
-		var admin=document.getElementsByClassName("admin operator");
+		var admin=document.getElementsByClassName("admin");
 		for (i=0;i<admin.length;i++){
 			admin[i].style.display="none";
 		}

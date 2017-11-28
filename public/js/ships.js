@@ -47,23 +47,6 @@ function loadShips(){
 		 error:function(status){alert(status.responseText)}
 	 })
 
-    /*    $.post("https://someleltest.herokuapp.com/api/ships",
-        {
-            
-                "ship":{
-                    "location":location,
-                    "capacity":capacity,
-                    "volume":volume,
-                    "ability":"innerGalactic",
-                    "speed":speed,
-                    "consumption":5,
-					"ability":ability
-                }
-            },
-        function(data,status){
-            console.log("O`k");
-           // location.reload();
-        });*/
     })
 $("#Delete").click(function (){
 	//var url=https://someleltest.herokuapp.com/api/ships

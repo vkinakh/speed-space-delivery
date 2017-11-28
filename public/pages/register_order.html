@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register order</title>
+    <link rel="stylesheet" href="../css/index.css" />
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <!-- bootstrap 4 -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    
+    <!-- qtips library -->
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.js"></script>
+	<link href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
+	<!-- jqeury ui -->
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<!-- cytoscape library -->
+	<script src="../js/cytoscape.min.js"></script>
+	<script src="../js/cola.js"></script>
+    <script src="../js/cytoscape-cola.js"></script>
+    <script src="../js/tooltipster.bundle.min.js"></script>
+	<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
+	<!-- own -->
+	
+	  <script src="../js/loadPages.js"></script>
+	
+	<script src="../js/index.js"></script>
+    <script src="../js/register.js"></script>
+  	<script src="../js/nav.js"></script>
+
+</head>
+<body>
+	
+<div class="container-fluid">
+	<div class="row" style="background-color: #010012"> <!-- navbar whith collapse menu -->
+  		 <div class="col-12">
+		   <div class="row justify-content-center">
+							   <div class="col-2 space-nav-text">
+									
+							   </div>
+							<div class="col-2 space-nav-text">
+						   		<span class="nav-text"><a href="#" id="menuBtn">Cabinet</a></span>
+						   </div>
+						   <div class="col-4 space-nav-logo">
+								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>
+						   </div>
+
+					   	   <div class="col-2 space-nav-text">
+								<p class="text-center" id="register-order"><span class="active-item"><a href="#">Register order</a></span></p>
+						   </div>
+						   
+						   <div class="col-2 space-nav-text">
+							<span ><a href="#" ></a></span>
+						   </div> 
+						   
+					 </div>
+             </div>
+             <div class="col-12" id="menu" style="display: none;">
+              <div class="row" >
+				<div class="col"><span><a href="order.html" class="">Order</a></span></div>
+				<div class="col operator admin" ><span><a href="ships.html">Ships</a></span></div>
+				<div class="col default"><span><a href="track.html">Track</a></span></div>
+				<div class="col operator admin"><span><a href="users.html">Users</a></span></div>
+				  <div class="col default"><span><a href="planets.html">Planets</a></span></div>
+            </div>
+             </div>
+              </div>
+</div>
+<div id="cy" class="main">
+</div>
+
+	<div id="dialog-order" title="Submit order">
+		<form id='makeOrderForm'>
+			<div class="row" style=" margin: 0; padding: 0 ">
+				<div class="col-6">
+					<div class="form-group">
+						<input type="text" id="sender" placeholder="Sender" class="form-control">
+					</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<input type="text" id="reciever" placeholder="Reciever" class="form-control">
+					</div>
+				</div>
+			</div>
+			<div class="row" style=" margin: 0; padding: 0 ">
+				<div class="col-5">
+					<p id="from" name="from">Click to select end planet</p>
+				</div>
+				<div class="col-1">
+					<button type="button" id="clear-from" class="btn alert-danger">x</button>
+				</div>
+				<div class="col-5">
+					<p id="to" name="to">Click to select end planet</p>
+				</div>
+				<div class="col-1">
+					<button type="button" id="clear-to" class="btn alert-danger">x</button>
+				</div>
+			</div>
+			<div class="row" style=" margin: 0; padding: 0 ">
+				<div class="col-6">
+						<div class="form-group">
+							<input type="number" id="weight" name="weight" class="form-control" placeholder="Weight">
+						</div>
+				</div>
+				<div class="col-6">
+					<div class="form-group">
+						<input type="number" id="volume" class="form-control" placeholder="Volume">
+					</div>
+				</div>
+			</div>
+			<div class="row" style=" margin: 0; padding: 0 ">
+				<div class="col-6">
+					<div class="form-group">
+						<select id="type" class='form-control'>
+							<option value="">None</option>
+							<option value="regular">Regular</option>
+							<option value="quick">Quick</option>
+							<option value="cheap">Cheap</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script src="../js/showByPermission.js"></script>
+	<script src="../js/logout.js"></script>
+</body>
+</html>

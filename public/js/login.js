@@ -16,8 +16,9 @@ function login (event){
 			data:loginObj,
 			success:function(data){
 				localStorage.setItem("SID",JSON.stringify(data.SID));
+				localStorage.setItem("email",JSON.stringify(email));
 				localStorage.setItem("permission",JSON.stringify(data.permission));
-				location.replace("office.html");
+				location.replace("track.html");
 			},
 			error:function(status){alert(status.responseText);}
 		})
