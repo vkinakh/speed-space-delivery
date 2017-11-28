@@ -1,6 +1,7 @@
 let express = require('express');
 let router = express.Router();
 let planetModel = require('../models/planet.js');
+let pathModel = require('../models/path.js');
 let containerModel = require('../models/container.js');
 let userModel = require('../models/user.js');
 let multer = require('multer');
