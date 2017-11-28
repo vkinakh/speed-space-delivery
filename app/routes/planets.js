@@ -154,11 +154,11 @@ router.route('/')
                                 if (err) res.status(400).send('Error while querying planet database');
                                 else if(result&&result.length>0){
                                     let err0r = false;
-                                    result.forEach(function(planet, i){
-                                        pathModel.find({$or: [{'source': planet}, {'target': planet}]}, function(err, data){
+                                    result.forEach(function(planetk, i){
+                                        pathModel.find({$or: [{'source': planetk.name}, {'target': planetk.name}]}, function(err, data){
                                             if (err) res.status(400).send('Error while querying path database');
                                             else if(data.length===0){
-                                                planetModel.remove({'_id': planet._id}, function (err) {
+                                                planetModel.remove({'_id': planetk._id}, function (err) {
                                                     if (err){
                                                         if(!err0r) res.status(400).send('Error while removing planet');
                                                         err0r = true;
