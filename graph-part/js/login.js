@@ -18,7 +18,7 @@ function login (event){
 				localStorage.setItem("SID",JSON.stringify(data.SID));
 			//	alert(data.SID);
 				localStorage.setItem("permission",JSON.stringify(data.permission));
-				location.replace("track.html");
+				location.replace("main_user_page.html");
 			},
 			error:function(status){alert(status.responseText);}
 		})
