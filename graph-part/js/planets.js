@@ -42,8 +42,10 @@ function buildHtmlTablePlanetsUsers(selector,array){
 	}
 	table+="</table>";
 	selector.innerHTML=table;
-		
+	
 }
+
+//<i class='fa fa-times-circle'></i>
 function myPost(obj_JSON){
 	console.log(obj_JSON);
  $.ajax({
@@ -104,7 +106,7 @@ keys.sort();
 	for (i=0;i<keys.length;++i){
 		table+="<th>"+keys[i]+"</th>";
 	}
-		table+="<th>X</th><th>Y</th>";
+		table+="<th>X</th><th>Y</th><th style='color:red;'>Delete</th><th style='color:#FFED00;'>Change</th>";
 	table+="</tr>"
 	
 	
@@ -130,6 +132,10 @@ keys.sort();
 			table+="<td>"+position[i].x+"</td>";
 			table+="<td>"+position[i].y+"</td>";
 			}
+			table+="<td><i class='fa fa-times-circle fa-2x' style='color:red;' onclick='";
+			table+="removePlanet(\"";
+			table+=temp.name;
+			table+="\")'</i></td>";
 			table+'</tr>';
 		}
 
@@ -137,6 +143,41 @@ keys.sort();
 	table+="</table>";
 	selector.innerHTML=table;
 		}
+ function removePlanet(name){
+	  $.confirm({
+	animation:'rotate',
+	closeAnimation:'scale',	 
+    title: 'Removing Planet',
+    content: 'Do you realy want to remove '+ name,
+    type: 'red',
+    typeAnimated: true,
+	autoClose: 'cancel|4000',
+    buttons: {
+        remove: {
+            text: 'Remove!',
+            btnClass: 'btn-red',
+            action: function(){
+				$.ajax({
+		 type:'DELETE',
+		 url:url,
+		 data:{
+			 "SID":JSON.parse(localStorage.getItem("SID")),
+			 "planetName":name
+		 },
+		 success:function (){
+		myGet(buildHtmlTablePlanets);
+	},
+		erorr:function(status){
+			alert(status.responseText);
+		}
+	 })
+            }
+        },
+        cancel: function () {
+        }
+    }
+})
+ }
 			
 
 

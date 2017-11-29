@@ -25,6 +25,8 @@
 	<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
 	<!-- own -->
 	<script src="../js/main_user_page.js"></script>
+	<script src="../js/loadPages.js"></script>
+ 	<script src="../js/showByPermission.js"></script>
   	<script src="../js/nav.js"></script>
 </head>
 <body>
@@ -34,10 +36,10 @@
   		 <div class="col-12">
 		   <div class="row justify-content-center">
 							<div class="col-2 space-nav-text">
-								<p class="text-center default" id="show-table"><span><a href="#">Table of orders</a></span></p>
+								<p class="text-center default" id="show-table-user"><span><a href="#">Table of orders</a></span></p>
 							</div>
 							<div class="col-2 space-nav-text">
-								<p class="text-center default" id="register-order"><span><a href="#">Register order</a></span></p>
+								<p class="text-center default" id="register-order-user"><span><a href="#">Register order</a></span></p>
 								<span class="nav-text text-center admin operator"><a href="#" id="menuBtn">Cabinet</a></span>
 						   </div>
 						   <div class="col-4 space-nav-logo">
@@ -45,7 +47,7 @@
 						   </div>
 
 					   	   <div class="col-2 space-nav-text">
-								<p class="text-center default" id="track-delivery"><span><a href="#">Track</a></span></p>
+								<p class="text-center default" id="track-delivery-user"><span><a href="#">Track</a></span></p>
 						   </div>
 						   
 						   <div class="col-2 space-nav-text">
@@ -56,74 +58,84 @@
              </div>
              <div class="col-12" id="menu" style="display: none;">
               <div class="row" >
-				<div class="col operator admin"><span><a href="order.html" class="">Order</a></span></div>
+				<div class="col operator admin"><span><a href="order.html">Orders</a></span></div>
 				<div class="col operator admin" ><span><a href="ships.html">Ships</a></span></div>
-				<div class="col default operator admin"><span><a href="track.html">Track</a></span></div>
-				<div class="col operator admin"><span><a href="users.html">Users</a></span></div>
-				  <div class="col default operator admin"><span><a href="planets.html">Planets</a></span></div>
+				<div class="col default operator admin"><p class="text-center"><span><a href="#" id="track-delivery">Track</a></span></p></div>
+				<div class="col operator admin"><p class="text-center"><span><a href="users.html">Users</a></span></p></div>
+				  <div class="col default operator admin"><p class="text-center"><span><a href="planets.html">Planets</a></span></p></div>
+          		<div class="col operator admin"><p class="text-center"><span><a href="#" id="register-order">Register order</a></span></p></div>
+          		<div class="col operator admin"><p class="text-center"><span><a href="#" id="show-table">History</a></span></p></div>
+           </div>
             </div>
              </div>
               </div>
-</div>
 <div id="cy" class="main">
 </div>
 	<!-- Dialog window for registering orders -->
 	<div id="dialog-order" title="Submit order">
-		<form id='makeOrderForm'>
-			<div class="row" style=" margin: 0; padding: 0 ">
-				<div class="col-6">
-					<div class="form-group">
-						<input type="text" id="sender" placeholder="Sender" class="form-control">
-					</div>
-				</div>
-				<div class="col-6">
-					<div class="form-group">
-						<input type="text" id="reciever" placeholder="Reciever" class="form-control">
-					</div>
+	<form id='makeOrderForm'>
+		<div class="row">
+			<div class="col-6 hint" data-title="Input your email sender@example.com">
+				<div class="form-group">
+					<label for="sender">Sender</label>
+					<input type="text" id="sender" placeholder="sender@exapmle.com" class="form-control" >
 				</div>
 			</div>
-			<div class="row" style=" margin: 0; padding: 0 ">
-				<div class="col-5">
-					<p id="from" name="from">Click to select end planet</p>
+			<div class="col-6 hint" data-title="Input reciever`s email  reciever@example.com">
+				<div class="form-group">
+					<label for="reciever">Reciever</label>
+					<input type="text" id="reciever" placeholder="reciever@exapmle.com" class="form-control">
+				</div>
+			</div>
+		</div>
+		 <div class="row" style="padding-top: 10%">
+			<div class="col-5" data-title="Select planet from where you want send container">
+						<p id="from" name="from">Click to select start planet</p>
 				</div>
 				<div class="col-1">
 					<button type="button" id="clear-from" class="btn alert-danger">x</button>
-				</div>
-				<div class="col-5">
+			</div>
+			<div class="col-5 hint" data-title="Select the planet where you want to send the parcel" >
+			
 					<p id="to" name="to">Click to select end planet</p>
 				</div>
 				<div class="col-1">
 					<button type="button" id="clear-to" class="btn alert-danger">x</button>
 				</div>
+			
 			</div>
-			<div class="row" style=" margin: 0; padding: 0 ">
-				<div class="col-6">
-						<div class="form-group">
-							<input type="number" id="weight" name="weight" class="form-control" placeholder="Weight">
-						</div>
-				</div>
-				<div class="col-6">
-					<div class="form-group">
-						<input type="number" id="volume" class="form-control" placeholder="Volume">
-					</div>
-				</div>
+       <div class="row" style="padding-top: 10%">
+		   <div class="col-6 hint" data-title="Input weight of your parcel form 0 to 3000">
+			<div class="form-group">
+				<label for="weight">Weight</label>
+				<input type="text" id="weight" class="form-control">
 			</div>
-			<div class="row" style=" margin: 0; padding: 0 ">
-				<div class="col-6">
-					<div class="form-group">
-						<select id="type" class='form-control'>
-							<option value="">None</option>
-							<option value="regular">Regular</option>
-							<option value="quick">Quick</option>
-							<option value="cheap">Cheap</option>
-						</select>
-					</div>
-				</div>
-				<div class="col-6">
-					<button type="button" id="make-order" class="btn btn-info">Make Order</button>
-				</div>
-			</div>
-		</form>
+		   </div>
+           <div class="col-6 hint" data-title="input volume of your parcel from 0 to 100">
+			<div class="form-group">
+			<label for="volume">Volume</label>
+			<input type="text" id="volume" class="form-control">
+       	</div>
+       </div>
+       </div>
+       <div class="row" style="padding-top: 10%">
+       	<div class="col-6 hint" data-title="Choose between cheap, regular, quick.">
+       	<!--Cheap- is cheap delivery method, your order will stay in queue. Regular - the cheapest method delivery , your order will be send as soon as regular ship wiil be avalible. Quick - the most expensive method dilvery , your order will be send during day-->
+       	<div class="form-group">
+       	<select id="type" class='form-control'>
+       		<option value="">None</option>
+       		<option value="regular">Regular</option>
+       		<option value="cheap">Cheap</option>
+			<option value="quick">Quick</option>
+       	</select></div>
+       	</div>
+       	<div class="col-12">
+       	<div class="form-group">
+       		<p class="text-center"><button type="button" id="make-order" class="btn btn-info">Make Order</button></p>
+       	</div>
+       	</div>
+       </div>
+		</form> 
 	</div>
 	<!-- End of dialog window for registering order -->
 	

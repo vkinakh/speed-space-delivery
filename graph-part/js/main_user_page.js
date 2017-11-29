@@ -1,6 +1,13 @@
 /* Main functions for work in main user page */
 // System ID for each user (taken from local storage after authentification)
-let SID = "3f46fd78c4c97533a687e06fafe91872d8fe40dc755220d82f4e55d2be118ca4";
+let SID = JSON.parse(localStorage.getItem("SID"));
+
+/* Email of current user */
+let email = JSON.parse(localStorage.getItem("email"));
+
+/* Permission for user */
+let permission = JSON.parse(localStorage.getItem("permission")); 
+permission=permission? permission:"unauthorized";
 
 // Global variable for saving planets and paths
 let planets, paths;
@@ -279,6 +286,12 @@ let validatePlanetName =(name) =>{
 	return valid;
 };
 
+/* Function for clearing styles and errors*/
+let clearGraphStyles = () =>{
+	cy.$().removeClass('highlighted start end');
+	cy.$().removeClass("quick regular cheap delivery-place start-delivery-place end-delivery-place");
+};
+
 // Function for validating email
 let validateEmail = (email) => {
 	let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -299,6 +312,7 @@ let validateEmail = (email) => {
 	
 	/* Display planet info on mouseover */
 	cy.on('mouseover', 'node', function(event) {
+		$('.qtip').remove();
 		let node = event.cyTarget;
 		let info = "Planet name: " + node.data("name") + "<br/>" + "Galactic: " + node.data("galactic") + "<br/>"+"URL: " + node.data("image");
 		node.qtip({
@@ -318,25 +332,14 @@ let validateEmail = (email) => {
 	/* Functions for register order part */
 	/* Variable for saving original content inside dialog window */
 	let originalDialogContentOrder = $("#dialog-order").html();
-	
-	/* Function for clearing errors */
-	let clearErrors = () =>{
-		$('#sender').qtip("hide");
-		$('#reciever').qtip("hide");
-		$('#from').qtip("hide");
-		$('#to').qtip("hide");
-		$('#weight').qtip("hide");
-		$('#volume').qtip("hide");
-		$('#type').qtip("hide");
-	};  
-	
+		
 	/* Dialog window to register order */
 	let dialogOrder;
 	
 	/* Dialog window properties */
 	dialogOrder = $( "#dialog-order" ).dialog({
 		autoOpen: false,
-		height: 300,
+		height: 575,
 		width: 650,
 		modal: true
 	});
@@ -359,6 +362,9 @@ let validateEmail = (email) => {
 				$("#ok").on("click", function(){
 					dialogOrder.dialog("close");
 					$("#dialog-order").html(originalDialogContentOrder);
+					addListenersToOrderDialogWindow();
+					clearGraphStyles();
+					clearStartEndNameOrder();
 				});
 			},
 			error: function (xhr, textStatus, errorThrown) {
@@ -368,6 +374,9 @@ let validateEmail = (email) => {
 				$("#ok").on("click", function(){
 					dialogOrder.dialog("close");
 					$("#dialog-order").html(originalDialogContentOrder);
+					addListenersToOrderDialogWindow();
+					clearGraphStyles();
+					clearStartEndNameOrder();
 				});
 			}
 		});
@@ -376,35 +385,12 @@ let validateEmail = (email) => {
 	// Names of start and end planets
 	let startPlanetNameOrder, endPlanetNameOrder;
 	
-	/* Clear all errors when input*/
-	$("#sender").on("input", function(){
-		clearErrors();
-	});
-	
-	$("#reciever").on("input", function(){
-		clearErrors();
-	});
-	
-	$("#from").on("input", function(){
-		clearErrors();
-	});
-	
-	$("#to").on("input", function(){
-		clearErrors();
-	});
-	
-	$("#weight").on("input", function(){
-		clearErrors();
-	});
-	
-	$("#volume").on("input", function(){
-		clearErrors();
-	});
-	
-	$("#type").on("input", function(){
-		clearErrors();
-	});
-	
+	/* Function for clearing startPlanetNameOrder and endPlanetNameOrder */
+	let clearStartEndNameOrder = () => {
+		startPlanetNameOrder = "";
+		endPlanetNameOrder = "";
+	};
+				
 	/* Function for clearing start planet */
 	$("#clear-from").on("click", function(){
 		let startId = findPlanetIdByName(startPlanetNameOrder);
@@ -426,9 +412,6 @@ let validateEmail = (email) => {
 	*  Saves start and end nodes data
 	*/
 	cy.on('tap', 'node', function(evt){
-		// Remove all error 
-		clearErrors();
-
 		// Get all data
 		let sender = $("#sender").val();
 		let receiver = $("#reciever").val();
@@ -453,31 +436,16 @@ let validateEmail = (email) => {
 					}
 				}
 			}else{
-			/*	$('#reciever').qtip({
-					position: {
-						target: $("#reciever"),
-						at: 'top left'
-					},
-					content: {
-						text: 'Error! Enter valid receiver email!'
-					},
-					show: {ready: true},
-					hide: {event: false},
-					style: {classes: 'qtip-red qtip-bootstrap'}
-				});*/
+				dialogOrder.dialog("open");
+				$("#reciever").val("");
+				$("#reciever").addClass("text-glow");
+				setTimeout(function () { $("#reciever").removeClass("text-glow"); }, 2000);
 			}
 		}else{
-		/*	$('#sender').qtip({
-				position: {
-					target: $("#sender")
-				},
-				content: {
-					text: 'Error! Enter valid sender email!'
-				},
-				show: {ready: true},
-				hide: {event: false},
-				style: {classes: 'qtip-red qtip-bootstrap'}
-			});*/
+			dialogOrder.dialog("open");
+			$("#sender").val("");
+			$("#sender").addClass("text-glow");
+			setTimeout(function () { $("#sender").removeClass("text-glow"); }, 2000);
 		}
 	});
 	
@@ -508,6 +476,9 @@ let validateEmail = (email) => {
 				$("#cancel-order").on("click", function(){
 					dialogOrder.dialog("close");
 					$("#dialog-order").html(originalDialogContentOrder);
+					addListenersToOrderDialogWindow();
+					clearGraphStyles();
+					clearStartEndNameOrder();
 				});
 			},
 			error: function (xhr, textStatus, errorThrown) {
@@ -516,14 +487,17 @@ let validateEmail = (email) => {
 				'<input type="button" value="Ok" id="ok" name="ok"></input>');
 				 /*Event listeners for dialog window */
 				$("#ok").on("click", function(){
-					$("#dialog-window").css("display", "none");
+					dialogOrder.dialog("close");
+					$("#dialog-order").html(originalDialogContentOrder);
+					addListenersToOrderDialogWindow();
+					clearGraphStyles();
+					clearStartEndNameOrder();
 				});
 			}
 		});
 	};
 	
 	let tryOrder = () => {
-		clearErrors();
 		// Get all data
 		let sender = $("#sender").val();
 		let receiver = $("#reciever").val();
@@ -547,121 +521,97 @@ let validateEmail = (email) => {
 								{
 									submitOrder(sender, receiver, startPlanetNameOrder, endPlanetNameOrder, weight, volume, type);
 								}else{
-									
-									/*$('#type').qtip({
-										content: {
-											text: 'Error! Select type of delivery!'
-										},
-										show: {ready: true},
-										hide: {event: false},
-										style: {classes: 'qtip-red qtip-bootstrap'}
-									});*/
+									dialogOrder.dialog("open");
+									$("#type").val("");
+									$("#type").addClass("text-glow");
+									setTimeout(function () { $("#type").removeClass("text-glow"); }, 2000);
 								}
 							}else{
-								/*$('#volume').qtip({
-									content: {
-										text: 'Error! Enter valid volume!'
-									},
-									position: {
-										target: $("#volume"),
-										at: "top left"
-									},
-									show: {ready: true},
-									hide: {event: false},
-									style: {classes: 'qtip-red qtip-bootstrap'}
-								});*/
+								dialogOrder.dialog("open");
+								$("#volume").val("");
+								$("#volume").addClass("text-glow");
+								setTimeout(function () { $("#volume").removeClass("text-glow"); }, 2000);
 							}
 						}else{
-							/*$('#weight').qtip({
-							content: {
-								text: 'Error! Enter valid weight!'
-							},
-							position: {
-								target: $("#weight")
-							},
-							show: {ready: true},
-							hide: {event: false},
-							style: {classes: 'qtip-red qtip-bootstrap'}
-							});*/
+							dialogOrder.dialog("open");
+							$("#weight").val("");
+							$("#weight").addClass("text-glow");
+							setTimeout(function () { $("#weight").removeClass("text-glow"); }, 2000);
 						}
 					}else{
-					/*	$('#to').qtip({
-						content: {
-							text: 'Error! Select end planet!'
-						},
-						position: {
-							target: $("#to"),
-							at: "top left"
-						},
-						show: {ready: true},
-						hide: {event: false},
-						style: {classes: 'qtip-red qtip-bootstrap'}
-					});*/
+						dialogOrder.dialog("open");
+						$("#to").val("");
+						$("#to").addClass("text-glow");
+						setTimeout(function () { $("#to").removeClass("text-glow"); }, 2000);
 					}
 				}else{
-					/*$('#from').qtip({
-						position: {
-							target: $("#from")
-						},
-						content: {
-							text: 'Error! Select start planet!'
-						},
-						show: {ready: true},
-						hide: {event: false},
-						style: {classes: 'qtip-red qtip-bootstrap'}
-					});*/
+					dialogOrder.dialog("open");
+					$("#from").val("");
+					$("#from").addClass("text-glow");
+					setTimeout(function () { $("#from").removeClass("text-glow"); }, 2000);
 				}
 			}else{
-				/*$('#reciever').qtip({
-					position: {
-						target: $("#reciever"),
-						at: 'top left'
-					},
-					content: {
-						text: 'Error! Enter valid receiver email!'
-					},
-					show: {ready: true},
-					hide: {event: false},
-					style: {classes: 'qtip-red qtip-bootstrap'}
-				});*/
+				dialogOrder.dialog("open");
+				$("#reciever").val("");
+				$("#reciever").addClass("text-glow");
+				setTimeout(function () { $("#reciever").removeClass("text-glow"); }, 2000);
 			}
 		}else{
-		/*	$('#sender').qtip({
-				position: {
-					target: $("#sender")
-				},
-				content: {
-					text: 'Error! Enter valid sender email!'
-				},
-				show: {ready: true},
-				hide: {event: false},
-				style: {classes: 'qtip-red qtip-bootstrap'}
-			});*/
+			dialogOrder.dialog("open");
+			$("#sender").val("");
+			$("#sender").addClass("text-glow");
+			setTimeout(function () { $("#sender").removeClass("text-glow"); }, 2000);
 		}
 	};
 	
 	$("#make-order").on("click", tryOrder);
 		
-	/* Open dialog window for registering order */
+	/* Open dialog window for registering order 
+	*  For admins and operators
+	*/
 	$("#register-order").on("click", function(){
 		dialogOrder.dialog("open");
-		// Clear errors
-		clearErrors();
 	});
 	
-	/*Function for showing graph for selecting start planet*/
-	$("#from").on("click", function()
-	{
-		dialogOrder.dialog("close");
-		clearErrors();
+	/* Open dialog window for registering order 
+	*  For users
+	*/
+	$("#register-order-user").on("click", function(){
+		dialogOrder.dialog("open");
 	});
+		
+	let addListenersToOrderDialogWindow = () =>
+	{
+		/*Function for showing graph for selecting start planet*/
+		$("#from").on("click", function(){
+			dialogOrder.dialog("close");
+		});
 	
-	/* Function for showing graph for selecting end planet */
-	$("#to").on("click", function()
-	{
-		dialogOrder.dialog("close");
-		clearErrors();
-	});
+		/* Function for showing graph for selecting end planet */
+		$("#to").on("click", function()
+		{
+			dialogOrder.dialog("close");
+		});
+		$("#make-order").on("click", tryOrder);
+		/* Function for clearing start planet */
+		$("#clear-from").on("click", function(){
+			let startId = findPlanetIdByName(startPlanetNameOrder);
+			cy.getElementById(startId).removeClass("highlighted start");
+			startPlanetNameOrder = "";
+			$("#from").html("Click to select start planet");
+		});
+	
+		/* Function for clering end planet */
+		$("#clear-to").on("click", function(){
+			let endId = findPlanetIdByName(endPlanetNameOrder);
+			cy.getElementById(endId).removeClass("highlighted end");
+			endPlanetNameOrder = "";
+			$("#to").html("Click to select end planet");
+		});
+	};
+	
+	tryPromise(addListenersToOrderDialogWindow);
+	
 	/* Functions for register order part*/
 	
 	/* Functions for track order part*/
@@ -958,9 +908,20 @@ let validateEmail = (email) => {
 		findDelivery();
 	});	
 	
+	/* Opens track delivery dialog window 
+	*  For admins and operators 
+	*/
 	$( "#track-delivery" ).on( "click", function() {
 		dialogTrack.dialog( "open" );
 	});
+	
+	/* Opens track delivery dialog window 
+	*  For users 
+	*/
+	$( "#track-delivery-user" ).on( "click", function() {
+		dialogTrack.dialog( "open" );
+	});
+	
 	/* Functions for track order part */
 	// Begin and end are reqiured for aStar algorithm
 	let beginTable, endTable;
@@ -1058,27 +1019,54 @@ let validateEmail = (email) => {
 	
 	/* Function for writing orders data to dialog form */
 	let applyDatasetDeliveriesTable = data => {
-		let table='<table class="table table-bordered table-hover">';
-        table+='<tr><th>trackID</th><th>esttime</th><th>sender</th><th>reciever</th><th>type</th><th>status</th><th>reg_date</th><th>price</th>';
-		table+='<th>volume</th><th>weight</th><th>location</th><th>to</th><th>from</th></tr>'
-        for(let i=0;i<data.length;++i){
-        table+="<tr>"
-            table+="<td>"+data[i].trackID+"</td>";
-            table+="<td>"+formatTime(data[i].esttime)+"</td>";
-            table+="<td>"+data[i].sender+"</td>";
-            table+="<td>"+data[i].reciever+"</td>";
-            table+="<td>"+data[i].type+"</td>";
-            table+="<td>"+data[i].status+"</td>";
-            table+="<td>"+data[i].reg_date+"</td>";
-            table+="<td>"+data[i].price+"</td>";
-            table+="<td>"+data[i].volume+"</td>";
-            table+="<td>"+data[i].weight+"</td>";
-			table+="<td>"+data[i].location+"</td>";
-			table+="<td>"+data[i].to+"</td>";
-			table+="<td>"+data[i].from+"</td>";
-        table+="</tr>"
-        }
-        table+='</table>';
+		let table;
+		if(permission == "admin" || permission == "operator"){
+			table='<table class="table table-bordered table-hover">';
+			table+='<tr><th>trackID</th><th>esttime</th><th>sender</th><th>reciever</th><th>type</th><th>status</th><th>reg_date</th><th>price</th>';
+			table+='<th>volume</th><th>weight</th><th>location</th><th>to</th><th>from</th></tr>'
+			for(let i=0;i<data.length;++i){
+				table+="<tr>"
+				table+="<td>"+data[i].trackID+"</td>";
+				table+="<td>"+formatTime(data[i].esttime)+"</td>";
+				table+="<td>"+data[i].sender+"</td>";
+				table+="<td>"+data[i].reciever+"</td>";
+				table+="<td>"+data[i].type+"</td>";
+				table+="<td>"+data[i].status+"</td>";
+				table+="<td>"+data[i].reg_date+"</td>";
+				table+="<td>"+data[i].price+"</td>";
+				table+="<td>"+data[i].volume+"</td>";
+				table+="<td>"+data[i].weight+"</td>";
+				table+="<td>"+data[i].location+"</td>";
+				table+="<td>"+data[i].to+"</td>";
+				table+="<td>"+data[i].from+"</td>";
+				table+="</tr>"
+			}	
+			table+='</table>';
+		}else{
+			table='<table class="table table-bordered table-hover">';
+			table+='<tr><th>trackID</th><th>esttime</th><th>sender</th><th>reciever</th><th>type</th><th>status</th><th>reg_date</th><th>price</th>';
+			table+='<th>volume</th><th>weight</th><th>location</th><th>to</th><th>from</th></tr>';
+			for(let i=0;i<data.length;++i){
+				if(email == data[i].sender || email == data[i].reciever){
+					table+="<tr>"
+					table+="<td>"+data[i].trackID+"</td>";
+					table+="<td>"+formatTime(data[i].esttime)+"</td>";
+					table+="<td>"+data[i].sender+"</td>";
+					table+="<td>"+data[i].reciever+"</td>";
+					table+="<td>"+data[i].type+"</td>";
+					table+="<td>"+data[i].status+"</td>";
+					table+="<td>"+data[i].reg_date+"</td>";
+					table+="<td>"+data[i].price+"</td>";
+					table+="<td>"+data[i].volume+"</td>";
+					table+="<td>"+data[i].weight+"</td>";
+					table+="<td>"+data[i].location+"</td>";
+					table+="<td>"+data[i].to+"</td>";
+					table+="<td>"+data[i].from+"</td>";
+					table+="</tr>";
+				}
+			}	
+			table+='</table>';
+		}
         $("#orders").html(table);
 	};
 	
@@ -1096,11 +1084,22 @@ let validateEmail = (email) => {
 		}
 	});
 	
-	/* Listener for button*/
+	/* Listener for button
+	*  Show dialog window for showing table with orders
+	*  For admins, operators 
+	*/
 	$( "#show-table" ).on( "click", function() {
 		dialogTable.dialog( "open" );
 	});
 	
+	/* Listener for button
+	*  Show dialog window for showing table with orders
+	*  For users
+	*/
+	$( "#show-table-user" ).on( "click", function() {
+		dialogTable.dialog( "open" );
+	});
+		
 	/*Promise for getting deliveries dataset*/
 	let applyDatasetTable = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveriesTable );
 	
