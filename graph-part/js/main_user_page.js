@@ -327,6 +327,12 @@ let validateEmail = (email) => {
 			style: {classes: 'qtip-bootstrap'}
 		}, event);
 	});
+	
+	/* Add panzoom to graph */
+	cy.panzoom({
+		// options here...
+	});
+	
 	/* Functions for working with graph */
 	
 	/* Functions for register order part */
