@@ -18,35 +18,43 @@
 </head>
 <body>   
     <div class="container-fluid">
-    <div class="row nav-background"> <!-- navbar whith collapse menu -->
+    <div class="row" style="background-color: #010012"> <!-- navbar whith collapse menu -->
   		 <div class="col-12">
 		   <div class="row justify-content-center">
-						   <div class="col-2"></div>
-							   <div class="col-2 space-nav-text">
-									<span class="nav-text"><a href="#" id="menuBtn">Cabinet</a></span>
-							   </div>
+							<div class="col-2 space-nav-text">
+								<p class="text-center default" id="show-table"><span><a href="#">Table of orders</a></span></p>
+							</div>
+							<div class="col-2 space-nav-text">
+								<p class="text-center default" id="register-order"><span><a href="#">Register order</a></span></p>
+								<span class="nav-text text-center admin operator"><a href="#" id="menuBtn">Cabinet</a></span>
+						   </div>
 						   <div class="col-4 space-nav-logo">
-								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>
+								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>	
 						   </div>
 
-						   <div class="col-2 space-nav-text">
-						   		<p class="text-center"><span class="nav-text"><a href="track.html">Track id</a></span></p>
+					   	   <div class="col-2 space-nav-text">
+								<p class="text-center default" id="track-delivery"><span><a href="#">Track</a></span></p>
 						   </div>
+						   
 						   <div class="col-2 space-nav-text">
-							 
+								<p class="text-center  default opeator admin" id="logout"><span><a href="#">Log out</a></span></p>
 						   </div> 
+						   
 					 </div>
              </div>
-             <div class="col-12" id="menu" style="display: none; background-color: rgb(0,1,22);">
-              <div class="row">
-				<div class="col "><span><a href="order.html" class="active-item">Order</a></span></div>
+             <div class="col-12" id="menu" style="display: none;">
+              <div class="row" >
+				<div class="col operator admin"><span><a href="order.html" class="active-item">Orders</a></span></div>
 				<div class="col operator admin" ><span><a href="ships.html">Ships</a></span></div>
-				<div class="col default"><p class="text-center"><span><a href="track.html">Track</a></span></p></div>
-				  <div class="col operator admin"><p class="text-center"><span><a href="users.html">Users</a></span></p></div>
-				  <div class="col default"><p class="text-center"><span>	<a href="planets.html">Planets</a></span></p></div>
+				<!--<div class="col default operator admin"><p class="text-center"><span><a href="main_user_page.html" >Track</a></span></p></div>-->
+				<div class="col operator admin"><p class="text-center"><span><a href="users.html">Users</a></span></p></div>
+				  <div class="col operator admin"><p class="text-center"><span><a href="planets.html">Planets</a></span></p></div>
+          		<!--<div class="col operator admin"><p class="text-center"><span><a href="#">Register order</a></span></p></div>-->
+          		<!--<div class="col operator admin"><p class="text-center"><span><a href="#">History</a></span></p></div>-->
+          		 <div class="col operator admin"><p class="text-center"><span><a href="main_user_page.html">Graph</a></span></p></div>
+           </div>
             </div>
              </div>
-              </div>
 		<div class="row justify-content-center">
 			<div class="col-4" >
 				<p class="text-center">
@@ -57,14 +65,14 @@
 				</div>
 				<div class="col-4" >
 					<p class="text-center">
-						<a class="btn btn-outline-warning btn-lg btn-block operator admin" data-toggle="collapse" href="#table" aria-expanded="false" id="openTableOrders">
+						<a class="btn btn-outline-primary btn-lg btn-block operator admin" data-toggle="collapse" href="#table" aria-expanded="false" id="openTableOrders">
 							Open Table 
 						</a>
 					</p>		
 				</div>
 			<div class="col-4">
 				<p class="text-center">
-					<a class="btn btn-outline-info btn-lg btn-block operator admin" data-toggle="collapse" href="#containersForm" aria-expanded="false" aria-controls="makeOrderForm">
+					<a class="btn btn-outline-primary btn-lg btn-block operator admin" data-toggle="collapse" href="#containersForm" aria-expanded="false" aria-controls="makeOrderForm">
 					Open Containers
 					</a>
 				</p>
@@ -124,6 +132,7 @@
        	<select id="type" class='form-control'>
        		<option value="0">cheap</option>
        		<option value="1">quick</option>
+       		<option value="2">regular</option>
        	</select></div>
        	</div>
        	<div class="col-12">

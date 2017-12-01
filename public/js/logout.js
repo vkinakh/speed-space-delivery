@@ -5,7 +5,7 @@ $("#logout").click(function (){
 		data:{
 		"SID":JSON.parse(localStorage.getItem("SID"))	
 		},
-		success:function(){alert("Vitalik log out is working!");
+		success:function(){
 							localStorage.clear();
 							location.replace("index.html")
 						  },

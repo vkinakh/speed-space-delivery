@@ -6,22 +6,31 @@ if (localStorage.getItem("permission")===null){
 	var permission=JSON.parse(localStorage.getItem("permission"));
 	switch(permission){
 	case "admin":{
+		var admin=document.getElementsByClassName("admin");
 		console.log("switch admin");
+		for (i=0;i<admin.length;i++){
+			admin[i].style.display="block";
+		}
 		break;
 	}
 		
 	case "operator" :{
 		console.log("switch operator");
-		var admin=document.getElementsByClassName("admin operator");
+		var operator=document.getElementsByClassName("operator");
 			for (i=0;i<admins.length;i++){
-				admin[i].style.display="none";
+				operator[i].style.display="block";
 			}
 		console.log(admin.length);
 		break;
 	}	
 	default:{
 		console.log("switch default");
-		var admin=document.getElementsByClassName("admin");
+		var defaultUser=document.getElementsByClassName("default");
+		console.log(defaultUser.length);
+		for (i=0;i<defaultUser.length;i++){
+			defaultUser[i].style.display="block";
+		}
+		/*var admin=document.getElementsByClassName("admin");
 		for (i=0;i<admin.length;i++){
 			admin[i].style.display="none";
 		}
@@ -30,7 +39,7 @@ if (localStorage.getItem("permission")===null){
 			operator[i].style.display="none";
 		}
 		console.log("admin length= "+admin.length);
-		console.log("operator length= "+operator.length);
+		console.log("operator length= "+operator.length);*/
 		break;
 		}
 }

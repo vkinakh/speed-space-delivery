@@ -12,8 +12,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
 	<link rel="stylesheet" href="../css/style.css">
-	
-	  <script src="../js/loadPages.js"></script>
+	<script src="../js/showByPermission.js"></script>
+	<script src="../js/loadPages.js"></script>
 	
 	<script src="../js/nav.js"></script>
 	<script src="../js/jquery-ui.min.js"></script>
@@ -21,36 +21,43 @@
 </head>
 <body>   
     <div class="container-fluid">
-		<div class="row nav-background"> <!-- navbar whith collapse menu -->
-			 <div class="col-12">
-			   <div class="row justify-content-center">
-							   <div class="col-2"></div>
-								   <div class="col-2 space-nav-text">
-										<span class="nav-text"><a href="#" id="menuBtn">Cabinet</a></span>
-								   </div>
-							   <div class="col-4 space-nav-logo">
-									<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>
-							   </div>
+		<div class="row" style="background-color: #010012"> <!-- navbar whith collapse menu -->
+  		 <div class="col-12">
+		   <div class="row justify-content-center">
+							<div class="col-2 space-nav-text">
+								<p class="text-center default" id="show-table"><span><a href="#">Table of orders</a></span></p>
+							</div>
+							<div class="col-2 space-nav-text">
+								<p class="text-center default" id="register-order"><span><a href="#">Register order</a></span></p>
+								<span class="nav-text text-center admin operator"><a href="#" id="menuBtn">Cabinet</a></span>
+						   </div>
+						   <div class="col-4 space-nav-logo">
+								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>
+						   </div>
 
-							   <div class="col-2 space-nav-text">
-								<span><a href="#" id="logout">Log out</a></span>
-									<!--<p class="text-center"><span class="nav-text"><a href="track.html">Track id</a></span></p> -->
-							   </div>
-							   <div class="col-2 space-nav-text">
-
-							   </div> 
-						 </div>
-				 </div>
-				 <div class="col-12" id="menu" style="display: none; background-color: rgb(0,1,22);">
-				  <div class="row" >
-					<div class="col"><span><a href="order.html">Order</a></span></div>
-					<div class="col operator admin" ><span><a href="ships.html">Ships</a></span></div>
-					<div class="col default"><span><a href="track.html">Track</a></span></div>
-					<div class="col operator admin"><span><a href="users.html">Users</a></span></div>
-					  <div class="col default"><span><a href="planets.html" class="active-item">Planets</a></span></div>
-				</div>
-				 </div>
-			</div>
+					   	   <div class="col-2 space-nav-text">
+								<p class="text-center default" id="track-delivery"><span><a href="#">Track</a></span></p>
+						   </div>
+						   
+						   <div class="col-2 space-nav-text">
+								<p class="text-center  default opeator admin" id="logout"><span><a href="#">Log out</a></span></p>
+						   </div> 
+						   
+					 </div>
+             </div>
+             <div class="col-12" id="menu" style="display: none;">
+              <div class="row" >
+				<div class="col operator admin"><span><a href="order.html">Orders</a></span></div>
+				<div class="col operator admin" ><span><a href="ships.html">Ships</a></span></div>
+			<!--	<div class="col default operator admin"><p class="text-center"><span><a href="main_user_page.html" >Track</a></span></p></div> -->
+				<div class="col operator admin"><p class="text-center"><span><a href="users.html">Users</a></span></p></div>
+				  <div class="col operator admin"><p class="text-center"><span><a href="planets.html"  class="active-item">Planets</a></span></p></div>
+          	<!--	<div class="col operator admin"><p class="text-center"><span><a href="#">Register order</a></span></p></div>-->
+          	<!--	<div class="col operator admin"><p class="text-center"><span><a href="#">History</a></span></p></div> -->
+          	 	<div class="col operator admin"><p class="text-center"><span><a href="main_user_page.html">Graph</a></span></p></div>
+           </div>
+            </div>
+             </div>
     <div class="row justify-content-center">
         <div class="col-9" id="trablcol"><p id="planets"></p></div>
     </div>
