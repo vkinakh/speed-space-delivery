@@ -1,0 +1,127 @@
+
+span>a:link {
+    font-size:1.5vw;
+  font-family: "Verdana";
+  color: rgb(255, 255, 255);
+  line-height: 1.2;
+  width: 76px;
+  height: 19px;
+  text-decoration: none;
+}
+
+span>a:visited {
+  font-size: 1.5vw;
+  font-family: "Verdana";
+  color: rgb(255, 255, 255);
+  line-height: 1.2;
+  width: 76px;
+  height: 19px;
+}
+
+span>a:hover {
+    border-radius: 10%;
+    font-size: 1.5vw;
+    font-family: "Verdana";
+    color: black;
+    line-height: 1.2;
+    width: 76px;
+    height: 19px;
+    background-color: white;
+    text-decoration: none;
+}
+
+span>a:active {
+    color: blue;
+    text-decoration: none;
+}
+
+.active-item{
+	background-color:#6666ff;
+/*	border-radius:10%;*/
+}
+.my-container{
+    width: 100%; height: 1000px;
+}
+.container-background{
+    background-image: url(../images/stars.jpg); background-repeat: no-repeat; background-size: 100%;
+}
+.nav-background{
+	background-image: url(../images/nav.png); background-size: 100%; background-repeat:no-repeat;
+}
+.speed-space-delivery{
+  background-image: url("../images/SPEEDSPACEDELIVERY.png");
+  width: 442px;
+  height: 194px;
+  z-index: 11;
+}
+
+ .speed-space-delivery-text{
+        padding-top: 7%;
+        padding-left: 10%;
+}
+.speed-space-delivery-button{
+    padding-top: 5%;
+    padding-left: 19%;
+    
+}
+.how-does-it-work {
+  font-size: 58.776px;
+  font-family: "Verdana";
+  color: rgb(0, 0, 0);
+  line-height: 1.2;
+  text-align: center;
+}
+.space-between-container{
+    padding-bottom: 3%;
+}
+.nav-other{
+    background-image: url(../images/stars.jpg); background-repeat: no-repeat; background-size: 100%;
+}
+.white-text{
+     font-size: 25px;
+  font-family: "Verdana";
+  color: rgb(255, 255, 255);
+  line-height: 1.2;
+  width: 76px;
+  height: 19px;
+}
+.space-nav-text{
+    padding-top: 4vw;
+}
+.space-nav-logo{
+    padding-top: 1vw;
+}
+
+.hint:after{
+	background: #333;
+	/*background:rgba(0,0,0,.9);*/
+    background: rgba(100,200,255,.9);
+    border-radius: 5px;
+    top:80%;
+    color: #fff;
+    content: attr(data-title);
+    padding: 10px 15px;
+    position: absolute;
+    z-index: 1;
+    width: auto;
+	opacity: 0;
+	transition: opacity 250ms;
+	}
+.hint:hover:after{
+    opacity: 1;
+	transition: opacity 1s;
+	transition-delay: 1s;
+}
+.logo-width{
+	width: 6vw;
+}
+
+ .admin{
+	display:none;
+ }
+ .operator {
+	display:none; 
+ }
+.default{
+	display:none;
+}
