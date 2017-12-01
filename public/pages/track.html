@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Track delivery</title>
+    <link rel="stylesheet" href="../css/index.css" />
+    <link rel="stylesheet" href="../css/style.css">
+	<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<link href="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">  
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="../js/cytoscape.min.js"></script>
+	<script src="../js/cola.js"></script>
+    <script src="../js/cytoscape-cola.js"></script>
+    <script src="../js/tooltipster.bundle.min.js"></script>
+	<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-qtip/2.7.0/cytoscape-qtip.js"></script>
+	<script src="../js/index.js"></script>
+    <script src="../js/track.js"></script>
+    <script src="../js/nav.js"></script>
+	<style>
+	    label, input { display:block; }
+		input.text { margin-bottom:12px; width:95%; padding: .4em; }
+		fieldset { padding:0; border:0; margin-top:25px; }
+		h1 { font-size: 1.2em; margin: .6em 0; }
+		.ui-dialog .ui-state-error { padding: .3em; }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+	<div class="row" style="background-color: #010012"> <!-- navbar whith collapse menu -->
+  		 <div class="col-12">
+		   <div class="row justify-content-center">
+							   <div class="col-2 space-nav-text">
+									
+							   </div>
+							<div class="col-2 space-nav-text">
+						   		<span class="nav-text"><a href="#" id="menuBtn">Cabinet</a></span>
+						   </div>
+						   <div class="col-4 space-nav-logo">
+								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid logo-width" ></a></p>
+						   </div>
+							<div class="col-2 space-nav-text">
+								<p class="text-center" id="register-order"><span><a href="#">Register order</a></span></p>
+						   </div>
+						   <div class="col-2 space-nav-text">
+							<span><a href="#" id="track-delivery">Track</a></span>
+						   </div> 
+						   
+					 </div>
+             </div>
+             <div class="col-12" id="menu" style="display: none;">
+              <div class="row" >
+				<div class="col"><span><a href="order.html" class="active-item">Order</a></span></div>
+				<div class="col operator admin" ><span><a href="ships.html">Ships</a></span></div>
+				<div class="col default"><span><a href="track.html">Track</a></span></div>
+				<div class="col operator admin"><span><a href="users.html">Users</a></span></div>
+				 <div class="col default"><span><a href="planets.html">Planets</a></span></div>
+            </div>
+             </div>
+              </div>
+</div>
+
+<div id="dialog-form" title="Enter track number">
+  <form>
+    <fieldset>
+      <label for="name">Track number</label>
+      <input type="text" name="track-number" id="track-number" class="ui-widget-content ui-corner-all">
+	  <div id="delivery-info"></div>
+	  <span class="err alert alert-danger" name="error" id="error" role="alert"></span>
+    </fieldset>
+  </form>
+</div>
+
+<div id="cy" class="main"></div>
+<script src="../js/showByPermission.js"></script>
+</body>
+</html>
