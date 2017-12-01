@@ -16,14 +16,14 @@ function loadPlanetsToSelect() {
 		type:'GET',
 		url:"https://someleltest.herokuapp.com/api/planets/getAll",
 		success:function (data){
-			$.each(data, function (i, planet) {
+			$.each(data, function (i, planets) {
 				$('#from').append($('<option>', { 
 					value: i,
-					text : planet.name
+					text : planets.name
 				}));
 				$("#to").append($('<option>',{
 					value:i,
-					text:planet.name
+					text:planets.name
 				}))
 				});
 					  

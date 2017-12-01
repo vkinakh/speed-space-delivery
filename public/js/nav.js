@@ -1,0 +1,2 @@
+$( document ).ready(function(){
+$("#menuBtn").click(function(){if(document.getElementById("menu").style.display=="none"){document.getElementById("menu").style.display = "inline-block";}else{document.getElementById("menu").style.display="none"}})})

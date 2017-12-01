@@ -21,7 +21,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(Fingerprint({
     parameters:[
         Fingerprint.useragent,
-        Fingerprint.acceptHeaders,
         Fingerprint.geoip
     ]
 }));
