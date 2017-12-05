@@ -1,8 +1,8 @@
  // Variable
 /*---------------------------------------------------------------------------------------------*/
 
-var url="https://someleltest.herokuapp.com/api/orders/";
-var urlGet="https://someleltest.herokuapp.com/api/orders?SID=";
+var url="https://sspacedelivery.herokuapp.com/api/orders/";
+var urlGet="https://sspacedelivery.herokuapp.com/api/orders?SID=";
 urlGet+=JSON.parse(localStorage.getItem("SID"));
 var table=document.getElementById("table");
 
@@ -14,7 +14,7 @@ function loadPlanetsToSelect() {
 	console.log("laodPlanetsToSelect()");
 	$.ajax({
 		type:'GET',
-		url:"https://someleltest.herokuapp.com/api/planets/getAll",
+		url:"https://sspacedelivery.herokuapp.com/api/planets/getAll",
 		success:function (data){
 			$.each(data, function (i, planets) {
 				$('#from').append($('<option>', { 
@@ -202,7 +202,7 @@ $("#btnConfirmContainer").click(function(){
 
 		$.ajax({
 type:'POST', 
-url: 'https://someleltest.herokuapp.com/api/orders/confirmContainer', 
+url: 'https://sspacedelivery.herokuapp.com/api/orders/confirmContainer', 
 data: JSON.stringify(data), 
 contentType: 'application/json',
 success:function(status){console.log(status);},
@@ -219,7 +219,7 @@ $("#cancel").click(function(){
 		"action":"cancel"
 	 }
 	$.ajax({
-	url:"https://someleltest.herokuapp.com/api/orders",
+	url:"https://sspacedelivery.herokuapp.com/api/orders",
 	type:'put',
 	data:accept,
 	success:function(status){console.log(status);show();}

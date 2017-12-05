@@ -129,10 +129,10 @@ let applyPaths = dataset => {
 };
 
 /*Promise for applying dataset from select*/
-let applyDatasetFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/planets?SID=" + SID).then( getDataset ).then( applyDataset );
+let applyDatasetFromSelect = () => Promise.resolve( "https://sspacedelivery.herokuapp.com/api/planets?SID=" + SID).then( getDataset ).then( applyDataset );
 
 /*Promise for applying paths*/
-let applyPathsFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/paths?SID=" + SID).then(getDataset).then(applyPaths)
+let applyPathsFromSelect = () => Promise.resolve( "https://sspacedelivery.herokuapp.com/api/paths?SID=" + SID).then(getDataset).then(applyPaths)
 
 /*
 * Function for calculating cached centrality

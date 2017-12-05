@@ -1,7 +1,7 @@
 $("#logout").click(function (){
 	$.ajax({
 		type:'POST',
-		url:"https://someleltest.herokuapp.com/api/users/logout",
+		url:"https://sspacedelivery.herokuapp.com/api/users/logout",
 		data:{
 		"SID":JSON.parse(localStorage.getItem("SID"))	
 		},
@@ -13,7 +13,7 @@ $("#logout").click(function (){
 						location.replace("index.html");}
 		
 	})
-	$.post("https://someleltest.herokuapp.com/api/users/logout",{
+	$.post("https://sspacedelivery.herokuapp.com/api/users/logout",{
 		},function (status){
 		console.log(status);
 		alert("Log out success");

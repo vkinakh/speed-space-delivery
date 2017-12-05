@@ -1,6 +1,6 @@
 
-var url="https://someleltest.herokuapp.com/api/users/";
-var urlGet="https://someleltest.herokuapp.com/api/users?SID=";
+var url="https://sspacedelivery.herokuapp.com/api/users/";
+var urlGet="https://sspacedelivery.herokuapp.com/api/users?SID=";
 var table=document.getElementById("table");
 var user_JSON
 
@@ -9,7 +9,7 @@ function loadPlanetsToSelect() {
 	console.log("laodPlanetsToSelect()");
 	$.ajax({
 		type:'GET',
-		url:"https://someleltest.herokuapp.com/api/planets/getAll",
+		url:"https://sspacedelivery.herokuapp.com/api/planets/getAll",
 		success:function (data){
 			$.each(data, function (i, planet) {
 				$('#planetSelect').append($('<option>', { 

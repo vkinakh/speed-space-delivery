@@ -31,7 +31,7 @@ $("#delete").click(function () {
 
 function addTFA(obj) {
     $.ajax({
-        url: "https://someleltest.herokuapp.com/api/users/addTFA",
+        url: "https://sspacedelivery.herokuapp.com/api/users/addTFA",
         type: 'POST',
         data: obj,
         success: function (response) {
@@ -54,7 +54,7 @@ function addTFA(obj) {
 
 function confirmTFA(obj) {
     $.ajax({
-        url: "https://someleltest.herokuapp.com/api/users/confirmTFA",
+        url: "https://sspacedelivery.herokuapp.com/api/users/confirmTFA",
         type: 'POST',
         data: obj,
         success: function (response) {
@@ -70,7 +70,7 @@ function confirmTFA(obj) {
 
 function removeTFA(obj) {
     $.ajax({
-        url: "https://someleltest.herokuapp.com/api/users/removeTFA",
+        url: "https://sspacedelivery.herokuapp.com/api/users/removeTFA",
         type: 'POST',
         data: obj,
         success: function (response) {

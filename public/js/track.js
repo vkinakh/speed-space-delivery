@@ -12,7 +12,7 @@
 	};
 	
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetD = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveries );
+	let applyDatasetD = () => Promise.resolve("https://sspacedelivery.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveries );
 	
 	// Function for adding event listeners to submit		
 	// </Helper functions>

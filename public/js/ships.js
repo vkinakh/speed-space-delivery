@@ -1,5 +1,5 @@
-var url="https://someleltest.herokuapp.com/api/ships";
-var urlGet="https://someleltest.herokuapp.com/api/ships?SID=";
+var url="https://sspacedelivery.herokuapp.com/api/ships";
+var urlGet="https://sspacedelivery.herokuapp.com/api/ships?SID=";
 urlGet+=JSON.parse(localStorage.getItem("SID"));
 var table=document.getElementById("ships");
 
@@ -49,9 +49,9 @@ function loadShips(){
 
     })
 $("#Delete").click(function (){
-	//var url=https://someleltest.herokuapp.com/api/ships
+	//var url=https://sspacedelivery.herokuapp.com/api/ships
 	$.ajax({
-		url:"https://someleltest.herokuapp.com/api/ships",
+		url:"https://sspacedelivery.herokuapp.com/api/ships",
 		type:"DELETE",
 		data:{
 		"SID":JSON.parse(localStorage.getItem("SID")),

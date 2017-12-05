@@ -38,7 +38,7 @@
 	let registerOrder = () =>
 	{
 		$.ajax({
-			url: 'https://someleltest.herokuapp.com/api/orders',
+			url: 'https://sspacedelivery.herokuapp.com/api/orders',
 			type: 'POST',
 			dataType: 'json',
 			data: JSON.parse('{"SID":"'+  SID + '","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + true + '}}'),
@@ -229,7 +229,7 @@
 		let d;
 		// Finally make a request
 		$.ajax({
-			url: 'https://someleltest.herokuapp.com/api/orders',
+			url: 'https://sspacedelivery.herokuapp.com/api/orders',
 			type: 'POST',
 			dataType: 'json',
 			data: JSON.parse('{"SID": "' + SID +'","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + false + '}}'),

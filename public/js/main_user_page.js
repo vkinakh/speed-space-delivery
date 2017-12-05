@@ -134,10 +134,10 @@ let applyPaths = dataset => {
 };
 
 /*Promise for applying dataset from select*/
-let applyDatasetFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/planets?SID=" + SID).then( getDataset ).then( applyDataset );
+let applyDatasetFromSelect = () => Promise.resolve( "https://sspacedelivery.herokuapp.com/api/planets?SID=" + SID).then( getDataset ).then( applyDataset );
 
 /*Promise for applying paths*/
-let applyPathsFromSelect = () => Promise.resolve( "https://someleltest.herokuapp.com/api/paths?SID=" + SID).then(getDataset).then(applyPaths)
+let applyPathsFromSelect = () => Promise.resolve( "https://sspacedelivery.herokuapp.com/api/paths?SID=" + SID).then(getDataset).then(applyPaths)
 
 /*
 * Function for calculating cached centrality
@@ -357,7 +357,7 @@ let validateEmail = (email) => {
 	let registerOrder = (sender, receiver, start, to, weight, volume, type) =>
 	{
 		$.ajax({
-			url: 'https://someleltest.herokuapp.com/api/orders',
+			url: 'https://sspacedelivery.herokuapp.com/api/orders',
 			type: 'POST',
 			dataType: 'json',
 			data: JSON.parse('{"SID":"'+  SID + '","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + true + '}}'),
@@ -466,7 +466,7 @@ let validateEmail = (email) => {
 		let d;
 		// Finally make a request
 		$.ajax({
-			url: 'https://someleltest.herokuapp.com/api/orders',
+			url: 'https://sspacedelivery.herokuapp.com/api/orders',
 			type: 'POST',
 			dataType: 'json',
 			data: JSON.parse('{"SID": "' + SID +'","order":{"sender" : "' + sender + '" ,"reciever" : "' + receiver+'" ,"from":"' + start + '" ,"to": "' + to +  '" ,"weight": '+ weight + ' ,"volume":' + volume + ' ,"type": "' + type +'", "estimate":' + false + '}}'),
@@ -630,7 +630,7 @@ let validateEmail = (email) => {
 	};
 	
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetTrack = () => Promise.resolve("https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveriesTrack );
+	let applyDatasetTrack = () => Promise.resolve("https://sspacedelivery.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveriesTrack );
 	
 	$("#track-number").on("input", function(){
 		$("#error").css("visibility","hidden");
@@ -1107,7 +1107,7 @@ let validateEmail = (email) => {
 	});
 		
 	/*Promise for getting deliveries dataset*/
-	let applyDatasetTable = () => Promise.resolve( "https://someleltest.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveriesTable );
+	let applyDatasetTable = () => Promise.resolve( "https://sspacedelivery.herokuapp.com/api/orders?SID=" + SID).then( getDataset ).then( applyDatasetDeliveriesTable );
 	
 		let createRowListeners = () => {
 		// Add event listener for each row in created table
