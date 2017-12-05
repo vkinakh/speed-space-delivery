@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Register</title>
+  <meta charset="utf-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="../js/loadPages.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <script src="../js/jquery-3.2.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/nav.js"></script>
+    <script src="../js/jquery-ui.min.js"></script>
+    <script src="../js/jquery-confirm.min.js"></script>
+</head>
+<body>   
+   
+<div class="container-fluid">
+     <div class="row nav-background"> <!-- navbar whith collapse menu -->
+  		 <div class="col-12">
+		   <div class="row justify-content-center">
+						   <div class="col-2"></div>
+							   <div class="col-2 space-nav-text">
+									<span class="nav-text"><a href="index.html">Home</a></span>
+							   </div>
+						   <div class="col-4 space-nav-logo">
+								<p class="text-center"><a href="index.html"><img src="../images/logo.png" class="img-fluid" style=" width: 11vw;"></a></p>
+						   </div>
+
+						   <div class="col-2 space-nav-text">
+					   		<p class="text-center"><span class=nav-text><a href="log-in.html">Log in</a></span></p>
+						   		<!--<p class="text-center"><span class="nav-text"><a href="track.html">Track id</a></span></p>-->
+						   </div>
+						   <div class="col-2 space-nav-text">
+							  
+						   </div> 
+					 </div>
+             </div>
+  
+              </div>
+    <div class="row justify-content-center" style="padding-top:10%;">
+           <div class="col-8">
+				<form id="form" class="form-horizontal" style="">
+				   <div class="col-12  " >
+					<div class="form-group"data-title="Input valid email!" >
+						<input type="text" class="form-control " id="email" placeholder="Email" >
+					</div>
+					</div>
+			  		 <div class="col-12">
+					   <div class="form-group"  data-title="At least 8 character">
+							<input type="password" class="form-control" id="password" placeholder="Password" >
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="form-group" data-title="Input equal passwords!">
+							<input type="password" class="form-control " id="password2" placeholder="Confirm password" >
+						</div>
+					</div>
+						<p class="text-center"><button class="btn btn-secondary" id="reg">Sign up!</button></p>
+				</form>
+				<form id="aftreg" class="form-horizontal" style="display: none;">
+					<div class="form-group">
+						<input type="text" class="form-control" id="confirmPassword" placeholder="confirm password">
+					</div>
+						<p class="text-center"><button class="btn" id="confirmButton">confirm</button></p>
+				</form>
+            
+        </div>
+        </div>
+    </div>
+   <nav class="fixed-bottom" style="background-image: url(../images/stars.jpg); ">
+   <span class="white-text">&#39;</span>
+</nav>
+    
+ <script src="../js/sign-up.js">
+    </script>
+</body>
+</html>
