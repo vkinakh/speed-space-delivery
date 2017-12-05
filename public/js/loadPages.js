@@ -6,14 +6,25 @@ var pages={
 }
 
 function loadPageByPerm(perm){
-	if((perm!=="admin"&&perm!=="operator"&&perm!="default")){perm="unauthorized"}
-	console.log(perm)
+	if(perm!=="admin"){
+		console.log("Your permission is not admin")
+		if(perm!=="operator"){
+			console.log("Your permission is not operator")
+			if(perm!="default") {
+				console.log("You are not authorizerd")
+				perm="unauthorized"
+			}
+		}
+	}
+	   
+		 
+	console.log("Your permission is: "+perm);
 	
 	var fileName=location.pathname.match(/[^\/]+$/)[0];
-	console.log(fileName);
+	//console.log(fileName);
 	
 	var accessPage=pages[perm];
-	console.log(accessPage);
+//	console.log(accessPage);
 	
 	var pr=false;
 	console.log("List of pages:")
@@ -27,4 +38,4 @@ function loadPageByPerm(perm){
 	
 
 
-	loadPageByPerm("asdasd");
+	loadPageByPerm(JSON.parse(localStorage.getItem("permission")));
