@@ -338,6 +338,12 @@ let validateEmail = (email) => {
 	/* Functions for register order part */
 	/* Variable for saving original content inside dialog window */
 	let originalDialogContentOrder = $("#dialog-order").html();
+	
+	/* Variable for checking if register order process is now
+	*  this variable will be true only if register order window was opened and sender receiver
+	   are ready
+	*/
+	let isItRegisterOrderProcess = false;
 		
 	/* Dialog window to register order */
 	let dialogOrder;
@@ -422,6 +428,7 @@ let validateEmail = (email) => {
 		let sender = $("#sender").val();
 		let receiver = $("#reciever").val();
 		
+		if(isItRegisterOrderProcess){
 		if(sender != "" && sender != undefined && validateEmail(sender))
 		{
 			if(receiver != "" &&  receiver != undefined && validateEmail(receiver))
@@ -452,6 +459,7 @@ let validateEmail = (email) => {
 			$("#sender").val("");
 			$("#sender").addClass("text-glow");
 			setTimeout(function () { $("#sender").removeClass("text-glow"); }, 2000);
+		}
 		}
 	});
 	
@@ -570,13 +578,16 @@ let validateEmail = (email) => {
 		}
 	};
 	
-	$("#make-order").on("click", tryOrder);
+	$("#make-order").on("click", function(){
+		tryOrder();
+	});
 		
 	/* Open dialog window for registering order 
 	*  For admins and operators
 	*/
 	$("#register-order").on("click", function(){
 		dialogOrder.dialog("open");
+		isItRegisterOrderProcess = true;
 	});
 	
 	/* Open dialog window for registering order 
@@ -584,6 +595,7 @@ let validateEmail = (email) => {
 	*/
 	$("#register-order-user").on("click", function(){
 		dialogOrder.dialog("open");
+		isItRegisterOrderProcess = true;
 	});
 		
 	let addListenersToOrderDialogWindow = () =>
