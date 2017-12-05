@@ -10,7 +10,6 @@ $(document).ready(function() {
 	});
 	myGet(buildHtmlTablePlanets);// завантаження таблиці планет
 });
-
 function myGet(responseFunction){
 	if(localStorage.getItem("SID")){
 	$.ajax({
@@ -25,63 +24,8 @@ function myGet(responseFunction){
 			success:function (data){console.log(data);buildHtmlTablePlanetsUsers(planets_NODE,data)}
 		})}
 }
-function buildHtmlTablePlanetsUsers(selector,array){
-
-	var table="<table class='table-bordered table-hover table-responsive'>";
-	
-	table+="<tr>"
-	table+="<th>name</th><th>moonOf</th><th>galactic</th>"
-	table+="</tr>"
-	for (i=0;i<array.length;++i){
-		table+="<tr>"
-		table+="<td>"+array[i].name;
-		table+="</td>";
-		if(array[i].moonOf){table+="<td>"+array[i].moonOf;table+="</td>"}
-		table+="<td>"+array[i].galactic;
-		table+="</td>";
-		table+="</tr>";
-	}
-	table+="</table>";
-	selector.innerHTML=table;
-	
-}
-
-//<i class='fa fa-times-circle'></i>
-function myPost(obj_JSON){
-	console.log(obj_JSON);
- $.ajax({
-	 url:url,
-	 type:'POST',
-	 data:obj_JSON,
-	 success:function(){alert("O`k");myGet(buildHtmlTablePlanets)},
-	 error:function(status){alert(status.responseText); return false;}
-		})
-}
-
-
-
-function deletePlanet (param) {
-	console.log(param);
-	$.ajax({
-		"url":url,
-		type:'DELETE',
-		data:{
-			"SID":JSON.parse(localStorage.getItem("SID")),
-			"planetName":param
-		},
-		success:function(){console.log("success in delete");myGet(buildHtmlTablePlanets)},
-	 	error:function(status){alert(status.responseText);}
-		
-	//})
-})
-}
-
-$("#add").click(function(){addPlanet()});
-$("#reload").click(function (){console.log("reload");myGet(buildHtmlTablePlanets)}); // обновленя таблиці
-$("#delete").click(function(){var name=$("#name").val();deletePlanet(name);myGet(buildHtmlTablePlanets)}); // видалення планети по параметру
-
-function buildHtmlTablePlanets(selector,responseArr)
-	{
+//$("#reload").click(function (){console.log("reload");myGet(buildHtmlTablePlanets)}); // обновленя таблиці
+function buildHtmlTablePlanets(selector,responseArr){
 		
 		var position = responseArr.map(function(el){
 return el.position;
@@ -137,15 +81,16 @@ keys.sort();
 			table+="removePlanet(\"";
 			table+=temp.name;
 			table+="\")'</i></td>";
-		
 		 	table+="<td><i class='fa fa-upload fa-2x' style='color:green;' onclick='";
 			table+='changePlanet(\"';
 		    table+=temp.name;
 			table+="\")'</i></td>";
+		if(i==0){table+="<td><i class='fa fa-plus fa-2x' style='color:#0066FF;' onclick='";
+			table+='addPlanet(\"';
+		    table+=temp.name;
+			table+="\")'</i></td>"}
 		    table+'</tr>';
 		}
-
-	
 	table+="</table>";
 	selector.innerHTML=table;
 		}
@@ -165,40 +110,67 @@ function filldFormByPlanetName(name){
 	})
 	return proper;
 }
-
+function checkChangesPlanetForm(){
+		var pr=true;
+		
+			if(!$('#name').val()){
+			$("#name").addClass("text-glow");setTimeout(function () { $("#name").removeClass("text-glow");},1000);pr=false;
+			   };
+		
+			if(!$('#type').val()){
+			$("#type").addClass("text-glow");setTimeout(function () { $("#type").removeClass("text-glow");},1000);pr=false;
+			   };
+		
+			if(!$('#diameter').val()){
+			$("#diameter").addClass("text-glow");setTimeout(function () { $("#diameter").removeClass("text-glow");},1000);pr=false;
+			   };
+			if(!$('#galactic').val()){
+			$("#galactic").addClass("text-glow");setTimeout(function () { $("#galactic").removeClass("text-glow");},1000);pr=false;
+			   };
+			if(!$('#image').val()){
+			$("#image").addClass("text-glow");setTimeout(function () { $("#image").removeClass("text-glow");},1000);pr=false;
+			   };
+			if(!$('#color').val()){
+			$("#color").addClass("text-glow");setTimeout(function () { $("#color").removeClass("text-glow");},1000);pr=false;
+			   };
+			if(!$('#x').val()){
+			$("#x").addClass("text-glow");setTimeout(function () { $("#x").removeClass("text-glow");},1000);pr= false;
+			   };
+			if(!$('#y').val()){
+			$("#y").addClass("text-glow");setTimeout(function () { $("#y").removeClass("text-glow");},1000);pr=false;
+			   };
+		return pr;
+	}
 function changePlanet(planetName){
 	console.log(RESPONSEARR);
 	var proper=filldFormByPlanetName(planetName);
-	//console.log(RESPONSEARR.findIndex(findPlanetByName))
-	//console.log(RESPONSEARR[id.fromString-1]);
-	//console.log(JSON.stringify(RESPONSEARR));
 	var contentTemp='<form>'
-		+'<div class="form-group"><input type="text"  placeholder="name" class="form-control"'
+		+'<div class="form-group"><lable>Name:<input type="text"  placeholder="name"  id="name" class="form-control"'
 		contentTemp+='value=\"'
 		contentTemp+=proper["name"];
-		contentTemp+='\"></div>'
-		+'<div class="form-group"><input type="text"  placeholder="diameter" class="form-control"'
+		contentTemp+='\" disabled></lable></div>'
+		+'<div class="form-group"><lable>Diameter:<input type="text"  placeholder="diameter" id="diameter" class="form-control"'
 		contentTemp+='value=\"'
 		contentTemp+=proper["diameter"];
-		contentTemp+='\"></div>'
-		+'<div class="form-group"><input type="text"  placeholder="galactic" class="form-control"'
+		contentTemp+='\"></lable></div>'
+		+'<div class="form-group"><lable>Galactic:<input type="text"  placeholder="galactic" id="galactic" class="form-control"'
 		contentTemp+='value=\"'
 		contentTemp+=proper["galactic"];
-		contentTemp+='\"></div>'
-		+'<div class="form-group"><input type="text"  placeholder="image" class="form-control"'
+		contentTemp+='\"></lable></div>'
+		+'<div class="form-group"><lable>Image:<input type="text"  placeholder="image" id="image" class="form-control"'
 		contentTemp+='value=\"'
 		contentTemp+=proper["image"];
-		contentTemp+='\"></div>'
-		+'<div class="form-group"><input type="text"  placeholder="color" class="form-control"'
+		contentTemp+='\"></lable></div>'
+		+'<div class="form-group"><lable>Color:<input type="text"  placeholder="color" id="color" class="form-control"'
 		contentTemp+='value=\"'
 		contentTemp+=proper["color"];
-		contentTemp+='\"></div>'
-		+'<div class="row stye=""><div class="col-3"><div class="form-group"><input type="text"  placeholder="X" class="form-control" value=\"';
+		contentTemp+='\"></lable></div>'
+		+'<div class="row stye=""><div class="col-3"><div class="form-group"><lable>X:<input type="text"  placeholder="X" id="x" class="form-control" value=\"';
 		contentTemp+=proper["x"];
-		contentTemp+='\"></div></div>'
-		+'<div class="col-3"><div class="form-group"><input type="text"  placeholder="Y" class="form-control" value=\"';
+		contentTemp+='\"></lable></div></div>'
+		+'<div class="col-3"><div class="form-group"><lable>Y:<input type="text"  placeholder="Y" id="y" class="form-control" value=\"';
 		contentTemp+=proper["y"];
-		contentTemp+='\"></div></div> </div>';
+		contentTemp+='\"></lable></div></div> </div>';
 		contentTemp+='</form>'
 	
 	$.confirm({
@@ -207,15 +179,40 @@ function changePlanet(planetName){
         	
     buttons: {
         formSubmit: {
-            text: 'Submit',
-            btnClass: 'btn-blue',
+            text: 'Save changes',
+            btnClass: 'btn btn-success',
             action: function () {
-                var name = this.$content.find('.name').val();
-                if(!name){
-                    $.alert('provide a valid name');
-                    return false;
-                }
-                $.alert('Your name is ' + name);
+               if(checkChangesPlanetForm()){
+				   console.log($('#name').val());
+				   console.log($('#diameter').val());
+				   console.log($('#galactic').val());
+				   console.log($('#image').val());
+				   console.log($('#color').val());
+				   console.log($('#x').val());
+				   console.log($('#y').val());
+				   $.ajax({
+					   type:'PUT',
+					   url:'https://sspacedelivery.herokuapp.com/api/planets',
+					   data:{
+						   "SID":JSON.parse(localStorage.getItem("SID")),
+						   "planet":{
+							   "name":$('#name').val(),
+							   "type":$('#type').val(),
+						   	   "diameter":$('#diameter').val(),
+						       "galactic":$('#galactic').val(),
+						       "image":$('#image').val(),
+						       "color":$('#color').val(),
+							   "position":{
+								   "x":$('#x').val(),
+								   "y":$('#y').val()
+							   }
+						   },success:function(){
+							 $.alert("Please reload page!");
+						   }
+						  
+					   }
+				   })
+			   }else return false;
             }
         },
         cancel: function () {
@@ -232,14 +229,8 @@ function changePlanet(planetName){
         });
     }
 });
-	/*
-        
-        */
 }
-
-
-
- function removePlanet(name){
+function removePlanet(name){
 	  $.confirm({
 	animation:'rotate',
 	closeAnimation:'scale',	 
@@ -274,29 +265,68 @@ function changePlanet(planetName){
     }
 })
  }
-			
-
-
-
-
 function addPlanet(){
-	var planetJSON={
-		"SID":JSON.parse(localStorage.getItem("SID")),
-		"planet":{
-		"name":$("#name").val(),
-		"diameter":$("#diameter").val(),
-		"type":$("#type").val(),
-		"galactic":$("#galactic").val(),
-		"position":{
-			"x":$("#x").val(),
-			"y":$("#y").val()
-		},
-		"image":$("#image").val(),
-		
-		"color":$("#color").val()
-	}
-	}
-	myPost(planetJSON);// mypost
+	console.log("add");
+	 $.confirm({
+	animation:'rotate',
+	closeAnimation:'scale',	 
+    title: 'Adding Planet',
+    typeAnimated: true,
+	content:'<form>'
+		+'<div class="form-group"><input type="text" id="name" placeholder="name" class="form-control"></div>'
+		+'<div class="form-group"><input type="text" id="type" placeholder="type" class="form-control"></div>'
+		+'<div class="form-group"><input type="text" id="diameter" placeholder="diameter" class="form-control"></div>'
+		+'<div class="form-group"><input type="text" id="galactic" placeholder="galactic" class="form-control"></div>'
+		+'<div class="form-group"><input type="text" id="image" placeholder="image" class="form-control"></div>'
+		+'<div class="form-group"><input type="text" id="color" placeholder="color" class="form-control"></div> '
+        +'<div class="row"><div class="col-3"><div class="form-group"><input type="text" id="x" placeholder="X" class="form-control"></div></div>'
+        +'<div class="col-3"><div class="form-group"><input type="text" id="y" placeholder="Y" class="form-control"></div></div></div>'
+		+' </form>'
+  
+		 ,
+    buttons: {
+       	Add: {
+            text: 'Add',
+            btnClass: 'btn-success',
+            action: function(){
+               if(checkChangesPlanetForm()){
+				   console.log($('#name').val());
+				   console.log($('#diameter').val());
+				   console.log($('#galactic').val());
+				   console.log($('#image').val());
+				   console.log($('#color').val());
+				   console.log($('#x').val());
+				   console.log($('#y').val());
+				   $.ajax({
+					   type:'POST',
+					   url:'https://sspacedelivery.herokuapp.com/api/planets',
+					   data:{
+						   "SID":JSON.parse(localStorage.getItem("SID")),
+						   "planet":{
+							   "name":$('#name').val(),
+							   "type":$('#type').val(),
+						   	   "diameter":$('#diameter').val(),
+						       "galactic":$('#galactic').val(),
+						       "image":$('#image').val(),
+						       "color":$('#color').val(),
+							   "position":{
+								   "x":$('#x').val(),
+								   "y":$('#y').val()
+							   }
+						   },success:function(){
+							 $.alert("Please reload page!");
+						   }
+						  
+					   }
+				   })
+			   }else return false;
+            }
+        },
+        cancel: function () {
+        }
+    }
+		 
+})
 };
 
 
