@@ -69,7 +69,7 @@ keys.sort();
 		else
 		{
 			table+="<td>";
-			if(temp[keys[j]]) table+=temp[keys[j]];else table+="";
+			if(temp[keys[j]]!== undefined) table+=temp[keys[j]];else table+="";
 			table+="</td>";
 			}
 	}
@@ -149,6 +149,12 @@ function changePlanet(planetName){
 		contentTemp+='value=\"'
 		contentTemp+=proper["name"];
 		contentTemp+='\" disabled></lable></div>'
+	
+		+'<div class="form-group"><lable>Type:<input type="text"  placeholder="type" id="type" class="form-control"'
+		contentTemp+='value=\"'
+		contentTemp+=proper["type"];
+		contentTemp+='\"></lable></div>'
+	
 		+'<div class="form-group"><lable>Diameter:<input type="text"  placeholder="diameter" id="diameter" class="form-control"'
 		contentTemp+='value=\"'
 		contentTemp+=proper["diameter"];
@@ -182,6 +188,7 @@ function changePlanet(planetName){
             text: 'Save changes',
             btnClass: 'btn btn-success',
             action: function () {
+				
                if(checkChangesPlanetForm()){
 				   console.log($('#name').val());
 				   console.log($('#diameter').val());
@@ -207,7 +214,7 @@ function changePlanet(planetName){
 								   "y":$('#y').val()
 							   }
 						   },success:function(){
-							 $.alert("Please reload page!");
+							  $.alert("Please reload page! Or click on 'reload table' ");
 						   }
 						  
 					   }
@@ -219,7 +226,7 @@ function changePlanet(planetName){
             //close
         },
     },
-    onContentReady: function () {
+   /* onContentReady: function () {
         // bind to events
         var jc = this;
         this.$content.find('form').on('submit', function (e) {
@@ -227,7 +234,7 @@ function changePlanet(planetName){
             e.preventDefault();
             jc.$$formSubmit.trigger('click'); // reference the button and click it
         });
-    }
+    }*/
 });
 }
 function removePlanet(name){

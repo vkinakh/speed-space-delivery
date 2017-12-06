@@ -9,7 +9,7 @@ var table=document.getElementById("table");
 // function defenitions 
 /*----------------------------------------------------------------------------------------------*/
 
-function loadPlanetsToSelect() {
+function loadPlanetsToSelect () {
 	'use strict';
 	console.log("laodPlanetsToSelect()");
 	$.ajax({
@@ -34,10 +34,12 @@ function loadPlanetsToSelect() {
 		
 	})
 }
-
-
 function reloadPage () {
 	location.reload();
+}
+function showCreateContainer(){
+	console.log("Show create container button");
+	$('#createContainerBtn').show();
 }
 function orderSend(data){
 	alert("Success sent");
@@ -80,6 +82,10 @@ keys.sort();
 			if(temp[keys[j]]) table+=temp[keys[j]];else table+="";
 			table+="</td>";
 			}
+		table+="<td><input type='checkbox' name=\"orders\" value=\""
+		table+=temp.trackID;
+		table+="\" onclick=\"showCreateContainerButton()\"></td>"
+		table+="</tr>"
 	}
 
 	
@@ -146,16 +152,12 @@ $("#accept").click(function(){
 }) 
 })	
 }
-function  listenerClickOpenTableOrders(){
+function listenerClickOpenTableOrders(){
 	
 	$( "#openTableOrders" ).click(function(){
 		loadTableOrders(); 
 })
 	}
-
-
-
-
 function listenerClickCreateContainer(){
 	console.log("listenerClickCreateContainer()");
 	$( "#btnCreateContainer" ).click(function(){
@@ -186,47 +188,46 @@ function listenerClickCreateContainer(){
 	})
 
 }
-
-/*
-
-$("#btnConfirmContainer").click(function(){
-	var data={
-"SID":JSON.parse(localStorage.getItem("SID")),
-"shipID":$("#orderID").val(),
-"containerID":$("#location").val()
+function showCreateContainerButton(){
+	var pr=0;
+	var inputElements = document.getElementsByName('orders');
+	for(var i=0; i<inputElements.length; ++i){
+      if(inputElements[i].checked){
+		  pr++;}
+	}
+	if(pr!==0){$('#createContainerBtn').show()}else {$('#createContainerBtn').hide()}
 }
-
-
-
-
-
-		$.ajax({
-type:'POST', 
-url: 'https://sspacedelivery.herokuapp.com/api/orders/confirmContainer', 
-data: JSON.stringify(data), 
-contentType: 'application/json',
-success:function(status){console.log(status);},
-error:function (status){alert(status.responseText);}
-})
-})
-
-
-
-$("#cancel").click(function(){
-	  var accept={
-		 "SID":JSON.parse(localStorage.getItem("SID")),
-		"trackID":$("#trackID").val(),
-		"action":"cancel"
-	 }
+function getArrayOrders () {
+	
+	var pr=0;
+	var orders=[];
+var inputElements = document.getElementsByName('orders');
+for(var i=0; i<inputElements.length; ++i){
+      if(inputElements[i].checked){
+		  pr++;
+		  orders.push(parseInt(inputElements[i].value))
+      }
+}
+	if(pr!==0){$('#createContainerBtn').show()}else {$('#createContainerBtn').hide()}
+	console.log(orders);
+	return orders;
+}
+function createContainer(){
+	console.log("createContainerClicked!");
+	var arrayOfOrders=getArrayOrders();
+	/*
 	$.ajax({
-	url:"https://sspacedelivery.herokuapp.com/api/orders",
-	type:'put',
-	data:accept,
-	success:function(status){console.log(status);show();}
-}) 
-  })
-
-
+	type:'POST',
+	url:"https://sspacedelivery.herokuapp.com/api/orders/",
+	data:LolKek_JSON,
+	success:function(){
+	if(window.cofirm("If you want to be replaced in order page press "Ok")){
+		location.replace("order.html");
+	},
+	error:function(status){$.alert(status.responseText);}
+	}
+	})*/
+}
 
 									// List of called functions
 /*-----------------------------------------------------------------------------------------------------------*/
