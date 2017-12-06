@@ -73,6 +73,7 @@ keys.sort();
 	for (i=0;i<keys.length;++i){
 		table+="<th>"+keys[i]+"</th>";
 	}
+	table+="<th>Choose</th><th style='color:green'>Register</th><th style='color:red'>Cancel</th>"
 	
 	for (i=0;i<responseArr.length;++i){
 		var temp=responseArr[i];
@@ -82,9 +83,12 @@ keys.sort();
 			if(temp[keys[j]]) table+=temp[keys[j]];else table+="";
 			table+="</td>";
 			}
-		table+="<td><input type='checkbox' name=\"orders\" value=\""
+		table+="<td><p class='text-center'><input type='checkbox' name=\"orders\" value=\""
 		table+=temp.trackID;
-		table+="\" onclick=\"showCreateContainerButton()\"></td>"
+		table+="\" onclick=\"showCreateContainerButton()\"></p></td>"
+		table+="<td><p class='text-center'><i class='fa fa-check-circle-o fa-2x' style='color:green'></i></p></td>"
+		table+="<td><p class='text-center'><i class='fa fa-times-circle-o fa-2x' style='color:red'></i></p></td>"
+
 		table+="</tr>"
 	}
 
