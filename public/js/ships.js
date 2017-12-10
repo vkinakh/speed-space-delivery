@@ -70,16 +70,16 @@ keys.sort();
 			if(temp[keys[j]]!== undefined) table+=temp[keys[j]];else table+="";
 			table+="</td>";
 			}
-		table+="<td><i class='fa fa-times-circle fa-2x' style='color:red;' onclick='";
+		table+="<td><i class='fa fa-times-circle fa-2x admin' style='color:red;' onclick='";
 			table+="removeShip(\"";
 			table+=temp.id;
 			table+="\")'</i></td>";
-		 	table+="<td><i class='fa fa-upload fa-2x' style='color:green;' onclick='";
+		 	table+="<td><i class='fa fa-upload fa-2x admin' style='color:green;' onclick='";
 			table+='changeShip(\"';
 		    table+=temp.id;
 			table+="\")'</i></td>";
 		if(i==0){
-			table+="<td><i class='fa fa-plus fa-2x' style='color:#0066FF;' onclick='";
+			table+="<td><i class='fa fa-plus fa-2x admin' style='color:#0066FF;' onclick='";
 			table+='addShip(\"';	
 			table+="\")'</i></td>";
 			}

@@ -1,7 +1,7 @@
 //------------------------------------variables--------------------------------------------------------//
 var pages={ // list of pages thar admin,operator,defaul,unauthorized have access
 	admin:["index.html","log-in.html","order.html","planets.html","ships.html","sing-up.html","tfa.html","users.html","main_user_page.html"],
-	operator:["index.html","log-in.html","order.html","planets.html","ships.html","sing-up.html","tfa.html","main_user_page.html"],
+	operator:["index.html","log-in.html","order.html","ships.html","sing-up.html","tfa.html","main_user_page.html"],
 	default:["index.html","log-in.html","sing-up.html","tfa.html","main_user_page.html"],
 	unauthorized:["index.html","log-in.html","sing-up.html"]
 }
